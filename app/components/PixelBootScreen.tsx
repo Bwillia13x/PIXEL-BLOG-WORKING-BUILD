@@ -53,7 +53,7 @@ export function PixelBootScreen({ onComplete }: PixelBootScreenProps) {
     if (newIndex !== textIndex) {
       setTextIndex(newIndex)
     }
-  }, [progress, bootTexts.length, textIndex])
+  }, [progress, textIndex])
 
   useEffect(() => {
     if (textIndex < bootTexts.length) {
@@ -72,7 +72,7 @@ export function PixelBootScreen({ onComplete }: PixelBootScreenProps) {
 
       return () => clearInterval(typingInterval)
     }
-  }, [textIndex, bootTexts])
+  }, [textIndex])
 
   return (
     <div className="h-full w-full bg-gray-900 flex flex-col items-center justify-center text-green-400 font-mono">
