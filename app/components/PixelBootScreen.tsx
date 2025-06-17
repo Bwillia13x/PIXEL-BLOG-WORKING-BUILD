@@ -7,21 +7,21 @@ interface PixelBootScreenProps {
   onComplete: () => void
 }
 
+const bootTexts = [
+  "Initializing pixel matrix...",
+  "Loading retro protocols...",
+  "Calibrating wisdom algorithms...",
+  "Accessing developer database...",
+  "Optimizing creative parameters...",
+  "Preparing blog framework...",
+  "Establishing pixel connections...",
+  "Ready to inspire...",
+]
+
 export function PixelBootScreen({ onComplete }: PixelBootScreenProps) {
   const [progress, setProgress] = useState(0)
   const [currentText, setCurrentText] = useState("")
   const [textIndex, setTextIndex] = useState(0)
-
-  const bootTexts = [
-    "Initializing pixel matrix...",
-    "Loading retro protocols...",
-    "Calibrating wisdom algorithms...",
-    "Accessing developer database...",
-    "Optimizing creative parameters...",
-    "Preparing blog framework...",
-    "Establishing pixel connections...",
-    "Ready to inspire...",
-  ]
 
   useEffect(() => {
     const progressInterval = setInterval(() => {

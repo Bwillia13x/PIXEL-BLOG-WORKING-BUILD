@@ -104,7 +104,6 @@ export function PixelIntroAnimation() {
 
     const animate = (time: number) => {
       if (!lastTime) lastTime = time
-      const deltaTime = time - lastTime
       lastTime = time
 
       if (phase === 0) {
