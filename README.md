@@ -4,18 +4,19 @@ A retro pixel-themed developer blog built with **Next.js 15**, featuring modern 
 
 ## 🌐 **LIVE DEPLOYMENT**
 
-**🚀 PRODUCTION URL:** https://modernblog-codex.windsurf.build
+**🚀 PRODUCTION URL:** https://pixel-wisdom-blog-e9u5rz99y-echoexes-projects.vercel.app
 
-*Fully deployed and accessible worldwide!*
+*Fully deployed and accessible worldwide with epic loading screen animation!*
 
 ## ✨ **Features**
 
 ### 🎨 **Design & UI**
+- **Epic Loading Screen**: Matrix-style intro animation with pixel boot screen
 - **Retro Pixel Aesthetic**: Gaming-inspired design with modern functionality
 - **Responsive Layout**: Optimized for all devices and screen sizes
 - **Improved Typography**: Readable fonts for body text, pixel fonts for headers
 - **Dark Theme**: Eye-friendly dark mode with green accent colors
-- **Smooth Animations**: Hover effects and transitions
+- **Smooth Animations**: Framer Motion powered animations and transitions
 
 ### 🔤 **Font System**
 - **Headers**: Press Start 2P (pixel font)
@@ -39,9 +40,10 @@ A retro pixel-themed developer blog built with **Next.js 15**, featuring modern 
 - **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
 - **Fonts**: Google Fonts (Press Start 2P, JetBrains Mono, VT323)
 - **Icons**: Lucide React
-- **Deployment**: Netlify (Static Export)
+- **Deployment**: Vercel (Next.js SSG)
 - **Package Manager**: pnpm
 
 ## 📁 **Project Structure**
@@ -165,15 +167,15 @@ const yourFont = Your_Font({
 
 This project is configured for static export and can be deployed to:
 
-- **Netlify** ✅ (Currently deployed)
-- **Vercel** ✅ 
-- **GitHub Pages** ✅
-- **Any static hosting service** ✅
+- **Vercel** ✅ (Currently deployed)
+- **Netlify** ✅ 
+- **GitHub Pages** ✅ (with static export)
+- **Any hosting service** ✅
 
-### Netlify Deployment (Current)
-1. Build the project: `pnpm build`
-2. Deploy the `out` folder to Netlify
-3. Configure build settings in Netlify dashboard
+### Vercel Deployment (Current)
+1. Push to GitHub repository
+2. Connect Vercel to your GitHub repo
+3. Auto-deployment on every push to main branch
 
 ## 📧 **Contact**
 
