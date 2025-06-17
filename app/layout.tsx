@@ -3,11 +3,12 @@ import { Press_Start_2P, VT323, JetBrains_Mono } from "next/font/google"
 import type React from "react"
 import type { Metadata } from "next"
 import { siteConfig } from "@/lib/site-config"
-import ColorfulPixelLogo from "./components/ColorfulPixelLogo"
+import RainingCharacters, { RainingBackground } from "./components/RainingCharacters"
 import BlinkingCursor from "./components/BlinkingCursor"
 import NavMenu from "./components/NavMenu"
 import ThemeToggle from "./components/ThemeToggle"
-import PixelatedBackground from "./components/PixelatedBackground"
+import { AppWrapper } from "./components/AppWrapper"
+
 import ClientComponents from "./components/ClientComponents"
 
 const pressStart2P = Press_Start_2P({
@@ -84,23 +85,24 @@ export default function RootLayout({
       <body
         className={`${pressStart2P.variable} ${vt323.variable} ${jetBrainsMono.variable} font-mono bg-gray-900 text-green-400 dark:bg-gray-900 dark:text-green-400`}
       >
-        <PixelatedBackground />
-        <div className="max-w-4xl mx-auto px-4">
-          <header className="py-8 flex flex-col items-center">
-            <ColorfulPixelLogo />
-            <h1 className="text-4xl font-bold text-center font-pixel mb-2">{siteConfig.name}</h1>
-            <p className="text-xl text-center font-retro flex items-center">
-              Tech • Art • Finance <BlinkingCursor />
-            </p>
-            <NavMenu />
-            <div className="mt-4">
-              <ThemeToggle />
-            </div>
-          </header>
-          <main>{children}</main>
-          <footer className="py-8 text-center font-retro">© 2025 {siteConfig.name}. All rights pixelated.</footer>
-        </div>
-        <ClientComponents />
+        <AppWrapper>
+          <RainingBackground />
+          <div className="max-w-4xl mx-auto px-4 relative z-10">
+            <header className="py-4 flex flex-col items-center relative z-10">
+              <RainingCharacters />
+              <p className="text-xl text-center font-retro flex items-center mt-4">
+                <BlinkingCursor />
+              </p>
+              <NavMenu />
+              <div className="mt-4">
+                <ThemeToggle />
+              </div>
+            </header>
+            <main className="relative z-10 bg-gray-900/70 backdrop-blur-sm rounded-lg p-6 mt-6">{children}</main>
+            <footer className="py-8 text-center font-retro relative z-10">© 2025 {siteConfig.name}. All rights pixelated.</footer>
+          </div>
+          <ClientComponents />
+        </AppWrapper>
       </body>
     </html>
   )
