@@ -30,7 +30,7 @@ export const siteConfig: SiteConfig = {
   name: "Drew Williams",
   title: "Drew Williams - Developer & Creative Technologist",
   description: "Full-stack developer passionate about AI-driven development, modern web technologies, and creating pixel-perfect digital experiences. Latest: Financial Data APIs Guide.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://v-o-pixel-blog-design.vercel.app",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://pixelwisdom.dev",
   ogImage: "/og-image.png",
   creator: "Drew Williams",
   keywords: ["full-stack", "developer", "AI", "Next.js", "TypeScript", "React", "web development", "creative technology"],
