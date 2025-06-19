@@ -1,9 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Temporarily disable export for Vercel deployment
-  // output: 'export',
-  // trailingSlash: true,
-  
   images: {
     // Enable image optimization for better performance
     formats: ['image/webp', 'image/avif'],
