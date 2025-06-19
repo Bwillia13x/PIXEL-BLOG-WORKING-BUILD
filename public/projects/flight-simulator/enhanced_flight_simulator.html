@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Flight Simulator - Elite Dogfight</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a2e, #16213e, #0f3460);
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            color: #00ff41;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #gameCanvas {
+            display: block;
+            background: radial-gradient(ellipse at center, #1a1a3a 0%, #0a0a1a 100%);
+            cursor: crosshair;
+        }
+
+        .hud-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .hud-element {
+            position: absolute;
+            color: #00ff41;
+            text-shadow: 0 0 10px #00ff41;
+            font-size: 16px;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 12px;
+            border: 1px solid #00ff41;
+            border-radius: 4px;
+        }
+
+        .hud-top-left {
+            top: 20px;
+            left: 20px;
+        }
+
+        .hud-top-right {
+            top: 20px;
+            right: 20px;
+        }
+
+        .hud-bottom-left {
+            bottom: 20px;
+            left: 20px;
+        }
+
+        .hud-bottom-right {
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .radar {
+            width: 200px;
+            height: 200px;
+            border: 2px solid #00ff41;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        .radar-sweep {
+            position: absolute;
+            width: 2px;
+            height: 96px;
+            background: linear-gradient(to top, transparent, #00ff41);
+            left: 50%;
+            top: 50%;
+            transform-origin: bottom center;
+            animation: radarSweep 3s linear infinite;
+        }
+
+        @keyframes radarSweep {
+            from { transform: translate(-50%, -100%) rotate(0deg); }
+            to { transform: translate(-50%, -100%) rotate(360deg); }
+        }
+
+        .radar-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ff0040;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 2px solid #00ff41;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .crosshair::before,
+        .crosshair::after {
+            content: '';
+            position: absolute;
+            background: #00ff41;
+        }
+
+        .crosshair::before {
+            width: 20px;
+            height: 2px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .crosshair::after {
+            width: 2px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .altitude-indicator {
+            position: absolute;
+            right: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 300px;
+            border: 1px solid #00ff41;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .altitude-bar {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(to top, #ff0040, #ffff00, #00ff41);
+            transition: height 0.3s ease;
+        }
+
+        .speed-indicator {
+            position: absolute;
+            left: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 300px;
+            border: 1px solid #00ff41;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .speed-bar {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(to top, #00ff41, #ffff00, #ff0040);
+            transition: height 0.3s ease;
+        }
+
+        .weapon-status {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .ammo-count {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 4px 8px;
+            border: 1px solid #ffff00;
+            border-radius: 3px;
+            color: #ffff00;
+        }
+
+        .controls-info {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 200;
+        }
+
+        .radar-label {
+            margin-bottom: 10px;
+        }
+
+        .speed-bar-initial {
+            height: 0%;
+        }
+
+        .altitude-bar-initial {
+            height: 50%;
+        }
+
+        .controls-info h2 {
+            color: #00ff41;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .controls-info p {
+            margin: 8px 0;
+            color: #ffffff;
+        }
+
+        .start-button {
+            background: #00ff41;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .start-button:hover {
+            background: #00cc33;
+            transform: scale(1.05);
+        }
+
+        .explosion {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ff6600 0%, #ff0000 30%, #cc0000 60%, transparent 100%);
+            animation: explode 0.5s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #ffff00;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .thruster-glow {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #0088ff 0%, #0044ff 50%, transparent 100%);
+            border-radius: 50%;
+            animation: thrusterPulse 0.3s ease-in-out infinite alternate;
+        }
+
+        @keyframes thrusterPulse {
+            from { transform: scale(0.8); opacity: 0.8; }
+            to { transform: scale(1.2); opacity: 1; }
+        }
+
+        .missile-trail {
+            position: absolute;
+            width: 3px;
+            height: 20px;
+            background: linear-gradient(to bottom, #ff6600, transparent);
+            border-radius: 50%;
+        }
+
+        .damage-indicator {
+            position: absolute;
+            color: #ff0040;
+            font-weight: bold;
+            font-size: 14px;
+            animation: damageFloat 1s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes damageFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hud-element {
+                font-size: 12px;
+                padding: 4px 8px;
+            }
+            
+            .radar {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .altitude-indicator,
+            .speed-indicator {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div class="hud-overlay">
+            <!-- Crosshair -->
+            <div class="crosshair"></div>
+            
+            <!-- Top Left HUD -->
+            <div class="hud-element hud-top-left">
+                <div>SCORE: <span id="score">0</span></div>
+                <div>WAVE: <span id="wave">1</span></div>
+                <div>ENEMIES: <span id="enemies">0</span></div>
+            </div>
+            
+            <!-- Top Right HUD -->
+            <div class="hud-element hud-top-right">
+                <div>HEALTH: <span id="health">100</span>%</div>
+                <div>FUEL: <span id="fuel">100</span>%</div>
+                <div>THROTTLE: <span id="throttle">0</span>%</div>
+            </div>
+            
+            <!-- Bottom Left - Radar -->
+            <div class="hud-element hud-bottom-left">
+                <div class="radar-label">RADAR</div>
+                <div class="radar" id="radar">
+                    <div class="radar-sweep"></div>
+                </div>
+            </div>
+            
+            <!-- Bottom Right - Weapons -->
+            <div class="hud-element hud-bottom-right">
+                <div class="weapon-status">
+                    <div>
+                        <div>CANNON</div>
+                        <div class="ammo-count" id="bullets">500</div>
+                    </div>
+                    <div>
+                        <div>MISSILES</div>
+                        <div class="ammo-count" id="missiles">6</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Speed Indicator -->
+            <div class="speed-indicator">
+                <div class="speed-bar speed-bar-initial" id="speedBar"></div>
+            </div>
+            
+            <!-- Altitude Indicator -->
+            <div class="altitude-indicator">
+                <div class="altitude-bar altitude-bar-initial" id="altitudeBar"></div>
+            </div>
+        </div>
+        
+        <!-- Controls Info -->
+        <div class="controls-info" id="controlsInfo">
+            <h2>🛩️ ELITE DOGFIGHT SIMULATOR 🛩️</h2>
+            <p><strong>WASD</strong> - Pitch & Roll Control</p>
+            <p><strong>Q/E</strong> - Yaw Left/Right</p>
+            <p><strong>SHIFT</strong> - Increase Throttle</p>
+            <p><strong>CTRL</strong> - Decrease Throttle</p>
+            <p><strong>SPACE</strong> - Fire Cannons</p>
+            <p><strong>F</strong> - Launch Missile</p>
+            <p><strong>ESC</strong> - Pause Game</p>
+            <p><strong>MOUSE</strong> - Look Around</p>
+            <button class="start-button" onclick="startGame()">START MISSION</button>
+        </div>
+    </div>
+
+    <script>
+        // Game Engine Core
+        class FlightSimulator {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.setupCanvas();
+                
+                // Game State
+                this.gameStarted = false;
+                this.gamePaused = false;
+                this.score = 0;
+                this.wave = 1;
+                this.lives = 3;
+                
+                // Player Aircraft
+                this.player = new PlayerJet(this.canvas.width / 2, this.canvas.height / 2);
+                
+                // Game Objects
+                this.enemies = [];
+                this.bullets = [];
+                this.missiles = [];
+                this.particles = [];
+                this.explosions = [];
+                
+                // Input System
+                this.keys = {};
+                this.mouse = { x: 0, y: 0, locked: false };
+                
+                // Game Physics
+                this.gravity = 0.1;
+                this.airDensity = 1.225;
+                this.windSpeed = { x: 0, y: 0 };
+                
+                // Audio Context
+                this.audioContext = null;
+                this.sounds = {};
+                
+                this.setupEventListeners();
+                this.initializeAudio();
+                this.gameLoop();
+            }
+            
+            setupCanvas() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                
+                window.addEventListener('resize', () => {
+                    this.canvas.width = window.innerWidth;
+                    this.canvas.height = window.innerHeight;
+                });
+            }
+            
+            setupEventListeners() {
+                // Keyboard Controls
+                document.addEventListener('keydown', (e) => {
+                    this.keys[e.key.toLowerCase()] = true;
+                    
+                    if (e.key === ' ') {
+                        e.preventDefault();
+                        if (this.gameStarted) this.player.firePrimary();
+                    }
+                    
+                    if (e.key.toLowerCase() === 'f') {
+                        if (this.gameStarted) this.player.fireSecondary();
+                    }
+                    
+                    if (e.key === 'Escape') {
+                        this.togglePause();
+                    }
+                });
+                
+                document.addEventListener('keyup', (e) => {
+                    this.keys[e.key.toLowerCase()] = false;
+                });
+                
+                // Mouse Controls
+                document.addEventListener('mousemove', (e) => {
+                    this.mouse.x = e.clientX;
+                    this.mouse.y = e.clientY;
+                });
+                
+                this.canvas.addEventListener('click', async () => {
+                    if (!this.mouse.locked && this.gameStarted) {
+                        await this.canvas.requestPointerLock();
+                    }
+                });
+                
+                document.addEventListener('pointerlockchange', () => {
+                    this.mouse.locked = document.pointerLockElement === this.canvas;
+                });
+            }
+            
+            async initializeAudio() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    
+                    // Create sound effects
+                    this.sounds = {
+                        engine: this.createEngineSound(),
+                        gunfire: this.createGunfireSound(),
+                        missile: this.createMissileSound(),
+                        explosion: this.createExplosionSound()
+                    };
+                } catch (error) {
+                    console.log('Audio initialization failed:', error);
+                }
+            }
+            
+            createEngineSound() {
+                if (!this.audioContext) return null;
+                
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(80, this.audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                return { oscillator, gainNode };
+            }
+            
+            createGunfireSound() {
+                if (!this.audioContext) return null;
+                
+                return () => {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+                    
+                    oscillator.type = 'white';
+                    oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
+                    gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+                    
+                    oscillator.start();
+                    oscillator.stop(this.audioContext.currentTime + 0.1);
+                };
+            }
+            
+            createMissileSound() {
+                if (!this.audioContext) return null;
+                
+                return () => {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+                    
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(400, this.audioContext.currentTime);
+                    oscillator.frequency.linearRampToValueAtTime(200, this.audioContext.currentTime + 1);
+                    gainNode.gain.setValueAtTime(0.2, this.audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 1);
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+                    
+                    oscillator.start();
+                    oscillator.stop(this.audioContext.currentTime + 1);
+                };
+            }
+            
+            createExplosionSound() {
+                if (!this.audioContext) return null;
+                
+                return () => {
+                    const bufferSize = this.audioContext.sampleRate * 0.5;
+                    const buffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
+                    const output = buffer.getChannelData(0);
+                    
+                    for (let i = 0; i < bufferSize; i++) {
+                        output[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+                    }
+                    
+                    const source = this.audioContext.createBufferSource();
+                    const gainNode = this.audioContext.createGain();
+                    
+                    source.buffer = buffer;
+                    gainNode.gain.setValueAtTime(0.5, this.audioContext.currentTime);
+                    
+                    source.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+                    
+                    source.start();
+                };
+            }
+            
+            handleInput() {
+                if (!this.gameStarted || this.gamePaused) return;
+                
+                const controlInput = { x: 0, y: 0, z: 0 };
+                let throttleDelta = 0;
+                
+                // Flight Controls
+                if (this.keys['w']) controlInput.x = -1; // Pitch up
+                if (this.keys['s']) controlInput.x = 1;  // Pitch down
+                if (this.keys['a']) controlInput.z = -1; // Roll left
+                if (this.keys['d']) controlInput.z = 1;  // Roll right
+                if (this.keys['q']) controlInput.y = -1; // Yaw left
+                if (this.keys['e']) controlInput.y = 1;  // Yaw right
+                
+                // Throttle Controls
+                if (this.keys['shift']) throttleDelta = 0.02;
+                if (this.keys['control']) throttleDelta = -0.02;
+                
+                this.player.handleControls(controlInput, throttleDelta);
+            }
+            
+            spawnWave() {
+                const enemyCount = 2 + this.wave;
+                this.enemies = [];
+                
+                for (let i = 0; i < enemyCount; i++) {
+                    const angle = (i / enemyCount) * Math.PI * 2;
+                    const distance = 800 + Math.random() * 400;
+                    const x = this.canvas.width / 2 + Math.cos(angle) * distance;
+                    const y = this.canvas.height / 2 + Math.sin(angle) * distance;
+                    
+                    const difficulty = Math.min(this.wave, 3);
+                    this.enemies.push(new EnemyJet(x, y, difficulty));
+                }
+                
+                this.updateHUD();
+            }
+            
+            update() {
+                if (!this.gameStarted || this.gamePaused) return;
+                
+                this.handleInput();
+                
+                // Update Player
+                this.player.update();
+                this.player.applyPhysics();
+                
+                // Update Enemies
+                this.enemies.forEach(enemy => {
+                    enemy.update(this.player);
+                    enemy.applyPhysics();
+                });
+                
+                // Update Projectiles
+                this.bullets = this.bullets.filter(bullet => {
+                    bullet.update();
+                    return bullet.alive && bullet.isOnScreen(this.canvas);
+                });
+                
+                this.missiles = this.missiles.filter(missile => {
+                    missile.update(this.findNearestTarget(missile));
+                    return missile.alive && missile.isOnScreen(this.canvas);
+                });
+                
+                // Update Particles
+                this.particles = this.particles.filter(particle => {
+                    particle.update();
+                    return particle.life > 0;
+                });
+                
+                // Collision Detection
+                this.checkCollisions();
+                
+                // Spawn new wave if needed
+                if (this.enemies.length === 0) {
+                    this.wave++;
+                    setTimeout(() => this.spawnWave(), 2000);
+                }
+                
+                this.updateHUD();
+            }
+            
+            checkCollisions() {
+                // Player bullets vs enemies
+                this.bullets.forEach(bullet => {
+                    if (bullet.owner === this.player) {
+                        this.enemies.forEach(enemy => {
+                            if (this.checkCircleCollision(bullet, enemy, 25)) {
+                                this.createExplosion(enemy.x, enemy.y);
+                                enemy.takeDamage(25);
+                                bullet.alive = false;
+                                
+                                if (enemy.health <= 0) {
+                                    this.score += 100;
+                                    this.enemies = this.enemies.filter(e => e !== enemy);
+                                }
+                            }
+                        });
+                    }
+                });
+                
+                // Enemy bullets vs player
+                this.bullets.forEach(bullet => {
+                    if (bullet.owner !== this.player) {
+                        if (this.checkCircleCollision(bullet, this.player, 25)) {
+                            this.createExplosion(this.player.x, this.player.y);
+                            this.player.takeDamage(10);
+                            bullet.alive = false;
+                            
+                            if (this.player.health <= 0) {
+                                this.gameOver();
+                            }
+                        }
+                    }
+                });
+                
+                // Missile collisions
+                this.missiles.forEach(missile => {
+                    const targets = missile.owner === this.player ? this.enemies : [this.player];
+                    targets.forEach(target => {
+                        if (this.checkCircleCollision(missile, target, 30)) {
+                            this.createExplosion(target.x, target.y, true);
+                            target.takeDamage(50);
+                            missile.alive = false;
+                            
+                            if (target.health <= 0) {
+                                if (target !== this.player) {
+                                    this.score += 200;
+                                    this.enemies = this.enemies.filter(e => e !== target);
+                                } else {
+                                    this.gameOver();
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+            
+            checkCircleCollision(obj1, obj2, radius) {
+                const dx = obj1.x - obj2.x;
+                const dy = obj1.y - obj2.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                return distance < radius;
+            }
+            
+            findNearestTarget(missile) {
+                const targets = missile.owner === this.player ? this.enemies : [this.player];
+                let nearest = null;
+                let minDistance = Infinity;
+                
+                targets.forEach(target => {
+                    const dx = missile.x - target.x;
+                    const dy = missile.y - target.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        nearest = target;
+                    }
+                });
+                
+                return nearest;
+            }
+            
+            createExplosion(x, y, large = false) {
+                const size = large ? 60 : 30;
+                const particleCount = large ? 20 : 10;
+                
+                // Create explosion particles
+                for (let i = 0; i < particleCount; i++) {
+                    const angle = (i / particleCount) * Math.PI * 2;
+                    const speed = 2 + Math.random() * 4;
+                    const particle = new Particle(
+                        x, y,
+                        Math.cos(angle) * speed,
+                        Math.sin(angle) * speed,
+                        '#ff6600', 60
+                    );
+                    this.particles.push(particle);
+                }
+                
+                // Play explosion sound
+                if (this.sounds.explosion) {
+                    this.sounds.explosion();
+                }
+                
+                // Create visual explosion effect
+                const explosion = document.createElement('div');
+                explosion.className = 'explosion';
+                explosion.style.left = (x - size/2) + 'px';
+                explosion.style.top = (y - size/2) + 'px';
+                explosion.style.width = size + 'px';
+                explosion.style.height = size + 'px';
+                document.body.appendChild(explosion);
+                
+                setTimeout(() => {
+                    if (explosion.parentNode) {
+                        explosion.parentNode.removeChild(explosion);
+                    }
+                }, 500);
+            }
+            
+            render() {
+                // Clear canvas
+                this.ctx.fillStyle = 'rgba(10, 10, 30, 0.1)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw stars background
+                this.drawStars();
+                
+                if (!this.gameStarted) return;
+                
+                // Draw game objects
+                this.player.render(this.ctx);
+                this.enemies.forEach(enemy => enemy.render(this.ctx));
+                this.bullets.forEach(bullet => bullet.render(this.ctx));
+                this.missiles.forEach(missile => missile.render(this.ctx));
+                this.particles.forEach(particle => particle.render(this.ctx));
+                
+                // Draw radar
+                this.updateRadar();
+            }
+            
+            drawStars() {
+                this.ctx.fillStyle = '#ffffff';
+                for (let i = 0; i < 100; i++) {
+                    const x = (i * 7) % this.canvas.width;
+                    const y = (i * 11) % this.canvas.height;
+                    const size = Math.random() * 2;
+                    this.ctx.fillRect(x, y, size, size);
+                }
+            }
+            
+            updateRadar() {
+                const radar = document.getElementById('radar');
+                radar.innerHTML = '<div class="radar-sweep"></div>';
+                
+                // Add enemy dots
+                this.enemies.forEach(enemy => {
+                    const dx = enemy.x - this.player.x;
+                    const dy = enemy.y - this.player.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 1000) {
+                        const dot = document.createElement('div');
+                        dot.className = 'radar-dot';
+                        
+                        const radarX = 50 + (dx / 1000) * 90;
+                        const radarY = 50 + (dy / 1000) * 90;
+                        
+                        dot.style.left = radarX + '%';
+                        dot.style.top = radarY + '%';
+                        
+                        radar.appendChild(dot);
+                    }
+                });
+            }
+            
+            updateHUD() {
+                document.getElementById('score').textContent = this.score;
+                document.getElementById('wave').textContent = this.wave;
+                document.getElementById('enemies').textContent = this.enemies.length;
+                document.getElementById('health').textContent = Math.max(0, this.player.health);
+                document.getElementById('fuel').textContent = Math.max(0, Math.round(this.player.fuel));
+                document.getElementById('throttle').textContent = Math.round(this.player.throttle * 100);
+                document.getElementById('bullets').textContent = this.player.ammo.bullets;
+                document.getElementById('missiles').textContent = this.player.ammo.missiles;
+                
+                // Update indicators
+                const speedPercent = Math.min(this.player.speed / 10, 1) * 100;
+                const altitudePercent = Math.min(Math.max(this.player.y / this.canvas.height, 0), 1) * 100;
+                
+                document.getElementById('speedBar').style.height = speedPercent + '%';
+                document.getElementById('altitudeBar').style.height = (100 - altitudePercent) + '%';
+            }
+            
+            gameLoop() {
+                this.update();
+                this.render();
+                requestAnimationFrame(() => this.gameLoop());
+            }
+            
+            startGame() {
+                this.gameStarted = true;
+                document.getElementById('controlsInfo').style.display = 'none';
+                this.spawnWave();
+                
+                // Start engine sound
+                if (this.sounds.engine && this.sounds.engine.oscillator) {
+                    this.sounds.engine.oscillator.start();
+                }
+            }
+            
+            togglePause() {
+                if (!this.gameStarted) return;
+                this.gamePaused = !this.gamePaused;
+            }
+            
+            gameOver() {
+                this.gameStarted = false;
+                alert(`Game Over! Final Score: ${this.score}`);
+                location.reload();
+            }
+        }
+
+        // Aircraft Classes
+        class Aircraft {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = 0;
+                this.vy = 0;
+                this.angle = 0;
+                this.speed = 0;
+                this.maxSpeed = 8;
+                this.health = 100;
+                this.maxHealth = 100;
+                this.fuel = 100;
+                this.throttle = 0;
+                
+                // Physics properties
+                this.mass = 15000;
+                this.thrust = 0;
+                this.maxThrust = 200000;
+                this.liftCoeff = 1.2;
+                this.dragCoeff = 0.3;
+                this.wingArea = 40;
+            }
+            
+            applyPhysics() {
+                // Thrust
+                const thrustX = Math.cos(this.angle) * this.thrust;
+                const thrustY = Math.sin(this.angle) * this.thrust;
+                
+                // Drag
+                const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                const dragMagnitude = 0.5 * 1.225 * speed * speed * this.dragCoeff * this.wingArea / this.mass;
+                const dragX = -this.vx * dragMagnitude * 0.01;
+                const dragY = -this.vy * dragMagnitude * 0.01;
+                
+                // Apply forces
+                this.vx += (thrustX + dragX) * 0.001;
+                this.vy += (thrustY + dragY) * 0.001;
+                
+                // Update position
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // Calculate speed
+                this.speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                
+                // Fuel consumption
+                this.fuel -= this.throttle * 0.01;
+                this.fuel = Math.max(0, this.fuel);
+                
+                // Wrap around screen
+                if (this.x < 0) this.x = game.canvas.width;
+                if (this.x > game.canvas.width) this.x = 0;
+                if (this.y < 0) this.y = game.canvas.height;
+                if (this.y > game.canvas.height) this.y = 0;
+            }
+            
+            takeDamage(amount) {
+                this.health -= amount;
+                this.health = Math.max(0, this.health);
+            }
+            
+            render(ctx) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                
+                // Draw aircraft body
+                ctx.fillStyle = this.health > 50 ? '#00ff41' : '#ff6600';
+                ctx.fillRect(-15, -3, 30, 6);
+                
+                // Draw wings
+                ctx.fillRect(-5, -12, 10, 24);
+                
+                // Draw thrust glow
+                if (this.throttle > 0) {
+                    ctx.fillStyle = '#0088ff';
+                    ctx.globalAlpha = this.throttle;
+                    ctx.fillRect(-20, -2, 8, 4);
+                    ctx.globalAlpha = 1;
+                }
+                
+                ctx.restore();
+                
+                // Draw health bar
+                if (this.health < this.maxHealth) {
+                    ctx.fillStyle = '#ff0000';
+                    ctx.fillRect(this.x - 15, this.y - 25, 30, 4);
+                    ctx.fillStyle = '#00ff00';
+                    ctx.fillRect(this.x - 15, this.y - 25, 30 * (this.health / this.maxHealth), 4);
+                }
+            }
+        }
+
+        class PlayerJet extends Aircraft {
+            constructor(x, y) {
+                super(x, y);
+                this.ammo = {
+                    bullets: 500,
+                    missiles: 6
+                };
+                this.weaponCooldown = {
+                    bullets: 0,
+                    missiles: 0
+                };
+            }
+            
+            handleControls(input, throttleDelta) {
+                // Control surface effectiveness based on speed
+                const effectiveness = Math.min(this.speed / 5, 1);
+                
+                // Apply control inputs
+                this.angle += input.y * 0.05 * effectiveness; // Yaw
+                this.angle += input.z * 0.03 * effectiveness; // Roll effect on yaw
+                
+                // Pitch affects velocity direction
+                const pitchForce = input.x * 0.5 * effectiveness;
+                this.vy += Math.sin(this.angle + Math.PI/2) * pitchForce;
+                this.vx += Math.cos(this.angle + Math.PI/2) * pitchForce;
+                
+                // Update throttle
+                this.throttle += throttleDelta;
+                this.throttle = Math.max(0, Math.min(1, this.throttle));
+                this.thrust = this.throttle * this.maxThrust;
+            }
+            
+            update() {
+                // Update weapon cooldowns
+                this.weaponCooldown.bullets = Math.max(0, this.weaponCooldown.bullets - 1);
+                this.weaponCooldown.missiles = Math.max(0, this.weaponCooldown.missiles - 1);
+            }
+            
+            firePrimary() {
+                if (this.weaponCooldown.bullets > 0 || this.ammo.bullets <= 0) return false;
+                
+                const bullet = new Bullet(
+                    this.x + Math.cos(this.angle) * 20,
+                    this.y + Math.sin(this.angle) * 20,
+                    this.angle,
+                    this
+                );
+                game.bullets.push(bullet);
+                
+                this.ammo.bullets--;
+                this.weaponCooldown.bullets = 5;
+                
+                // Play gunfire sound
+                if (game.sounds.gunfire) {
+                    game.sounds.gunfire();
+                }
+                
+                return true;
+            }
+            
+            fireSecondary() {
+                if (this.weaponCooldown.missiles > 0 || this.ammo.missiles <= 0) return false;
+                
+                const missile = new Missile(
+                    this.x + Math.cos(this.angle) * 20,
+                    this.y + Math.sin(this.angle) * 20,
+                    this.angle,
+                    this
+                );
+                game.missiles.push(missile);
+                
+                this.ammo.missiles--;
+                this.weaponCooldown.missiles = 120;
+                
+                // Play missile sound
+                if (game.sounds.missile) {
+                    game.sounds.missile();
+                }
+                
+                return true;
+            }
+        }
+
+        class EnemyJet extends Aircraft {
+            constructor(x, y, difficulty = 1) {
+                super(x, y);
+                this.difficulty = difficulty;
+                this.state = 'patrol';
+                this.stateTimer = 0;
+                this.target = null;
+                this.weaponCooldown = 0;
+                this.lastFired = 0;
+                
+                // AI parameters based on difficulty
+                this.reactionTime = [2000, 1000, 300][difficulty - 1];
+                this.accuracy = [0.6, 0.8, 0.95][difficulty - 1];
+                this.aggressiveness = [0.4, 0.7, 0.9][difficulty - 1];
+                
+                // Patrol behavior
+                this.patrolAngle = Math.random() * Math.PI * 2;
+                this.patrolRadius = 200 + Math.random() * 300;
+                this.patrolCenter = { x, y };
+            }
+            
+            update(player) {
+                this.stateTimer++;
+                this.weaponCooldown = Math.max(0, this.weaponCooldown - 1);
+                
+                // State machine
+                switch (this.state) {
+                    case 'patrol':
+                        this.patrolBehavior();
+                        if (this.canDetectTarget(player)) {
+                            this.target = player;
+                            this.state = 'pursue';
+                            this.stateTimer = 0;
+                        }
+                        break;
+                        
+                    case 'pursue':
+                        this.pursueBehavior();
+                        if (this.getDistanceToTarget() < 300) {
+                            this.state = 'attack';
+                            this.stateTimer = 0;
+                        }
+                        break;
+                        
+                    case 'attack':
+                        this.attackBehavior();
+                        if (this.getDistanceToTarget() > 500) {
+                            this.state = 'pursue';
+                            this.stateTimer = 0;
+                        }
+                        break;
+                        
+                    case 'evade':
+                        this.evadeBehavior();
+                        if (this.stateTimer > 180) {
+                            this.state = 'pursue';
+                            this.stateTimer = 0;
+                        }
+                        break;
+                }
+                
+                // Apply AI throttle
+                this.throttle = this.state === 'evade' ? 1.0 : 0.7;
+                this.thrust = this.throttle * this.maxThrust;
+            }
+            
+            canDetectTarget(target) {
+                const distance = this.getDistanceToTarget(target);
+                return distance < 800 && this.stateTimer > this.reactionTime;
+            }
+            
+            getDistanceToTarget(target = this.target) {
+                if (!target) return Infinity;
+                const dx = this.x - target.x;
+                const dy = this.y - target.y;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+            
+            patrolBehavior() {
+                // Lazy circle patrol
+                this.patrolAngle += 0.02;
+                const targetX = this.patrolCenter.x + Math.cos(this.patrolAngle) * this.patrolRadius;
+                const targetY = this.patrolCenter.y + Math.sin(this.patrolAngle) * this.patrolRadius;
+                
+                const angleToTarget = Math.atan2(targetY - this.y, targetX - this.x);
+                this.angle = this.lerpAngle(this.angle, angleToTarget, 0.02);
+            }
+            
+            pursueBehavior() {
+                if (!this.target) return;
+                
+                const angleToTarget = Math.atan2(this.target.y - this.y, this.target.x - this.x);
+                this.angle = this.lerpAngle(this.angle, angleToTarget, 0.05);
+            }
+            
+            attackBehavior() {
+                if (!this.target) return;
+                
+                // Lead target
+                const leadTime = this.getDistanceToTarget() / 15; // Bullet speed approximation
+                const predictedX = this.target.x + this.target.vx * leadTime;
+                const predictedY = this.target.y + this.target.vy * leadTime;
+                
+                const angleToTarget = Math.atan2(predictedY - this.y, predictedX - this.x);
+                this.angle = this.lerpAngle(this.angle, angleToTarget, 0.08);
+                
+                // Fire if on target
+                const angleDiff = Math.abs(this.angleDifference(this.angle, angleToTarget));
+                if (angleDiff < 0.2 && this.weaponCooldown === 0) {
+                    this.fireWeapon();
+                }
+            }
+            
+            evadeBehavior() {
+                // Barrel roll and random movements
+                const evasiveAngle = this.angle + Math.sin(this.stateTimer * 0.1) * 0.5;
+                this.angle = this.lerpAngle(this.angle, evasiveAngle, 0.1);
+            }
+            
+            fireWeapon() {
+                if (Math.random() < this.accuracy) {
+                    const bullet = new Bullet(
+                        this.x + Math.cos(this.angle) * 20,
+                        this.y + Math.sin(this.angle) * 20,
+                        this.angle,
+                        this
+                    );
+                    game.bullets.push(bullet);
+                }
+                
+                this.weaponCooldown = 30 + Math.random() * 30;
+            }
+            
+            lerpAngle(from, to, factor) {
+                const difference = this.angleDifference(from, to);
+                return from + difference * factor;
+            }
+            
+            angleDifference(a, b) {
+                let diff = b - a;
+                while (diff > Math.PI) diff -= Math.PI * 2;
+                while (diff < -Math.PI) diff += Math.PI * 2;
+                return diff;
+            }
+            
+            render(ctx) {
+                super.render(ctx);
+                
+                // Draw AI state indicator
+                ctx.fillStyle = '#ff6600';
+                ctx.font = '12px monospace';
+                ctx.fillText(this.state.toUpperCase(), this.x - 20, this.y - 35);
+            }
+        }
+
+        // Projectile Classes
+        class Projectile {
+            constructor(x, y, angle, owner) {
+                this.x = x;
+                this.y = y;
+                this.angle = angle;
+                this.owner = owner;
+                this.alive = true;
+                this.speed = 15;
+                this.vx = Math.cos(angle) * this.speed;
+                this.vy = Math.sin(angle) * this.speed;
+                this.life = 300; // frames
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life--;
+                
+                if (this.life <= 0) {
+                    this.alive = false;
+                }
+            }
+            
+            isOnScreen(canvas) {
+                return this.x > -50 && this.x < canvas.width + 50 &&
+                       this.y > -50 && this.y < canvas.height + 50;
+            }
+        }
+
+        class Bullet extends Projectile {
+            constructor(x, y, angle, owner) {
+                super(x, y, angle, owner);
+                this.speed = 20;
+                this.vx = Math.cos(angle) * this.speed;
+                this.vy = Math.sin(angle) * this.speed;
+            }
+            
+            render(ctx) {
+                ctx.fillStyle = this.owner instanceof PlayerJet ? '#00ff41' : '#ff6600';
+                ctx.fillRect(this.x - 2, this.y - 1, 4, 2);
+                
+                // Tracer effect
+                ctx.strokeStyle = this.owner instanceof PlayerJet ? '#00ff41' : '#ff6600';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x - this.vx * 2, this.y - this.vy * 2);
+                ctx.stroke();
+            }
+        }
+
+        class Missile extends Projectile {
+            constructor(x, y, angle, owner) {
+                super(x, y, angle, owner);
+                this.speed = 8;
+                this.turnRate = 0.05;
+                this.target = null;
+                this.fuel = 300;
+                this.armed = false;
+                this.armingDelay = 30;
+            }
+            
+            update(target) {
+                this.armingDelay--;
+                if (this.armingDelay <= 0) {
+                    this.armed = true;
+                }
+                
+                // Homing behavior
+                if (target && this.fuel > 0) {
+                    const angleToTarget = Math.atan2(target.y - this.y, target.x - this.x);
+                    const angleDiff = this.angleDifference(this.angle, angleToTarget);
+                    this.angle += Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), this.turnRate);
+                }
+                
+                // Update velocity
+                this.vx = Math.cos(this.angle) * this.speed;
+                this.vy = Math.sin(this.angle) * this.speed;
+                
+                super.update();
+                
+                this.fuel--;
+                if (this.fuel <= 0) {
+                    this.speed *= 0.98; // Glide
+                }
+                
+                // Create exhaust particles
+                if (this.fuel > 0 && Math.random() < 0.5) {
+                    const particle = new Particle(
+                        this.x - Math.cos(this.angle) * 10,
+                        this.y - Math.sin(this.angle) * 10,
+                        (Math.random() - 0.5) * 2,
+                        (Math.random() - 0.5) * 2,
+                        '#ff6600',
+                        30
+                    );
+                    game.particles.push(particle);
+                }
+            }
+            
+            angleDifference(a, b) {
+                let diff = b - a;
+                while (diff > Math.PI) diff -= Math.PI * 2;
+                while (diff < -Math.PI) diff += Math.PI * 2;
+                return diff;
+            }
+            
+            render(ctx) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                
+                // Missile body
+                ctx.fillStyle = '#cccccc';
+                ctx.fillRect(-8, -2, 16, 4);
+                
+                // Fins
+                ctx.fillStyle = '#999999';
+                ctx.fillRect(-4, -6, 2, 12);
+                ctx.fillRect(2, -6, 2, 12);
+                
+                // Exhaust
+                if (this.fuel > 0) {
+                    ctx.fillStyle = '#ff6600';
+                    ctx.fillRect(-12, -1, 6, 2);
+                }
+                
+                ctx.restore();
+            }
+        }
+
+        // Particle System
+        class Particle {
+            constructor(x, y, vx, vy, color, life) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.color = color;
+                this.life = life;
+                this.maxLife = life;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vx *= 0.98;
+                this.vy *= 0.98;
+                this.life--;
+            }
+            
+            render(ctx) {
+                const alpha = this.life / this.maxLife;
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x - 1, this.y - 1, 2, 2);
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        // Global functions
+        function startGame() {
+            game.startGame();
+        }
+
+        // Initialize game
+        let game;
+        window.addEventListener('load', () => {
+            game = new FlightSimulator();
+        });
+    </script>
+</body>
+</html>

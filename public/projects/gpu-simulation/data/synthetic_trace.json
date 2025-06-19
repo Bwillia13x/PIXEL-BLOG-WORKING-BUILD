@@ -1,0 +1,50 @@
+[
+  {
+    "src": "SM0",
+    "dst": "DRAM0",
+    "type": "load",
+    "bytes": 2048
+  },
+  {
+    "src": "SM1",
+    "dst": "DRAM1",
+    "type": "load",
+    "bytes": 4096
+  },
+  {
+    "src": "SM2",
+    "dst": "DRAM0",
+    "type": "load",
+    "bytes": 8192
+  },
+  {
+    "src": "SM3",
+    "dst": "DRAM1",
+    "type": "load",
+    "bytes": 1024
+  },
+  {
+    "src": "SM4",
+    "dst": "DRAM0",
+    "type": "load",
+    "bytes": 6144
+  },
+  {
+    "src": "SM5",
+    "dst": "DRAM1",
+    "type": "load",
+    "bytes": 2048
+  },
+  {
+    "src": "SM6",
+    "dst": "DRAM0",
+    "type": "load",
+    "bytes": 3072
+  },
+  {
+    "src": "SM7",
+    "dst": "DRAM1",
+    "type": "load",
+    "bytes": 5120
+  }
+]

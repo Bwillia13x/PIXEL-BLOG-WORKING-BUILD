@@ -12,10 +12,10 @@ const nextConfig = {
     // Add domains for external images if needed
     remotePatterns: [
       // Example: Enable if you use external image sources
-      // {
-      //   protocol: 'https',
-      //   hostname: 'example.com',
-      // },
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+      },
     ],
   },
   

@@ -47,6 +47,73 @@ export const projects: Project[] = [
     tags: ["Next.js", "D3.js", "PostgreSQL", "WebSocket"],
     year: 2024,
     status: "completed"
+  },
+  {
+    id: "epv-visualizations",
+    title: "EPV Visualizations",
+    description: "Interactive visualizations for Earnings Power Value (EPV) analysis following Bruce Greenwald's methodology. Features normalized earnings charts, WACC sensitivity analysis, and DCF comparison tools.",
+    image: "/placeholder.jpg",
+    tags: ["Python", "Data Visualization", "Financial Analysis", "D3.js"],
+    year: 2025,
+    status: "completed",
+    github: "https://github.com/Bwillia13x/PixelProjects_v1/tree/main/epv-visualizations",
+    demo: "/projects/epv-visualizations/epv_visualizations.html",
+    featured: true
+  },
+  {
+    id: "flight-simulator",
+    title: "Flight Simulator",
+    description: "A browser-based flight simulator leveraging WebGL to demonstrate aerodynamics and real-time physics rendering with interactive controls.",
+    image: "/placeholder.jpg",
+    tags: ["WebGL", "JavaScript", "Physics", "3D Graphics"],
+    year: 2025,
+    status: "completed",
+    github: "https://github.com/Bwillia13x/PixelProjects_v1/tree/main/flight-simulator",
+    demo: "/projects/flight-simulator/enhanced_flight_simulator.html"
+  },
+  {
+    id: "gpu-simulation",
+    title: "GPU Particle Simulation",
+    description: "High-performance particle simulation harnessing GPU compute shaders to showcase massive-scale physical systems in the browser with real-time visualization.",
+    image: "/placeholder.jpg",
+    tags: ["WebGPU", "JavaScript", "Simulation", "GLSL"],
+    year: 2025,
+    status: "completed",
+    github: "https://github.com/Bwillia13x/PixelProjects_v1/tree/main/gpu-simulation",
+    demo: "/projects/gpu-simulation/index.html"
+  },
+  {
+    id: "neural-network",
+    title: "Neural Network Playground",
+    description: "Interactive visualization of neural network training with forward and backward propagation animation, built from scratch to demonstrate machine learning fundamentals.",
+    image: "/placeholder.jpg",
+    tags: ["JavaScript", "Machine Learning", "Data Visualization", "Education"],
+    year: 2024,
+    status: "completed",
+    github: "https://github.com/Bwillia13x/PixelProjects_v1/tree/main/neural-network",
+    demo: "/projects/neural-network/neural_network_simulation.html"
+  },
+  {
+    id: "renewable-energy-explorer",
+    title: "Global Renewable Energy Explorer",
+    description: "Interactive choropleth world map visualizing renewable electricity output by country from 1990-present, featuring trend charts, rankings, and responsive design.",
+    image: "/placeholder.jpg",
+    tags: ["Next.js", "D3.js", "Data Analysis", "TypeScript"],
+    year: 2024,
+    status: "in-progress",
+    github: "https://github.com/Bwillia13x/PixelProjects_v1/tree/main/renewable-energy-explorer",
+    featured: true
+  },
+  {
+    id: "static-visualizations",
+    title: "Computational Fluid Dynamics Visualizations",
+    description: "Curated collection of high-quality CFD visualizations including shock wave analysis, Mach field comparisons, and multi-field computational fluid dynamics studies.",
+    image: "/projects/static-visualizations/shock_wave_visualizations/mach_comparison_grid.png",
+    tags: ["CFD", "Scientific Computing", "Visualization", "Python"],
+    year: 2023,
+    status: "completed",
+    github: "https://github.com/Bwillia13x/PixelProjects_v1/tree/main/static-visualizations",
+    demo: "/projects/static-visualizations/LLM Simultion (06:13:2025).html"
   }
 ]
 
