@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Data Visualization Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0c0a0e 0%, #1a1625 100%);
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .ui-panel {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            pointer-events: all;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .ui-panel:hover {
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+        }
+        
+        .control-panel {
+            top: 20px;
+            left: 20px;
+            width: 300px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+        
+        .stats-panel {
+            top: 20px;
+            right: 20px;
+            width: 250px;
+        }
+        
+        .visualization-selector {
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .viz-button {
+            padding: 12px 20px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            border-radius: 8px;
+            color: #60a5fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .viz-button:hover {
+            background: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .viz-button.active {
+            background: rgba(59, 130, 246, 0.5);
+            color: white;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        
+        .control-group h3 {
+            margin: 0 0 10px 0;
+            color: #60a5fa;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .slider-container {
+            margin: 10px 0;
+        }
+        
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        
+        .slider {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(148, 163, 184, 0.3);
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #60a5fa;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(96, 165, 250, 0.5);
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+        
+        .checkbox {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+        }
+        
+        .button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px 0;
+        }
+        
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .stat-label {
+            color: #94a3b8;
+        }
+        
+        .stat-value {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+        
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #60a5fa;
+            font-size: 18px;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(96, 165, 250, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #60a5fa;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: white;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 200;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div class="ui-overlay">
+        <!-- Control Panel -->
+        <div class="ui-panel control-panel">
+            <h2 style="margin: 0 0 20px 0; color: white; font-size: 18px;">
+                <i class="fas fa-cube"></i> 3D Data Engine
+            </h2>
+            
+            <div class="control-group">
+                <h3>Dataset</h3>
+                <select id="dataset-select" style="width: 100%; padding: 8px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 4px; color: white;">
+                    <option value="scatter">3D Scatter Plot (1000 points)</option>
+                    <option value="network">Network Graph (50 nodes)</option>
+                    <option value="surface">Mathematical Surface</option>
+                    <option value="clusters">Data Clusters (5 groups)</option>
+                    <option value="time-series">Time Series (3D)</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <h3>Visualization</h3>
+                <div class="slider-container">
+                    <label>Point Size: <span id="point-size-value">2</span></label>
+                    <input type="range" id="point-size" class="slider" min="0.5" max="5" value="2" step="0.1">
+                </div>
+                <div class="slider-container">
+                    <label>Opacity: <span id="opacity-value">0.8</span></label>
+                    <input type="range" id="opacity" class="slider" min="0.1" max="1" value="0.8" step="0.1">
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="show-connections" class="checkbox" checked>
+                    <label for="show-connections">Show Connections</label>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="animate" class="checkbox" checked>
+                    <label for="animate">Animate</label>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h3>Camera</h3>
+                <div class="slider-container">
+                    <label>Zoom: <span id="zoom-value">100</span></label>
+                    <input type="range" id="zoom" class="slider" min="50" max="200" value="100" step="5">
+                </div>
+                <div class="slider-container">
+                    <label>Rotation Speed: <span id="rotation-speed-value">1</span></label>
+                    <input type="range" id="rotation-speed" class="slider" min="0" max="3" value="1" step="0.1">
+                </div>
+                <button class="button" id="reset-camera">
+                    <i class="fas fa-home"></i> Reset Camera
+                </button>
+            </div>
+            
+            <div class="control-group">
+                <h3>Effects</h3>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="show-grid" class="checkbox" checked>
+                    <label for="show-grid">Show Grid</label>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="show-axes" class="checkbox" checked>
+                    <label for="show-axes">Show Axes</label>
+                </div>
+                <button class="button" id="randomize-data">
+                    <i class="fas fa-random"></i> Randomize Data
+                </button>
+                <button class="button" id="export-image">
+                    <i class="fas fa-download"></i> Export PNG
+                </button>
+            </div>
+        </div>
+        
+        <!-- Stats Panel -->
+        <div class="ui-panel stats-panel">
+            <h3 style="margin: 0 0 15px 0; color: white; font-size: 16px;">
+                <i class="fas fa-chart-bar"></i> Statistics
+            </h3>
+            <div class="stat-item">
+                <span class="stat-label">Data Points:</span>
+                <span class="stat-value" id="data-points">1000</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Render Time:</span>
+                <span class="stat-value" id="render-time">16ms</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">FPS:</span>
+                <span class="stat-value" id="fps">60</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Memory:</span>
+                <span class="stat-value" id="memory">45MB</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Triangles:</span>
+                <span class="stat-value" id="triangles">2000</span>
+            </div>
+        </div>
+        
+        <!-- Visualization Selector -->
+        <div class="ui-panel visualization-selector">
+            <div class="viz-button active" data-viz="points">
+                <i class="fas fa-circle"></i> Points
+            </div>
+            <div class="viz-button" data-viz="spheres">
+                <i class="fas fa-sphere"></i> Spheres
+            </div>
+            <div class="viz-button" data-viz="cubes">
+                <i class="fas fa-cube"></i> Cubes
+            </div>
+            <div class="viz-button" data-viz="lines">
+                <i class="fas fa-project-diagram"></i> Network
+            </div>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div class="loading-indicator" id="loading" style="display: none;">
+            <div class="loading-spinner"></div>
+            Processing data...
+        </div>
+        
+        <!-- Tooltip -->
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <script>
+        // Global variables
+        let scene, camera, renderer, controls;
+        let dataPoints = [];
+        let currentVisualization = 'points';
+        let currentDataset = 'scatter';
+        let animationId;
+        let stats = { fps: 0, renderTime: 0, dataPoints: 0, memory: 0, triangles: 0 };
+        let mouse = new THREE.Vector2();
+        let raycaster = new THREE.Raycaster();
+        
+        // Initialize the 3D engine
+        function init() {
+            const container = document.getElementById('canvas-container');
+            
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a0f);
+            scene.fog = new THREE.Fog(0x0a0a0f, 50, 200);
+            
+            // Camera setup
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(30, 30, 30);
+            
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+            
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.enableZoom = true;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 1.0;
+            
+            // Lighting
+            setupLighting();
+            
+            // Grid and axes
+            setupGridAndAxes();
+            
+            // Generate initial data
+            generateData(currentDataset);
+            
+            // Event listeners
+            setupEventListeners();
+            
+            // Start animation loop
+            animate();
+            
+            console.log('3D Data Visualization Engine initialized');
+        }
+        
+        function setupLighting() {
+            // Ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+            
+            // Directional light
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 50, 50);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+            
+            // Point lights for ambiance
+            const pointLight1 = new THREE.PointLight(0x3b82f6, 0.5);
+            pointLight1.position.set(-30, 20, 30);
+            scene.add(pointLight1);
+            
+            const pointLight2 = new THREE.PointLight(0x8b5cf6, 0.3);
+            pointLight2.position.set(30, -20, -30);
+            scene.add(pointLight2);
+        }
+        
+        function setupGridAndAxes() {
+            // Grid
+            const gridHelper = new THREE.GridHelper(100, 20, 0x3b82f6, 0x1e40af);
+            gridHelper.name = 'grid';
+            scene.add(gridHelper);
+            
+            // Axes helper
+            const axesHelper = new THREE.AxesHelper(25);
+            axesHelper.name = 'axes';
+            scene.add(axesHelper);
+        }
+        
+        function generateData(datasetType) {
+            showLoading(true);
+            
+            setTimeout(() => {
+                switch(datasetType) {
+                    case 'scatter':
+                        generateScatterData();
+                        break;
+                    case 'network':
+                        generateNetworkData();
+                        break;
+                    case 'surface':
+                        generateSurfaceData();
+                        break;
+                    case 'clusters':
+                        generateClusterData();
+                        break;
+                    case 'time-series':
+                        generateTimeSeriesData();
+                        break;
+                }
+                
+                visualizeData();
+                updateStats();
+                showLoading(false);
+            }, 500);
+        }
+        
+        function generateScatterData() {
+            dataPoints = [];
+            for (let i = 0; i < 1000; i++) {
+                dataPoints.push({
+                    x: (Math.random() - 0.5) * 50,
+                    y: (Math.random() - 0.5) * 50,
+                    z: (Math.random() - 0.5) * 50,
+                    value: Math.random(),
+                    color: new THREE.Color().setHSL(Math.random(), 0.7, 0.6)
+                });
+            }
+        }
+        
+        function generateNetworkData() {
+            dataPoints = [];
+            const nodeCount = 50;
+            const nodes = [];
+            
+            // Generate nodes
+            for (let i = 0; i < nodeCount; i++) {
+                const node = {
+                    x: (Math.random() - 0.5) * 40,
+                    y: (Math.random() - 0.5) * 40,
+                    z: (Math.random() - 0.5) * 40,
+                    value: Math.random(),
+                    connections: [],
+                    color: new THREE.Color().setHSL(i / nodeCount, 0.8, 0.6)
+                };
+                nodes.push(node);
+                dataPoints.push(node);
+            }
+            
+            // Generate connections
+            for (let i = 0; i < nodeCount; i++) {
+                const connectionsCount = Math.floor(Math.random() * 5) + 1;
+                for (let j = 0; j < connectionsCount; j++) {
+                    const targetIndex = Math.floor(Math.random() * nodeCount);
+                    if (targetIndex !== i && !nodes[i].connections.includes(targetIndex)) {
+                        nodes[i].connections.push(targetIndex);
+                    }
+                }
+            }
+        }
+        
+        function generateSurfaceData() {
+            dataPoints = [];
+            const resolution = 30;
+            
+            for (let i = 0; i < resolution; i++) {
+                for (let j = 0; j < resolution; j++) {
+                    const x = (i - resolution/2) * 2;
+                    const z = (j - resolution/2) * 2;
+                    const y = Math.sin(x * 0.3) * Math.cos(z * 0.3) * 10;
+                    
+                    dataPoints.push({
+                        x: x,
+                        y: y,
+                        z: z,
+                        value: (y + 10) / 20,
+                        color: new THREE.Color().setHSL((y + 10) / 20 * 0.6, 0.8, 0.6)
+                    });
+                }
+            }
+        }
+        
+        function generateClusterData() {
+            dataPoints = [];
+            const clusters = [
+                {center: {x: 20, y: 10, z: 0}, color: 0.0},
+                {center: {x: -20, y: -10, z: 15}, color: 0.2},
+                {center: {x: 0, y: 20, z: -20}, color: 0.4},
+                {center: {x: 15, y: -15, z: 20}, color: 0.6},
+                {center: {x: -15, y: 0, z: -15}, color: 0.8}
+            ];
+            
+            clusters.forEach(cluster => {
+                const pointsPerCluster = 200;
+                for (let i = 0; i < pointsPerCluster; i++) {
+                    dataPoints.push({
+                        x: cluster.center.x + (Math.random() - 0.5) * 15,
+                        y: cluster.center.y + (Math.random() - 0.5) * 15,
+                        z: cluster.center.z + (Math.random() - 0.5) * 15,
+                        value: Math.random(),
+                        color: new THREE.Color().setHSL(cluster.color, 0.8, 0.6)
+                    });
+                }
+            });
+        }
+        
+        function generateTimeSeriesData() {
+            dataPoints = [];
+            const timeSteps = 100;
+            const series = 5;
+            
+            for (let s = 0; s < series; s++) {
+                for (let t = 0; t < timeSteps; t++) {
+                    const x = t - timeSteps/2;
+                    const y = Math.sin(t * 0.1 + s) * 10 + Math.random() * 2;
+                    const z = s * 8 - series * 4;
+                    
+                    dataPoints.push({
+                        x: x,
+                        y: y,
+                        z: z,
+                        value: (y + 12) / 24,
+                        time: t,
+                        series: s,
+                        color: new THREE.Color().setHSL(s / series, 0.8, 0.6)
+                    });
+                }
+            }
+        }
+        
+        function visualizeData() {
+            // Clear existing data visualization
+            scene.children = scene.children.filter(child => 
+                child.name === 'grid' || child.name === 'axes' || child.type === 'AmbientLight' || 
+                child.type === 'DirectionalLight' || child.type === 'PointLight'
+            );
+            
+            switch(currentVisualization) {
+                case 'points':
+                    createPointVisualization();
+                    break;
+                case 'spheres':
+                    createSphereVisualization();
+                    break;
+                case 'cubes':
+                    createCubeVisualization();
+                    break;
+                case 'lines':
+                    createNetworkVisualization();
+                    break;
+            }
+        }
+        
+        function createPointVisualization() {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(dataPoints.length * 3);
+            const colors = new Float32Array(dataPoints.length * 3);
+            
+            dataPoints.forEach((point, i) => {
+                positions[i * 3] = point.x;
+                positions[i * 3 + 1] = point.y;
+                positions[i * 3 + 2] = point.z;
+                
+                colors[i * 3] = point.color.r;
+                colors[i * 3 + 1] = point.color.g;
+                colors[i * 3 + 2] = point.color.b;
+            });
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const material = new THREE.PointsMaterial({
+                size: parseFloat(document.getElementById('point-size').value),
+                vertexColors: true,
+                opacity: parseFloat(document.getElementById('opacity').value),
+                transparent: true
+            });
+            
+            const points = new THREE.Points(geometry, material);
+            scene.add(points);
+        }
+        
+        function createSphereVisualization() {
+            const geometry = new THREE.SphereGeometry(0.5, 8, 6);
+            const instancedGeometry = new THREE.InstancedBufferGeometry().copy(geometry);
+            const instanceCount = Math.min(dataPoints.length, 1000); // Limit for performance
+            
+            const instanceMatrix = new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 16), 16);
+            const instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
+            
+            for (let i = 0; i < instanceCount; i++) {
+                const point = dataPoints[i];
+                const matrix = new THREE.Matrix4();
+                const scale = parseFloat(document.getElementById('point-size').value) * 0.5;
+                matrix.setPosition(point.x, point.y, point.z);
+                matrix.scale(new THREE.Vector3(scale, scale, scale));
+                matrix.toArray(instanceMatrix.array, i * 16);
+                
+                instanceColor.setXYZ(i, point.color.r, point.color.g, point.color.b);
+            }
+            
+            instancedGeometry.setAttribute('instanceMatrix', instanceMatrix);
+            instancedGeometry.setAttribute('instanceColor', instanceColor);
+            
+            const material = new THREE.MeshPhongMaterial({
+                vertexColors: true,
+                opacity: parseFloat(document.getElementById('opacity').value),
+                transparent: true
+            });
+            
+            const mesh = new THREE.InstancedMesh(geometry, material, instanceCount);
+            scene.add(mesh);
+        }
+        
+        function createCubeVisualization() {
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const instancedGeometry = new THREE.InstancedBufferGeometry().copy(geometry);
+            const instanceCount = Math.min(dataPoints.length, 500); // Limit for performance
+            
+            const instanceMatrix = new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 16), 16);
+            const instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(instanceCount * 3), 3);
+            
+            for (let i = 0; i < instanceCount; i++) {
+                const point = dataPoints[i];
+                const matrix = new THREE.Matrix4();
+                const scale = parseFloat(document.getElementById('point-size').value) * 0.5;
+                matrix.setPosition(point.x, point.y, point.z);
+                matrix.scale(new THREE.Vector3(scale, scale, scale));
+                matrix.toArray(instanceMatrix.array, i * 16);
+                
+                instanceColor.setXYZ(i, point.color.r, point.color.g, point.color.b);
+            }
+            
+            instancedGeometry.setAttribute('instanceMatrix', instanceMatrix);
+            instancedGeometry.setAttribute('instanceColor', instanceColor);
+            
+            const material = new THREE.MeshPhongMaterial({
+                vertexColors: true,
+                opacity: parseFloat(document.getElementById('opacity').value),
+                transparent: true
+            });
+            
+            const mesh = new THREE.InstancedMesh(geometry, material, instanceCount);
+            scene.add(mesh);
+        }
+        
+        function createNetworkVisualization() {
+            createPointVisualization();
+            
+            if (document.getElementById('show-connections').checked && currentDataset === 'network') {
+                const lineGeometry = new THREE.BufferGeometry();
+                const linePositions = [];
+                const lineColors = [];
+                
+                dataPoints.forEach((node, i) => {
+                    node.connections.forEach(connectionIndex => {
+                        if (connectionIndex < dataPoints.length) {
+                            const target = dataPoints[connectionIndex];
+                            
+                            linePositions.push(node.x, node.y, node.z);
+                            linePositions.push(target.x, target.y, target.z);
+                            
+                            lineColors.push(node.color.r, node.color.g, node.color.b);
+                            lineColors.push(target.color.r, target.color.g, target.color.b);
+                        }
+                    });
+                });
+                
+                lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+                lineGeometry.setAttribute('color', new THREE.Float32BufferAttribute(lineColors, 3));
+                
+                const lineMaterial = new THREE.LineBasicMaterial({
+                    vertexColors: true,
+                    opacity: 0.3,
+                    transparent: true
+                });
+                
+                const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+                scene.add(lines);
+            }
+        }
+        
+        function setupEventListeners() {
+            // Dataset selection
+            document.getElementById('dataset-select').addEventListener('change', (e) => {
+                currentDataset = e.target.value;
+                generateData(currentDataset);
+            });
+            
+            // Visualization controls
+            document.getElementById('point-size').addEventListener('input', (e) => {
+                document.getElementById('point-size-value').textContent = e.target.value;
+                visualizeData();
+            });
+            
+            document.getElementById('opacity').addEventListener('input', (e) => {
+                document.getElementById('opacity-value').textContent = e.target.value;
+                visualizeData();
+            });
+            
+            document.getElementById('show-connections').addEventListener('change', () => {
+                visualizeData();
+            });
+            
+            document.getElementById('animate').addEventListener('change', (e) => {
+                controls.autoRotate = e.target.checked;
+            });
+            
+            // Camera controls
+            document.getElementById('zoom').addEventListener('input', (e) => {
+                document.getElementById('zoom-value').textContent = e.target.value;
+                const zoomFactor = parseFloat(e.target.value) / 100;
+                camera.position.setLength(50 / zoomFactor);
+            });
+            
+            document.getElementById('rotation-speed').addEventListener('input', (e) => {
+                document.getElementById('rotation-speed-value').textContent = e.target.value;
+                controls.autoRotateSpeed = parseFloat(e.target.value);
+            });
+            
+            document.getElementById('reset-camera').addEventListener('click', () => {
+                camera.position.set(30, 30, 30);
+                controls.reset();
+                document.getElementById('zoom').value = 100;
+                document.getElementById('zoom-value').textContent = '100';
+            });
+            
+            // Effects
+            document.getElementById('show-grid').addEventListener('change', (e) => {
+                const grid = scene.getObjectByName('grid');
+                if (grid) grid.visible = e.target.checked;
+            });
+            
+            document.getElementById('show-axes').addEventListener('change', (e) => {
+                const axes = scene.getObjectByName('axes');
+                if (axes) axes.visible = e.target.checked;
+            });
+            
+            document.getElementById('randomize-data').addEventListener('click', () => {
+                generateData(currentDataset);
+            });
+            
+            document.getElementById('export-image').addEventListener('click', () => {
+                const link = document.createElement('a');
+                link.download = '3d-visualization.png';
+                link.href = renderer.domElement.toDataURL();
+                link.click();
+            });
+            
+            // Visualization type buttons
+            document.querySelectorAll('.viz-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    document.querySelectorAll('.viz-button').forEach(b => b.classList.remove('active'));
+                    button.classList.add('active');
+                    currentVisualization = button.dataset.viz;
+                    visualizeData();
+                });
+            });
+            
+            // Mouse interaction for tooltips
+            renderer.domElement.addEventListener('mousemove', onMouseMove);
+            
+            // Window resize
+            window.addEventListener('resize', onWindowResize);
+        }
+        
+        function onMouseMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            raycaster.setFromCamera(mouse, camera);
+            // Tooltip implementation would go here
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        function updateStats() {
+            stats.dataPoints = dataPoints.length;
+            stats.triangles = renderer.info.render.triangles;
+            stats.memory = Math.round(renderer.info.memory.geometries + renderer.info.memory.textures);
+            
+            document.getElementById('data-points').textContent = stats.dataPoints.toLocaleString();
+            document.getElementById('triangles').textContent = stats.triangles.toLocaleString();
+            document.getElementById('memory').textContent = stats.memory + 'MB';
+        }
+        
+        function animate() {
+            const startTime = performance.now();
+            
+            animationId = requestAnimationFrame(animate);
+            
+            controls.update();
+            renderer.render(scene, camera);
+            
+            // Update FPS and render time
+            const endTime = performance.now();
+            stats.renderTime = Math.round(endTime - startTime);
+            stats.fps = Math.round(1000 / (endTime - startTime));
+            
+            document.getElementById('render-time').textContent = stats.renderTime + 'ms';
+            document.getElementById('fps').textContent = stats.fps;
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html> 

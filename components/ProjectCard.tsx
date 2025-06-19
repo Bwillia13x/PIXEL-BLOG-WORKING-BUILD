@@ -62,6 +62,13 @@ export default function ProjectCard({ project, className = '' }: ProjectCardProp
         </time>
         
         <nav className="flex gap-2" aria-label="Project links">
+          <Link 
+            href={`/projects/${project.id}`}
+            className="px-3 py-1 bg-blue-600 text-white font-mono text-xs rounded hover:bg-blue-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+            aria-label={`View ${project.title} details and interactive demo`}
+          >
+            View Project
+          </Link>
           {project.github && (
             <Link 
               href={project.github}
@@ -79,9 +86,9 @@ export default function ProjectCard({ project, className = '' }: ProjectCardProp
               target="_blank"
               rel="noopener noreferrer"
               className="px-3 py-1 bg-green-600 text-black font-mono text-xs rounded hover:bg-green-500 transition-colors focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
-              aria-label={`View ${project.title} live demo`}
+              aria-label={`View ${project.title} in full screen`}
             >
-              Live Demo
+              Full Screen
             </Link>
           )}
         </nav>

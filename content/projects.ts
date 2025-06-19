@@ -114,6 +114,36 @@ export const projects: Project[] = [
     status: "completed",
     github: "https://github.com/Bwillia13x/PixelProjects_v1/tree/main/static-visualizations",
     demo: "/projects/static-visualizations/LLM Simultion (06:13:2025).html"
+  },
+  {
+    id: "trading-dashboard",
+    title: "Real-Time Trading Dashboard",
+    description: "Advanced financial trading dashboard with real-time market data simulation, portfolio management, and technical analysis indicators.",
+    longDescription: "A comprehensive trading platform featuring real-time price updates, portfolio tracking with P&L calculations, interactive candlestick charts, technical indicators (RSI, MACD, Moving Averages, Bollinger Bands), and a professional financial UI. Built with vanilla JavaScript and Chart.js for optimal performance.",
+    tags: ["Financial Technology", "Real-time Data", "Technical Analysis", "JavaScript"],
+    image: "/placeholder.jpg",
+    demoUrl: "/projects/trading-dashboard/index.html",
+    githubUrl: "https://github.com/Bwillia13x/PixelProjects_v1",
+    status: "completed",
+    featured: true,
+    year: 2025,
+    technologies: ["JavaScript", "Chart.js", "HTML5", "CSS3", "WebGL"],
+    category: "web-app"
+  },
+  {
+    id: "3d-data-engine",
+    title: "3D Data Visualization Engine",
+    description: "Interactive 3D data visualization platform with WebGL rendering, supporting multiple visualization types and large dataset exploration.",
+    longDescription: "A powerful 3D visualization engine built with Three.js and WebGL, featuring point clouds, network graphs, mathematical surfaces, and data clusters. Includes real-time controls, performance monitoring, instanced rendering for thousands of data points, and multiple visualization modes with 60 FPS performance.",
+    tags: ["Data Visualization", "WebGL", "3D Graphics", "Three.js"],
+    image: "/placeholder.jpg", 
+    demoUrl: "/projects/3d-data-engine/index.html",
+    githubUrl: "https://github.com/Bwillia13x/PixelProjects_v1",
+    status: "completed",
+    featured: true,
+    year: 2025,
+    technologies: ["Three.js", "WebGL", "JavaScript", "BufferGeometry", "Instanced Rendering"],
+    category: "visualization"
   }
 ]
 

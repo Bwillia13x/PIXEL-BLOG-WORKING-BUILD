@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Trading Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        .card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        .price-up { color: #10b981; }
+        .price-down { color: #ef4444; }
+        .market-ticker {
+            animation: scroll-left 30s linear infinite;
+        }
+        @keyframes scroll-left {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .indicator-positive { color: #10b981; background-color: rgba(16, 185, 129, 0.1); }
+        .indicator-negative { color: #ef4444; background-color: rgba(239, 68, 68, 0.1); }
+        .indicator-neutral { color: #64748b; background-color: rgba(100, 116, 139, 0.1); }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse-status 2s infinite;
+        }
+        @keyframes pulse-status {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white">
+    <!-- Header -->
+    <header class="border-b border-gray-700 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-chart-line text-2xl text-green-500"></i>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+                        Trading Dashboard
+                    </h1>
+                    <div class="flex items-center space-x-2">
+                        <div class="status-dot bg-green-500"></div>
+                        <span class="text-sm text-gray-400">Live Market Data</span>
+                    </div>
+                </div>
+                <button id="refresh-btn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Market Ticker -->
+    <div class="bg-slate-800/50 border-b border-gray-700 overflow-hidden py-2">
+        <div class="market-ticker whitespace-nowrap">
+            <span id="ticker-content" class="inline-block text-sm font-mono">
+                Loading market data...
+            </span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Top Metrics Row -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="card metric-card rounded-xl p-4 transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm text-gray-400">Portfolio Value</div>
+                        <div id="portfolio-value" class="text-2xl font-bold text-green-500">$125,750</div>
+                        <div id="portfolio-change" class="text-sm text-green-500">+$2,430 (+1.97%)</div>
+                    </div>
+                    <i class="fas fa-wallet text-3xl text-green-500 opacity-20"></i>
+                </div>
+            </div>
+            
+            <div class="card metric-card rounded-xl p-4 transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm text-gray-400">Day's P&L</div>
+                        <div id="daily-pnl" class="text-2xl font-bold text-green-500">+$1,234</div>
+                        <div id="daily-pnl-percent" class="text-sm text-green-500">+0.99%</div>
+                    </div>
+                    <i class="fas fa-trending-up text-3xl text-green-500 opacity-20"></i>
+                </div>
+            </div>
+            
+            <div class="card metric-card rounded-xl p-4 transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm text-gray-400">Total Return</div>
+                        <div id="total-return" class="text-2xl font-bold text-blue-500">+23.5%</div>
+                        <div id="total-return-amount" class="text-sm text-blue-500">+$24,120</div>
+                    </div>
+                    <i class="fas fa-chart-area text-3xl text-blue-500 opacity-20"></i>
+                </div>
+            </div>
+            
+            <div class="card metric-card rounded-xl p-4 transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm text-gray-400">Win Rate</div>
+                        <div id="win-rate" class="text-2xl font-bold text-purple-500">68.3%</div>
+                        <div id="win-rate-trades" class="text-sm text-purple-500">123/180 trades</div>
+                    </div>
+                    <i class="fas fa-target text-3xl text-purple-500 opacity-20"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Charts and Watchlist -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Main Chart -->
+            <div class="lg:col-span-2 card rounded-xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-xl font-semibold">Live Chart</h2>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <select id="symbol-select" class="bg-slate-700 text-white px-3 py-1 rounded text-sm">
+                                <option value="AAPL">Apple (AAPL)</option>
+                                <option value="GOOGL">Google (GOOGL)</option>
+                                <option value="MSFT">Microsoft (MSFT)</option>
+                                <option value="TSLA">Tesla (TSLA)</option>
+                                <option value="NVDA">NVIDIA (NVDA)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div id="current-price" class="text-2xl font-bold text-green-500">$150.25</div>
+                        <div id="price-change" class="text-sm text-green-500">+$2.34 (+1.58%)</div>
+                    </div>
+                </div>
+                <div id="main-chart" style="height: 400px;"></div>
+            </div>
+
+            <!-- Watchlist -->
+            <div class="card rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">Watchlist</h2>
+                <div id="watchlist" class="space-y-3 max-h-96 overflow-y-auto">
+                    <!-- Watchlist items will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Indicators and Portfolio -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Technical Indicators -->
+            <div class="card rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">Technical Indicators</h2>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">RSI (14)</span>
+                        <span id="rsi-value" class="indicator-neutral px-3 py-1 rounded-full text-sm font-medium">45.6</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">MACD</span>
+                        <span id="macd-value" class="indicator-positive px-3 py-1 rounded-full text-sm font-medium">Bullish</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Moving Avg (50)</span>
+                        <span id="ma50-value" class="indicator-positive px-3 py-1 rounded-full text-sm font-medium">$148.32</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Moving Avg (200)</span>
+                        <span id="ma200-value" class="indicator-negative px-3 py-1 rounded-full text-sm font-medium">$145.67</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portfolio Holdings -->
+            <div class="card rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">Portfolio Holdings</h2>
+                <div id="portfolio-holdings" class="space-y-3 max-h-96 overflow-y-auto">
+                    <!-- Portfolio items will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data for demonstration
+        let currentSymbol = 'AAPL';
+        
+        const watchlistData = [
+            { symbol: 'AAPL', name: 'Apple Inc.', price: 150.25, change: 2.34, changePercent: 1.58 },
+            { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 2650.45, change: -15.30, changePercent: -0.57 },
+            { symbol: 'MSFT', name: 'Microsoft Corp.', price: 305.67, change: 4.12, changePercent: 1.37 },
+            { symbol: 'TSLA', name: 'Tesla Inc.', price: 245.89, change: -8.45, changePercent: -3.32 },
+            { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 420.15, change: 12.34, changePercent: 3.03 }
+        ];
+
+        const portfolioData = [
+            { symbol: 'AAPL', name: 'Apple Inc.', shares: 100, avgPrice: 145.50, currentPrice: 150.25, value: 15025 },
+            { symbol: 'GOOGL', name: 'Alphabet Inc.', shares: 15, avgPrice: 2600.00, currentPrice: 2650.45, value: 39756.75 },
+            { symbol: 'MSFT', name: 'Microsoft Corp.', shares: 75, avgPrice: 290.00, currentPrice: 305.67, value: 22925.25 },
+            { symbol: 'TSLA', name: 'Tesla Inc.', shares: 50, avgPrice: 250.00, currentPrice: 245.89, value: 12294.50 }
+        ];
+
+        function initDashboard() {
+            updateMarketTicker();
+            updateWatchlist();
+            updatePortfolio();
+            updateTechnicalIndicators();
+            createMainChart();
+            
+            // Start real-time updates
+            setInterval(updateRealTimeData, 5000);
+        }
+
+        function updateMarketTicker() {
+            const tickerContent = document.getElementById('ticker-content');
+            let tickerHTML = '';
+            
+            watchlistData.forEach(stock => {
+                const changeClass = stock.change >= 0 ? 'price-up' : 'price-down';
+                const changeSymbol = stock.change >= 0 ? '+' : '';
+                tickerHTML += `
+                    <span class="mx-8">
+                        <strong>${stock.symbol}</strong> 
+                        <span class="${changeClass}">$${stock.price.toFixed(2)}</span>
+                        <span class="${changeClass}">${changeSymbol}${stock.change.toFixed(2)} (${changeSymbol}${stock.changePercent.toFixed(2)}%)</span>
+                    </span>
+                `;
+            });
+            
+            tickerContent.innerHTML = tickerHTML;
+        }
+
+        function updateWatchlist() {
+            const watchlist = document.getElementById('watchlist');
+            watchlist.innerHTML = '';
+            
+            watchlistData.forEach(stock => {
+                const changeClass = stock.change >= 0 ? 'price-up' : 'price-down';
+                const changeIcon = stock.change >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+                const changeSymbol = stock.change >= 0 ? '+' : '';
+                
+                const stockElement = document.createElement('div');
+                stockElement.className = 'p-3 rounded-lg border border-gray-700 cursor-pointer transition-all duration-200 hover:bg-gray-700/20';
+                stockElement.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="font-semibold">${stock.symbol}</div>
+                            <div class="text-sm text-gray-400">${stock.name}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-semibold">$${stock.price.toFixed(2)}</div>
+                            <div class="text-sm ${changeClass}">
+                                <i class="fas ${changeIcon}"></i>
+                                ${changeSymbol}${stock.changePercent.toFixed(2)}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                stockElement.addEventListener('click', () => {
+                    currentSymbol = stock.symbol;
+                    document.getElementById('symbol-select').value = stock.symbol;
+                    updateCurrentPrice(stock);
+                    createMainChart();
+                });
+                
+                watchlist.appendChild(stockElement);
+            });
+        }
+
+        function updatePortfolio() {
+            const portfolio = document.getElementById('portfolio-holdings');
+            portfolio.innerHTML = '';
+            
+            portfolioData.forEach(holding => {
+                const pnl = (holding.currentPrice - holding.avgPrice) * holding.shares;
+                const pnlPercent = ((holding.currentPrice - holding.avgPrice) / holding.avgPrice) * 100;
+                const pnlClass = pnl >= 0 ? 'price-up' : 'price-down';
+                const pnlSymbol = pnl >= 0 ? '+' : '';
+                
+                const holdingElement = document.createElement('div');
+                holdingElement.className = 'p-3 rounded-lg border border-gray-700';
+                holdingElement.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="font-semibold">${holding.symbol}</div>
+                            <div class="text-sm text-gray-400">${holding.shares} shares @ $${holding.avgPrice.toFixed(2)}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-semibold">$${holding.value.toLocaleString()}</div>
+                            <div class="text-sm ${pnlClass}">
+                                ${pnlSymbol}$${Math.abs(pnl).toFixed(2)} (${pnlSymbol}${pnlPercent.toFixed(2)}%)
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                portfolio.appendChild(holdingElement);
+            });
+        }
+
+        function updateTechnicalIndicators() {
+            const rsi = 45.6 + (Math.random() - 0.5) * 10;
+            const rsiElement = document.getElementById('rsi-value');
+            rsiElement.textContent = rsi.toFixed(1);
+            rsiElement.className = rsi > 70 ? 'indicator-negative px-3 py-1 rounded-full text-sm font-medium' :
+                                  rsi < 30 ? 'indicator-positive px-3 py-1 rounded-full text-sm font-medium' :
+                                  'indicator-neutral px-3 py-1 rounded-full text-sm font-medium';
+        }
+
+        function createMainChart() {
+            const dates = [];
+            const opens = [];
+            const highs = [];
+            const lows = [];
+            const closes = [];
+            
+            let basePrice = 150;
+            const now = new Date();
+            
+            for (let i = 30; i >= 0; i--) {
+                const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+                dates.push(date.toISOString().split('T')[0]);
+                
+                const open = basePrice + (Math.random() - 0.5) * 10;
+                const close = open + (Math.random() - 0.5) * 8;
+                const high = Math.max(open, close) + Math.random() * 3;
+                const low = Math.min(open, close) - Math.random() * 3;
+                
+                opens.push(open);
+                highs.push(high);
+                lows.push(low);
+                closes.push(close);
+                
+                basePrice = close;
+            }
+            
+            const trace = {
+                x: dates,
+                open: opens,
+                high: highs,
+                low: lows,
+                close: closes,
+                type: 'candlestick',
+                name: currentSymbol,
+                increasing: { line: { color: '#10b981' } },
+                decreasing: { line: { color: '#ef4444' } }
+            };
+            
+            const layout = {
+                plot_bgcolor: 'rgba(15, 23, 42, 0.95)',
+                paper_bgcolor: 'rgba(15, 23, 42, 0.95)',
+                font: { color: '#e2e8f0' },
+                xaxis: { gridcolor: 'rgba(148, 163, 184, 0.2)', color: '#94a3b8' },
+                yaxis: { gridcolor: 'rgba(148, 163, 184, 0.2)', color: '#94a3b8' },
+                margin: { t: 20, r: 20, b: 40, l: 60 }
+            };
+            
+            Plotly.newPlot('main-chart', [trace], layout, {
+                responsive: true,
+                displayModeBar: false
+            });
+        }
+
+        function updateCurrentPrice(stock) {
+            document.getElementById('current-price').textContent = `$${stock.price.toFixed(2)}`;
+            const changeElement = document.getElementById('price-change');
+            const changeClass = stock.change >= 0 ? 'price-up' : 'price-down';
+            const changeSymbol = stock.change >= 0 ? '+' : '';
+            changeElement.textContent = `${changeSymbol}$${stock.change.toFixed(2)} (${changeSymbol}${stock.changePercent.toFixed(2)}%)`;
+            changeElement.className = `text-sm ${changeClass}`;
+        }
+
+        function updateRealTimeData() {
+            watchlistData.forEach(stock => {
+                const priceChange = (Math.random() - 0.5) * 2;
+                stock.price += priceChange;
+                stock.change += priceChange;
+                stock.changePercent = (stock.change / (stock.price - stock.change)) * 100;
+            });
+            
+            portfolioData.forEach(holding => {
+                const stockData = watchlistData.find(s => s.symbol === holding.symbol);
+                if (stockData) {
+                    holding.currentPrice = stockData.price;
+                    holding.value = holding.shares * holding.currentPrice;
+                }
+            });
+            
+            updateMarketTicker();
+            updateWatchlist();
+            updatePortfolio();
+            updateTechnicalIndicators();
+            
+            const currentStock = watchlistData.find(s => s.symbol === currentSymbol);
+            if (currentStock) {
+                updateCurrentPrice(currentStock);
+            }
+        }
+
+        document.getElementById('symbol-select').addEventListener('change', (e) => {
+            currentSymbol = e.target.value;
+            const stock = watchlistData.find(s => s.symbol === currentSymbol);
+            if (stock) {
+                updateCurrentPrice(stock);
+                createMainChart();
+            }
+        });
+
+        document.getElementById('refresh-btn').addEventListener('click', () => {
+            updateRealTimeData();
+            createMainChart();
+        });
+
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>
