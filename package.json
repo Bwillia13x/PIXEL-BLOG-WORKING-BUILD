@@ -18,7 +18,10 @@
     "type-check": "tsc --noEmit",
     "build:analyze": "ANALYZE=true next build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "new-post": "node scripts/new-post.js",
+    "content:validate": "node scripts/validate-content.js",
+    "deploy": "git add . && git commit -m 'feat: new content update' && git push origin main"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
