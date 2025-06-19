@@ -19,6 +19,32 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
+
+  // Optimize webpack for development and exclude problematic directories
+  webpack: (config, { dev, isServer }) => {
+    if (dev) {
+      // Exclude problematic directories from file watching
+      config.watchOptions = {
+        ...config.watchOptions,
+        ignored: [
+          '**/node_modules/**',
+          '**/.git/**',
+          '**/.next/**',
+          '**/public/projects/**',
+          '**/*.log',
+          '**/dist/**',
+          '**/build/**',
+          '**/.vercel/**',
+          '**/.env*',
+        ],
+        // Reduce polling frequency
+        poll: 1000,
+        // Add aggregation timeout to batch changes
+        aggregateTimeout: 300,
+      }
+    }
+    return config
+  },
 }
 
 export default nextConfig
