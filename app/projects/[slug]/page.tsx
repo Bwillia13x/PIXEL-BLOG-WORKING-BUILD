@@ -83,7 +83,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-pixel">Interactive Demo</h2>
             <span className="text-sm font-mono text-gray-400">
-              Click "Open Full Screen" for best experience
+              Click &ldquo;Open Full Screen&rdquo; for best experience
             </span>
           </div>
           
