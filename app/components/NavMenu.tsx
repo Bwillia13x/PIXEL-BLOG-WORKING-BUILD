@@ -342,7 +342,9 @@ const NavMenu = () => {
                         className="mb-2"
                       >
                         <Link
-                          ref={el => itemRefs.current[index] = el}
+                          ref={el => {
+                            if (el) itemRefs.current[index] = el
+                          }}
                           href={item.href}
                           onClick={closeMobileMenu}
                           className={`group flex items-center p-4 rounded-lg transition-all duration-200 touch-manipulation ${

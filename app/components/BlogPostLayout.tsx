@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -10,7 +10,7 @@ import {
   TagIcon, 
   FolderIcon,
   EyeIcon,
-  TrendingUpIcon
+  DocumentTextIcon
 } from '@heroicons/react/24/outline'
 
 import { Post, posts } from '@/app/data/posts'
@@ -86,7 +86,7 @@ function PostMeta({ post, readingTime, views }: PostMetaProps) {
         )}
         
         <div className="flex items-center space-x-1">
-          <TrendingUpIcon className="h-4 w-4" />
+          <DocumentTextIcon className="h-4 w-4" />
           <span>{readingTime.words} words</span>
         </div>
       </div>
@@ -110,7 +110,7 @@ function PostMeta({ post, readingTime, views }: PostMetaProps) {
   )
 }
 
-function ReadingProgress({ targetRef }: { targetRef: React.RefObject<HTMLElement> }) {
+function ReadingProgress({ targetRef }: { targetRef: React.RefObject<HTMLDivElement | null> }) {
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
@@ -168,7 +168,7 @@ export default function BlogPostLayout({
   showSocialShare = true,
   className = ""
 }: BlogPostLayoutProps) {
-  const contentRef = useState<HTMLElement | null>(null)[0]
+  const contentRef = useRef<HTMLDivElement | null>(null)
   const [analytics, setAnalytics] = useState<any>(null)
   const [views, setViews] = useState<number | undefined>(undefined)
 
@@ -233,7 +233,7 @@ export default function BlogPostLayout({
       )}
 
       {/* Reading Progress Bar */}
-      <ReadingProgress targetRef={{ current: contentRef }} />
+      <ReadingProgress targetRef={contentRef} />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Main Content */}
@@ -270,17 +270,15 @@ export default function BlogPostLayout({
               <SocialShare
                 title={post.title}
                 url={currentUrl}
-                description={post.excerpt}
-                hashtags={post.tags}
+                description={post.excerpt || ''}
                 className="justify-center"
-                onShare={handleShare}
               />
             </motion.div>
           )}
 
           {/* Post Content */}
           <motion.div
-            ref={(el) => contentRef = el}
+            ref={contentRef}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -364,11 +362,8 @@ export default function BlogPostLayout({
               <SocialShare
                 title={post.title}
                 url={currentUrl}
-                description={post.excerpt}
-                hashtags={post.tags}
+                description={post.excerpt || ''}
                 className="justify-center"
-                showLabel={false}
-                onShare={handleShare}
               />
             </motion.div>
           )}
@@ -429,12 +424,7 @@ export default function BlogPostLayout({
               <SocialShare
                 title={post.title}
                 url={currentUrl}
-                description={post.excerpt}
-                hashtags={post.tags}
-                vertical={true}
-                sticky={true}
-                showLabel={false}
-                onShare={handleShare}
+                description={post.excerpt || ''}
               />
             </motion.div>
           )}

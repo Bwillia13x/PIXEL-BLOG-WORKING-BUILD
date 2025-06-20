@@ -5,6 +5,27 @@
 /* Import theme system styles */
 @import './styles/themes.css';
 
+/* Critical CSS for font loading */
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Prevent flash of unstyled content */
+html {
+  visibility: visible;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 :root {
   --foreground-rgb: 74, 222, 128;
   --background-start-rgb: 17, 24, 39;

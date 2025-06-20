@@ -68,8 +68,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [accessibilityMode, setAccessibilityModeState] = useState(false)
   const [reduceMotion, setReduceMotionState] = useState(false)
   
-  const transitionTimeoutRef = useRef<NodeJS.Timeout>()
-  const rootElementRef = useRef<HTMLElement>()
+  const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const rootElementRef = useRef<HTMLElement | null>(null)
 
   // Initialize root element reference
   useEffect(() => {

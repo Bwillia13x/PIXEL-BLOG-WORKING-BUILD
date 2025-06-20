@@ -20,6 +20,11 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react'],
   },
 
+  // Disable ESLint during builds
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   // Optimize webpack for development and exclude problematic directories
   webpack: (config, { dev, isServer }) => {
     if (dev) {

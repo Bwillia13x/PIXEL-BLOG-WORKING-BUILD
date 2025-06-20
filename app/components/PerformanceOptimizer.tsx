@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, useRef } from 'react'
-import { useIntersectionObserver } from '../hooks/useIntersectionObserver'
+
 
 interface PerformanceOptimizerProps {
   children: React.ReactNode
@@ -20,7 +20,7 @@ export const PerformanceOptimizer: React.FC<PerformanceOptimizerProps> = ({
 }) => {
   const [isVisible, setIsVisible] = useState(false)
   const [shouldRender, setShouldRender] = useState(priority === 'high')
-  const elementRef = useRef<HTMLDivElement>(null)
+  const elementRef = useRef<HTMLDivElement | null>(null)
 
   const entry = useIntersectionObserver(elementRef, {
     threshold,
@@ -50,7 +50,7 @@ export const PerformanceOptimizer: React.FC<PerformanceOptimizerProps> = ({
 
 // Hook for intersection observer
 export const useIntersectionObserver = (
-  elementRef: React.RefObject<Element>,
+  elementRef: React.RefObject<Element | null>,
   options: IntersectionObserverInit & { freezeOnceVisible?: boolean } = {}
 ) => {
   const [entry, setEntry] = useState<IntersectionObserverEntry>()

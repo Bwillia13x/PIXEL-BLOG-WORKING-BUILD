@@ -203,9 +203,7 @@ export default function OptimizedImage({
         ...style,
         ...(aspectRatio && { aspectRatio }),
         ...(pixelArt && { 
-          imageRendering: 'pixelated',
-          imageRendering: '-moz-crisp-edges' as any,
-          imageRendering: 'crisp-edges'
+          imageRendering: 'pixelated' as any
         })
       }}
       onLoad={handleLoad}

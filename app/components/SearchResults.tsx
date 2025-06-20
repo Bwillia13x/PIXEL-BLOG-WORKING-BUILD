@@ -66,12 +66,12 @@ function SearchResultItem({ item }: SearchResultItemProps) {
                 </div>
               )}
               
-              {item.category && (
+              {'category' in item && item.category ? (
                 <div className="flex items-center space-x-1">
                   <FolderIcon className="h-3 w-3" />
                   <span dangerouslySetInnerHTML={{ __html: item.category }} />
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
           
@@ -89,16 +89,19 @@ function SearchResultItem({ item }: SearchResultItemProps) {
         </div>
 
         {/* Content Preview */}
-        {item.content && (
-          <div className="text-sm text-gray-300 leading-relaxed">
-            <p 
-              className="line-clamp-2"
-              dangerouslySetInnerHTML={{ 
-                __html: item.content.slice(0, 200) + (item.content.length > 200 ? '...' : '') 
-              }} 
-            />
-          </div>
-        )}
+        {(('content' in item && item.content) || ('description' in item && item.description)) && (() => {
+          const content = 'content' in item ? item.content : 'description' in item ? item.description : ''
+          return (
+            <div className="text-sm text-gray-300 leading-relaxed">
+              <p 
+                className="line-clamp-2"
+                dangerouslySetInnerHTML={{ 
+                  __html: content.slice(0, 200) + (content.length > 200 ? '...' : '') 
+                }} 
+              />
+            </div>
+          )
+        })()}
 
         {/* Tags */}
         {item.tags && item.tags.length > 0 && (
@@ -139,9 +142,9 @@ function SearchResultItem({ item }: SearchResultItemProps) {
               <span>View Details</span>
             </Link>
             
-            {'demo' in item && item.demo && (
+            {'demo' in item && item.demo ? (
               <a
-                href={item.demo}
+                href={String(item.demo)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="
@@ -152,11 +155,11 @@ function SearchResultItem({ item }: SearchResultItemProps) {
                 <LinkIcon className="h-3 w-3" />
                 <span>Live Demo</span>
               </a>
-            )}
+            ) : null}
             
-            {'github' in item && item.github && (
+            {'github' in item && item.github ? (
               <a
-                href={item.github}
+                href={String(item.github)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="
@@ -167,7 +170,7 @@ function SearchResultItem({ item }: SearchResultItemProps) {
                 <LinkIcon className="h-3 w-3" />
                 <span>GitHub</span>
               </a>
-            )}
+            ) : null}
           </div>
         )}
       </div>
@@ -246,7 +249,7 @@ export default function SearchResults({ results, isLoading, query }: SearchResul
       </div>
       
       {results.map((item, index) => (
-        <SearchResultItem key={`${item.type}-${item.id || item.slug}-${index}`} item={item} />
+        <SearchResultItem key={`${item.type}-${item.id || ('slug' in item ? item.slug : '')}-${index}`} item={item} />
       ))}
     </div>
   )

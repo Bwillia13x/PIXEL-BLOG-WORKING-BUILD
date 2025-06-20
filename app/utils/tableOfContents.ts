@@ -147,7 +147,7 @@ export function generateTocMarkdown(toc: TocItem[], currentDepth = 0): string {
 export function getHeadingElements(container?: HTMLElement): HTMLElement[] {
   const root = container || document
   return Array.from(root.querySelectorAll('h2, h3, h4')).filter(
-    (heading): heading is HTMLElement => heading instanceof HTMLElement && heading.id
+    (heading): heading is HTMLElement => heading instanceof HTMLElement && Boolean(heading.id)
   )
 }
 

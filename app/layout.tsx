@@ -223,36 +223,7 @@ export default function RootLayout({
           }}
         />
         
-        {/* Critical CSS for font loading */}
-        <style jsx>{`
-          @font-face {
-            font-family: 'JetBrains Mono';
-            src: url('/fonts/JetBrainsMono-Regular.woff2') format('woff2');
-            font-weight: 400;
-            font-style: normal;
-            font-display: swap;
-          }
-          
-          .font-mono {
-            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
-          }
-          
-          /* Prevent flash of unstyled content */
-          html {
-            visibility: visible;
-          }
-          
-          /* Smooth scrolling for skip links */
-          html {
-            scroll-behavior: smooth;
-          }
-          
-          @media (prefers-reduced-motion: reduce) {
-            html {
-              scroll-behavior: auto;
-            }
-          }
-        `}</style>
+
       </body>
     </html>
   )

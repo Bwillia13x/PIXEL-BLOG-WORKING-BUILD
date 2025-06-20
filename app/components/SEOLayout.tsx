@@ -66,7 +66,7 @@ function initializePerformanceMonitoring() {
         ttfb: navigation.responseStart - navigation.requestStart,
         download: navigation.responseEnd - navigation.responseStart,
         domParse: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
-        totalLoad: navigation.loadEventEnd - navigation.navigationStart
+        totalLoad: navigation.loadEventEnd - navigation.startTime
       }
 
       console.log('Performance Metrics:', metrics)
@@ -117,9 +117,9 @@ function initializeAnalytics() {
     script.async = true
     document.head.appendChild(script)
 
-    window.dataLayer = window.dataLayer || []
+    ;(window as any).dataLayer = (window as any).dataLayer || []
     function gtag(...args: any[]) {
-      window.dataLayer.push(args)
+      ;(window as any).dataLayer.push(args)
     }
     ;(window as any).gtag = gtag
 
@@ -206,7 +206,7 @@ function initializeAccessibility() {
   }
   
   mediaQuery.addEventListener('change', handleContrastChange)
-  handleContrastChange(mediaQuery)
+  handleContrastChange({ matches: mediaQuery.matches } as MediaQueryListEvent)
 
   // Reduced motion detection
   const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -215,7 +215,7 @@ function initializeAccessibility() {
   }
   
   motionQuery.addEventListener('change', handleMotionChange)
-  handleMotionChange(motionQuery)
+  handleMotionChange({ matches: motionQuery.matches } as MediaQueryListEvent)
 
   // Keyboard navigation improvements
   document.addEventListener('keydown', (e) => {

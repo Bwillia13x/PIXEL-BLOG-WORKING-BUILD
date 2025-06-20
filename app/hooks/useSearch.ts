@@ -58,23 +58,18 @@ function normalizeSearchableItem(item: Post | Project, type: 'post' | 'project')
     return {
       ...project,
       type: 'project',
-      category: project.tags[0] || 'Project', // Use first tag as category
       content: project.description,
-    }
+    } as SearchableItem
   }
 }
 
 function extractSearchTerms(item: SearchableItem): string {
   const terms = [
     item.title,
-    item.content || '',
-    item.category || '',
+    item.type === 'post' ? item.content || '' : item.description || '',
+    'category' in item ? item.category || '' : '',
     ...(item.tags || []),
   ]
-  
-  if (item.type === 'project' && 'description' in item) {
-    terms.push(item.description)
-  }
   
   return terms.join(' ').toLowerCase()
 }
@@ -158,7 +153,7 @@ export function useSearch(options: UseSearchOptions = {}) {
     const statuses = new Set<string>()
     
     searchableData.forEach(item => {
-      if (item.category) categories.add(item.category)
+      if ('category' in item && item.category) categories.add(item.category)
       if (item.tags) item.tags.forEach(tag => tags.add(tag))
       if (item.type === 'project' && 'status' in item) statuses.add(item.status)
     })
@@ -182,7 +177,7 @@ export function useSearch(options: UseSearchOptions = {}) {
     // Filter by categories
     if (filters.categories.length > 0) {
       filtered = filtered.filter(item => 
-        item.category && filters.categories.includes(item.category))
+        'category' in item && item.category && filters.categories.includes(item.category))
     }
     
     // Filter by tags
@@ -248,14 +243,22 @@ export function useSearch(options: UseSearchOptions = {}) {
   }, [searchableData, filters, debouncedQuery])
   
   // Helper function to highlight search results
-  const highlightResult = (item: SearchableItem) => {
+  const highlightResult = (item: SearchableItem): SearchableItem => {
     if (!debouncedQuery.trim()) return item
     
-    return {
-      ...item,
-      title: highlightText(item.title, debouncedQuery),
-      content: highlightText(item.content || '', debouncedQuery),
-      category: item.category ? highlightText(item.category, debouncedQuery) : item.category,
+    if (item.type === 'post') {
+      return {
+        ...item,
+        title: highlightText(item.title, debouncedQuery),
+        content: highlightText(item.content || '', debouncedQuery),
+        category: highlightText(item.category || '', debouncedQuery),
+      }
+    } else {
+      return {
+        ...item,
+        title: highlightText(item.title, debouncedQuery),
+        description: highlightText(item.description || '', debouncedQuery),
+      }
     }
   }
   

@@ -1,8 +1,3 @@
-import fs from 'fs'
-import path from 'path'
-import matter from 'gray-matter'
-import { calculateReadingTime } from '@/app/utils/readingTime'
-
 export interface Post {
   id: string
   slug: string
@@ -16,37 +11,43 @@ export interface Post {
   published?: boolean
 }
 
-const postsDirectory = path.join(process.cwd(), 'content', 'blog')
-
-function getPostData(fileName: string): Post {
-  const slug = fileName.replace(/\.mdx?$/, '')
-  const fullPath = path.join(postsDirectory, fileName)
-  const fileContents = fs.readFileSync(fullPath, 'utf8')
-  const { data, content } = matter(fileContents)
-
-  // Calculate reading time if not provided in frontmatter
-  const readTime = data.readTime || calculateReadingTime(content).text
-
-  return {
-    id: slug,
-    slug,
-    title: (data.title as string) ?? slug,
-    category: (data.category as string) ?? 'Blog',
-    date: data.date as string | undefined,
-    content,
-    tags: Array.isArray(data.tags) ? data.tags : [],
-    excerpt: data.excerpt as string | undefined,
-    readTime,
-    published: data.published !== false, // Default to true unless explicitly false
+// Client-side function to fetch posts from API
+export async function fetchPosts(): Promise<Post[]> {
+  try {
+    const response = await fetch('/api/posts')
+    if (!response.ok) {
+      throw new Error('Failed to fetch posts')
+    }
+    return response.json()
+  } catch (error) {
+    console.error('Error fetching posts:', error)
+    return []
   }
 }
 
-export const posts: Post[] = fs
-  .readdirSync(postsDirectory)
-  .filter((file) => file.endsWith('.md') || file.endsWith('.mdx'))
-  .map(getPostData)
-  .sort((a, b) => {
-    const dateA = a.date ? new Date(a.date).getTime() : 0
-    const dateB = b.date ? new Date(b.date).getTime() : 0
-    return dateB - dateA
-  })
+// For compatibility with existing code that expects posts to be available immediately
+// This should be replaced with fetchPosts() in components that need posts data
+export const posts: Post[] = []
+
+// Helper functions for common operations
+export function getPostBySlug(posts: Post[], slug: string): Post | undefined {
+  return posts.find(post => post.slug === slug)
+}
+
+export function getPostsByCategory(posts: Post[], category: string): Post[] {
+  return posts.filter(post => post.category.toLowerCase() === category.toLowerCase())
+}
+
+export function getPublishedPosts(posts: Post[]): Post[] {
+  return posts.filter(post => post.published !== false)
+}
+
+export function searchPosts(posts: Post[], query: string): Post[] {
+  const lowercaseQuery = query.toLowerCase()
+  return posts.filter(post => 
+    post.title.toLowerCase().includes(lowercaseQuery) ||
+    post.content.toLowerCase().includes(lowercaseQuery) ||
+    post.tags?.some(tag => tag.toLowerCase().includes(lowercaseQuery)) ||
+    post.excerpt?.toLowerCase().includes(lowercaseQuery)
+  )
+}

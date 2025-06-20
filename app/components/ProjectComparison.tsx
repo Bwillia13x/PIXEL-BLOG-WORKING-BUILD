@@ -297,17 +297,20 @@ function ComparisonTable({ projects, onRemoveProject }: ComparisonTableProps) {
                 </td>
                 {projects.map((project) => (
                   <td key={project.id} className="p-3">
-                    {metric.type === 'status' && (
-                      <div className={`
-                        flex items-center space-x-1 px-2 py-1 pixel-border text-xs
-                        ${STATUS_CONFIG[project.status].color} 
-                        ${STATUS_CONFIG[project.status].bgColor} 
-                        ${STATUS_CONFIG[project.status].borderColor}
-                      `}>
-                        <STATUS_CONFIG[project.status].icon className="h-3 w-3" />
-                        <span>{STATUS_CONFIG[project.status].label}</span>
-                      </div>
-                    )}
+                    {metric.type === 'status' && (() => {
+                      const StatusIcon = STATUS_CONFIG[project.status].icon
+                      return (
+                        <div className={`
+                          flex items-center space-x-1 px-2 py-1 pixel-border text-xs
+                          ${STATUS_CONFIG[project.status].color} 
+                          ${STATUS_CONFIG[project.status].bgColor} 
+                          ${STATUS_CONFIG[project.status].borderColor}
+                        `}>
+                          <StatusIcon className="h-3 w-3" />
+                          <span>{STATUS_CONFIG[project.status].label}</span>
+                        </div>
+                      )
+                    })()}
                     
                     {metric.type === 'tags' && (
                       <div className="flex flex-wrap gap-1">

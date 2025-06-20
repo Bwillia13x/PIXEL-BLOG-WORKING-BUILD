@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { getCLS, getFID, getFCP, getLCP, getTTFB, Metric } from 'web-vitals'
+import { onCLS, onINP, onFCP, onLCP, onTTFB, type Metric } from 'web-vitals'
 
 interface WebVitalData {
   name: string
@@ -14,7 +14,7 @@ interface WebVitalData {
 
 interface WebVitalsState {
   cls: WebVitalData | null
-  fid: WebVitalData | null
+  inp: WebVitalData | null
   fcp: WebVitalData | null
   lcp: WebVitalData | null
   ttfb: WebVitalData | null
@@ -32,7 +32,7 @@ interface WebVitalsMonitorProps {
 // Thresholds for Core Web Vitals
 const THRESHOLDS = {
   CLS: { good: 0.1, poor: 0.25 },
-  FID: { good: 100, poor: 300 },
+  INP: { good: 200, poor: 500 },
   FCP: { good: 1800, poor: 3000 },
   LCP: { good: 2500, poor: 4000 },
   TTFB: { good: 800, poor: 1800 }
@@ -51,7 +51,7 @@ function formatValue(name: string, value: number): string {
   switch (name) {
     case 'CLS':
       return value.toFixed(3)
-    case 'FID':
+    case 'INP':
     case 'FCP':
     case 'LCP':
     case 'TTFB':
@@ -65,8 +65,8 @@ function getMetricDescription(name: string): string {
   switch (name) {
     case 'CLS':
       return 'Cumulative Layout Shift - measures visual stability'
-    case 'FID':
-      return 'First Input Delay - measures interactivity'
+    case 'INP':
+      return 'Interaction to Next Paint - measures interactivity'
     case 'FCP':
       return 'First Contentful Paint - measures loading performance'
     case 'LCP':
@@ -154,7 +154,7 @@ function PerformanceInsights({ vitals }: PerformanceInsightsProps) {
     recommendations.push('Add size attributes to images and avoid dynamic content injection')
   }
   
-  if (vitals.fid && vitals.fid.rating !== 'good') {
+  if (vitals.inp && vitals.inp.rating !== 'good') {
     recommendations.push('Reduce JavaScript execution time and optimize event handlers')
   }
 
@@ -189,7 +189,7 @@ export default function WebVitalsMonitor({
 }: WebVitalsMonitorProps) {
   const [vitals, setVitals] = useState<WebVitalsState>({
     cls: null,
-    fid: null,
+    inp: null,
     fcp: null,
     lcp: null,
     ttfb: null,
@@ -268,11 +268,11 @@ export default function WebVitalsMonitor({
   useEffect(() => {
     try {
       // Measure Core Web Vitals
-      getCLS(handleMetric)
-      getFID(handleMetric)
-      getFCP(handleMetric)
-      getLCP(handleMetric)
-      getTTFB(handleMetric)
+      onCLS(handleMetric)
+      onINP(handleMetric)
+      onFCP(handleMetric)
+      onLCP(handleMetric)
+      onTTFB(handleMetric)
 
       // Set loading to false after a timeout
       const timer = setTimeout(() => {
@@ -408,11 +408,11 @@ export function useWebVitals() {
       }))
     }
 
-    getCLS(handleMetric)
-    getFID(handleMetric)
-    getFCP(handleMetric)
-    getLCP(handleMetric)
-    getTTFB(handleMetric)
+    onCLS(handleMetric)
+    onINP(handleMetric)
+    onFCP(handleMetric)
+    onLCP(handleMetric)
+    onTTFB(handleMetric)
   }, [])
 
   return vitals

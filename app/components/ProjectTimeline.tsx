@@ -166,7 +166,7 @@ function TimelineNode({
         )}
 
         {/* Progress for Current Projects */}
-        {isCurrentProject && event.project.progress !== undefined && (
+        {isCurrentProject && 'progress' in event.project && event.project.progress !== undefined && (
           <div className="mb-3 space-y-1">
             <div className="flex justify-between text-xs font-mono text-gray-400">
               <span>Progress</span>

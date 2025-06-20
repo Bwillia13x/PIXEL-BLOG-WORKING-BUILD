@@ -97,7 +97,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const allProjects = [...projects, ...currentProjects]
   const projectPages: MetadataRoute.Sitemap = allProjects.map(project => ({
     url: `${baseUrl}/projects/${project.id}`,
-    lastModified: project.updatedAt ? new Date(project.updatedAt) : currentDate,
+    lastModified: currentDate, // Projects don't have updatedAt property
     changeFrequency: 'monthly' as const,
     priority: project.featured ? 0.8 : 0.6,
   }))
@@ -181,7 +181,7 @@ export async function generateImageSitemap(): Promise<MetadataRoute.Sitemap> {
     .filter(project => project.image)
     .map(project => ({
       url: `${baseUrl}${project.image}`,
-      lastModified: project.updatedAt ? new Date(project.updatedAt) : currentDate,
+      lastModified: currentDate, // Projects don't have updatedAt property
       changeFrequency: 'yearly' as const,
       priority: 0.5,
     }))

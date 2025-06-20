@@ -30,7 +30,7 @@ export const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
   layers = { matrix: true, particles: true, geometric: false },
   intensity = 'medium',
   interactive = true,
-  performance = 'balanced'
+  performance: performanceLevel = 'balanced'
 }) => {
   const { theme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -102,8 +102,8 @@ export const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
       return baseSettings.optimized
     }
     
-    return baseSettings[performance]
-  }, [performance, isLowPerformance, performanceMode])
+    return baseSettings[performanceLevel]
+  }, [performanceLevel, isLowPerformance, performanceMode])
 
   // Visibility management for performance
   useEffect(() => {
@@ -170,7 +170,7 @@ export const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
       {process.env.NODE_ENV === 'development' && (
         <div className="absolute top-4 left-4 z-50 bg-black/80 text-green-400 text-xs font-mono p-2 rounded">
           <div>FPS: {frameRate}</div>
-          <div>Mode: {isLowPerformance ? 'Low Perf' : performance}</div>
+          <div>Mode: {isLowPerformance ? 'Low Perf' : performanceLevel}</div>
           <div>Mobile: {isMobile ? 'Yes' : 'No'}</div>
         </div>
       )}

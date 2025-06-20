@@ -39,9 +39,9 @@ const FloatingPixels: React.FC<FloatingPixelsProps> = ({
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [isMouseMoving, setIsMouseMoving] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number | null>(null)
   const lastFrameTime = useRef<number>(0)
-  const mouseTimeoutRef = useRef<NodeJS.Timeout>()
+  const mouseTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const [mounted, setMounted] = useState(false)
 
   // Theme-aware colors

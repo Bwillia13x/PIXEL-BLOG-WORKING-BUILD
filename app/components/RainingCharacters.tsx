@@ -169,7 +169,7 @@ export const RainingBackground: React.FC<RainingBackgroundProps> = ({
   const [columns, setColumns] = useState<MatrixColumn[]>([])
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 })
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number>(0)
   const lastFrameTime = useRef<number>(0)
   const [mounted, setMounted] = useState(false)
 

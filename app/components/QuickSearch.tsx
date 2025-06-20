@@ -25,7 +25,7 @@ export default function QuickSearch({ className = "" }: QuickSearchProps) {
   const filteredResults = query.trim() ? 
     searchInstance.results
       .filter(item => {
-        const searchText = `${item.title} ${item.content || ''} ${item.category || ''} ${item.tags?.join(' ') || ''}`.toLowerCase()
+        const searchText = `${item.title} ${'content' in item ? item.content || '' : ''} ${'description' in item ? item.description || '' : ''} ${'category' in item ? item.category || '' : ''} ${item.tags?.join(' ') || ''}`.toLowerCase()
         return searchText.includes(query.toLowerCase())
       })
       .slice(0, 5) : []
@@ -137,10 +137,10 @@ export default function QuickSearch({ className = "" }: QuickSearchProps) {
               {query.trim() && filteredResults.length > 0 ? (
                 <div className="p-2">
                   {filteredResults.map((item, index) => {
-                    const href = item.type === 'post' ? `/blog/${item.slug}` : `/projects/${item.id}`
+                    const href = item.type === 'post' ? `/blog/${'slug' in item ? item.slug : ''}` : `/projects/${item.id}`
                     return (
                       <Link
-                        key={`${item.type}-${item.id || item.slug}-${index}`}
+                        key={`${item.type}-${item.id || ('slug' in item ? item.slug : '')}-${index}`}
                         href={href}
                         onClick={handleResultClick}
                         className="
@@ -158,7 +158,7 @@ export default function QuickSearch({ className = "" }: QuickSearchProps) {
                               {item.title}
                             </h4>
                             <p className="text-xs text-gray-400 mt-1 line-clamp-2">
-                              {item.content?.slice(0, 100)}...
+                              {('content' in item ? item.content : 'description' in item ? item.description : '')?.slice(0, 100)}...
                             </p>
                             <div className="flex items-center space-x-2 mt-2">
                               <span className={`
@@ -167,7 +167,7 @@ export default function QuickSearch({ className = "" }: QuickSearchProps) {
                               `}>
                                 {item.type.toUpperCase()}
                               </span>
-                              {item.category && (
+                              {'category' in item && item.category && (
                                 <span className="text-xs text-gray-500 font-mono">
                                   {item.category}
                                 </span>
