@@ -3,11 +3,11 @@ import { Press_Start_2P, VT323, JetBrains_Mono } from "next/font/google"
 import type React from "react"
 import type { Metadata } from "next"
 import { siteConfig } from "@/lib/site-config"
-import RainingCharacters, { RainingBackground } from "./components/RainingCharacters"
-import BlinkingCursor from "./components/BlinkingCursor"
-import NavMenu from "./components/NavMenu"
-import ThemeToggle from "./components/ThemeToggle"
+import { RainingBackground } from "./components/RainingCharacters"
+import ResponsiveHeader from "./components/ResponsiveHeader"
 import { AppWrapper } from "./components/AppWrapper"
+import { PerformanceMetrics } from "./components/PerformanceOptimizer"
+import AccessibilityTester from "./components/AccessibilityTester"
 
 import ClientComponents from "./components/ClientComponents"
 
@@ -85,23 +85,41 @@ export default function RootLayout({
       <body
         className={`${pressStart2P.variable} ${vt323.variable} ${jetBrainsMono.variable} font-mono bg-gray-900 text-green-400 dark:bg-gray-900 dark:text-green-400`}
       >
+        <a 
+          href="#main-content" 
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[10000] focus:px-4 focus:py-2 focus:bg-green-400 focus:text-black focus:rounded focus:font-pixel focus:text-sm"
+        >
+          Skip to main content
+        </a>
         <AppWrapper>
-          <RainingBackground />
-          <div className="max-w-4xl mx-auto px-4 relative z-10">
-            <header className="py-4 flex flex-col items-center relative z-10">
-              <RainingCharacters />
-              <p className="text-xl text-center font-retro flex items-center mt-4">
-                <BlinkingCursor />
-              </p>
-              <NavMenu />
-              <div className="mt-4">
-                <ThemeToggle />
+          <RainingBackground aria-hidden="true" />
+          <div className="max-w-6xl mx-auto relative z-10">
+            <ResponsiveHeader 
+              showBreadcrumbs={true}
+              collapsible={true}
+              className="header-sticky"
+            />
+            <main 
+              id="main-content"
+              className="relative z-10 bg-gray-900/70 backdrop-blur-sm rounded-lg p-4 sm:p-6 mt-6 mx-4 sm:mx-6 lg:mx-8"
+              role="main"
+              aria-label="Main content"
+            >
+              {children}
+            </main>
+            <footer 
+              className="py-8 text-center font-retro relative z-10 px-4 sm:px-6 lg:px-8"
+              role="contentinfo"
+              aria-label="Site footer"
+            >
+              <div className="border-t border-green-400/30 pt-6">
+                © 2025 {siteConfig.name}. All rights pixelated.
               </div>
-            </header>
-            <main className="relative z-10 bg-gray-900/70 backdrop-blur-sm rounded-lg p-6 mt-6">{children}</main>
-            <footer className="py-8 text-center font-retro relative z-10">© 2025 {siteConfig.name}. All rights pixelated.</footer>
+            </footer>
           </div>
           <ClientComponents />
+          <PerformanceMetrics />
+          <AccessibilityTester />
         </AppWrapper>
       </body>
     </html>

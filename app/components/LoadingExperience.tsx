@@ -7,10 +7,12 @@ import { PixelBootScreen } from "./PixelBootScreen"
 
 interface LoadingExperienceProps {
   onComplete: () => void
+  soundEnabled?: boolean
 }
 
-export function LoadingExperience({ onComplete }: LoadingExperienceProps) {
+export function LoadingExperience({ onComplete, soundEnabled = false }: LoadingExperienceProps) {
   const [currentPhase, setCurrentPhase] = useState<'intro' | 'boot' | 'complete'>('intro')
+  const [soundToggle, setSoundToggle] = useState(soundEnabled)
 
   useEffect(() => {
     // Start with intro animation for 3 seconds
@@ -30,7 +32,38 @@ export function LoadingExperience({ onComplete }: LoadingExperienceProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-gray-900 overflow-hidden">
+    <div 
+      className="fixed inset-0 z-[9999] bg-gray-900 overflow-hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Loading screen"
+    >
+      {/* Skip loading button for accessibility */}
+      <button
+        onClick={handleBootComplete}
+        className="absolute top-4 left-4 z-10 px-3 py-2 bg-gray-800 text-green-400 text-xs font-mono border border-green-400 hover:bg-green-400 hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-green-400"
+        aria-label="Skip loading animation"
+      >
+        Skip Loading
+      </button>
+
+      {/* Sound Toggle Button */}
+      <button
+        onClick={() => setSoundToggle(!soundToggle)}
+        className="absolute top-4 right-4 z-10 px-3 py-2 bg-gray-800 text-green-400 text-xs font-mono border border-green-400 hover:bg-green-400 hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-green-400"
+        aria-label={`${soundToggle ? 'Disable' : 'Enable'} sound effects`}
+        aria-pressed={soundToggle}
+      >
+        <span aria-hidden="true">{soundToggle ? '🔊' : '🔇'}</span>
+        <span className="ml-1">SOUND: {soundToggle ? 'ON' : 'OFF'}</span>
+      </button>
+
+      {/* Loading status for screen readers */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {currentPhase === 'intro' && 'Loading: Initializing...'}
+        {currentPhase === 'boot' && 'Loading: Booting system...'}
+        {currentPhase === 'complete' && 'Loading complete'}
+      </div>
       <AnimatePresence mode="wait">
         {currentPhase === 'intro' && (
           <motion.div
@@ -54,7 +87,7 @@ export function LoadingExperience({ onComplete }: LoadingExperienceProps) {
             transition={{ duration: 0.5 }}
             className="absolute inset-0"
           >
-            <PixelBootScreen onComplete={handleBootComplete} />
+            <PixelBootScreen onComplete={handleBootComplete} soundEnabled={soundToggle} />
           </motion.div>
         )}
         

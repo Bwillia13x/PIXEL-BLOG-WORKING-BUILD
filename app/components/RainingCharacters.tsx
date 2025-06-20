@@ -1,13 +1,28 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
+import { useTheme } from "next-themes"
 
 interface Character {
   char: string
   x: number
   y: number
   speed: number
+  opacity: number
+  trail: Array<{ x: number; y: number; opacity: number }>
+  glitch: boolean
+  lifespan: number
+  age: number
+}
+
+interface MatrixColumn {
+  chars: string[]
+  speeds: number[]
+  x: number
+  length: number
+  headY: number
+  active: boolean
 }
 
 class TextScramble {
@@ -136,101 +151,249 @@ export const ScrambledTitle: React.FC = () => {
   )
 }
 
-// Full-page raining background component
-export const RainingBackground: React.FC = () => {
-  const [characters, setCharacters] = useState<Character[]>([])
-  const [activeIndices, setActiveIndices] = useState<Set<number>>(new Set())
+interface RainingBackgroundProps {
+  intensity?: 'low' | 'medium' | 'high'
+  showTrails?: boolean
+  enableGlitch?: boolean
+  mouseInteraction?: boolean
+}
 
-  const createCharacters = useCallback(() => {
-    const allChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?▓▒░"
-    const charCount = 400 // More characters for full page coverage
-    const newCharacters: Character[] = []
+// Enhanced full-page raining background component
+export const RainingBackground: React.FC<RainingBackgroundProps> = ({
+  intensity = 'medium',
+  showTrails = true,
+  enableGlitch = true,
+  mouseInteraction = true
+}) => {
+  const { theme } = useTheme()
+  const [columns, setColumns] = useState<MatrixColumn[]>([])
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 })
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const animationRef = useRef<number>()
+  const lastFrameTime = useRef<number>(0)
+  const [mounted, setMounted] = useState(false)
 
-    for (let i = 0; i < charCount; i++) {
-      newCharacters.push({
-        char: allChars[Math.floor(Math.random() * allChars.length)],
-        x: Math.random() * 100,
-        y: Math.random() * 120, // Extra height to cover scroll area
-        speed: 0.02 + Math.random() * 0.08, // Slower for background effect
+  // Theme-aware colors
+  const colors = useMemo(() => {
+    if (!mounted) return { primary: '#4ade80', secondary: '#22c55e', dim: '#374151' }
+    
+    return theme === 'dark' ? {
+      primary: '#4ade80',
+      secondary: '#22c55e', 
+      dim: '#374151',
+      background: '#000000'
+    } : {
+      primary: '#059669',
+      secondary: '#10b981',
+      dim: '#9ca3af',
+      background: '#ffffff'
+    }
+  }, [theme, mounted])
+
+  const matrixChars = useMemo(() => {
+    return [
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      '0123456789',
+      'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン',
+      '!@#$%^&*()_+-=[]{}|;:,.<>?',
+      '▓▒░█▄▀■□▪▫'
+    ].join('')
+  }, [])
+
+  const intensitySettings = useMemo(() => {
+    const settings = {
+      low: { charCount: 150, speed: 0.3, glitchChance: 0.001 },
+      medium: { charCount: 300, speed: 0.5, glitchChance: 0.003 },
+      high: { charCount: 500, speed: 0.8, glitchChance: 0.005 }
+    }
+    return settings[intensity]
+  }, [intensity])
+
+  // Mouse tracking
+  useEffect(() => {
+    if (!mouseInteraction) return
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = canvasRef.current?.getBoundingClientRect()
+      if (rect) {
+        setMousePos({
+          x: ((e.clientX - rect.left) / rect.width) * 100,
+          y: ((e.clientY - rect.top) / rect.height) * 100
+        })
+      }
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [mouseInteraction])
+
+  // Initialize matrix columns
+  useEffect(() => {
+    setMounted(true)
+    const columnWidth = 20
+    const numColumns = Math.floor(window.innerWidth / columnWidth)
+    
+    const newColumns: MatrixColumn[] = []
+    for (let i = 0; i < numColumns; i++) {
+      const length = Math.floor(Math.random() * 20) + 5
+      newColumns.push({
+        chars: Array(length).fill(0).map(() => 
+          matrixChars[Math.floor(Math.random() * matrixChars.length)]
+        ),
+        speeds: Array(length).fill(0).map(() => Math.random() * 2 + 0.5),
+        x: i * columnWidth,
+        length,
+        headY: Math.random() * -500,
+        active: Math.random() > 0.7
       })
     }
-
-    return newCharacters
+    
+    setColumns(newColumns)
   }, [])
 
+  // Canvas-based animation for better performance
   useEffect(() => {
-    setCharacters(createCharacters())
-  }, [createCharacters])
+    const canvas = canvasRef.current
+    if (!canvas || !mounted) return
 
-  useEffect(() => {
-    const updateActiveIndices = () => {
-      const newActiveIndices = new Set<number>()
-      const numActive = Math.floor(Math.random() * 5) + 3 // More active chars for full page
-      for (let i = 0; i < numActive; i++) {
-        newActiveIndices.add(Math.floor(Math.random() * characters.length))
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+    }
+    
+    resizeCanvas()
+    window.addEventListener('resize', resizeCanvas)
+
+    const animate = (currentTime: number) => {
+      const deltaTime = currentTime - lastFrameTime.current
+      
+      if (deltaTime >= 50) { // 20 FPS cap for performance
+        // Clear canvas with fade effect
+        ctx.fillStyle = theme === 'dark' ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+        // Update and draw columns
+        setColumns(prevColumns => 
+          prevColumns.map(column => {
+            const newColumn = { ...column }
+            
+            // Update position
+            newColumn.headY += intensitySettings.speed
+            
+            // Reset if off screen
+            if (newColumn.headY > canvas.height + newColumn.length * 20) {
+              newColumn.headY = Math.random() * -500
+              newColumn.active = Math.random() > 0.6
+              // Regenerate characters
+              newColumn.chars = newColumn.chars.map(() => 
+                matrixChars[Math.floor(Math.random() * matrixChars.length)]
+              )
+            }
+            
+            // Draw column if active
+            if (newColumn.active) {
+              ctx.font = '14px monospace'
+              
+              for (let i = 0; i < newColumn.length; i++) {
+                const charY = newColumn.headY - (i * 20)
+                
+                if (charY > -20 && charY < canvas.height + 20) {
+                  const opacity = i === 0 ? 1 : Math.max(0, 1 - (i / newColumn.length))
+                  const isHead = i < 3
+                  
+                  // Mouse interaction effect
+                  let distanceFromMouse = 1
+                  if (mouseInteraction) {
+                    const mouseX = (mousePos.x / 100) * canvas.width
+                    const mouseY = (mousePos.y / 100) * canvas.height
+                    const distance = Math.sqrt(
+                      Math.pow(newColumn.x - mouseX, 2) + Math.pow(charY - mouseY, 2)
+                    )
+                    distanceFromMouse = Math.max(0.3, Math.min(1, distance / 150))
+                  }
+                  
+                  // Color based on position and theme
+                  if (isHead) {
+                    ctx.fillStyle = `rgba(${theme === 'dark' ? '255, 255, 255' : '0, 0, 0'}, ${opacity * distanceFromMouse})`
+                  } else {
+                    const green = theme === 'dark' ? '74, 222, 128' : '5, 150, 105'
+                    ctx.fillStyle = `rgba(${green}, ${opacity * 0.8 * distanceFromMouse})`
+                  }
+                  
+                  // Glitch effect
+                  if (enableGlitch && Math.random() < intensitySettings.glitchChance) {
+                    newColumn.chars[i] = matrixChars[Math.floor(Math.random() * matrixChars.length)]
+                  }
+                  
+                  ctx.fillText(newColumn.chars[i], newColumn.x, charY)
+                }
+              }
+            }
+            
+            return newColumn
+          })
+        )
+        
+        lastFrameTime.current = currentTime
       }
-      setActiveIndices(newActiveIndices)
+      
+      animationRef.current = requestAnimationFrame(animate)
     }
 
-    const flickerInterval = setInterval(updateActiveIndices, 150)
-    return () => clearInterval(flickerInterval)
-  }, [characters.length])
-
-  useEffect(() => {
-    let animationFrameId: number
-
-    const updatePositions = () => {
-      setCharacters(prevChars => 
-        prevChars.map(char => ({
-          ...char,
-          y: char.y + char.speed,
-          ...(char.y >= 110 && {
-            y: -10,
-            x: Math.random() * 100,
-            char: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?▓▒░"[
-              Math.floor(Math.random() * "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?▓▒░".length)
-            ],
-          }),
-        }))
-      )
-      animationFrameId = requestAnimationFrame(updatePositions)
+    animationRef.current = requestAnimationFrame(animate)
+    
+    return () => {
+      window.removeEventListener('resize', resizeCanvas)
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
     }
+  }, [mounted, theme, matrixChars, intensitySettings, mousePos, mouseInteraction, enableGlitch])
 
-    animationFrameId = requestAnimationFrame(updatePositions)
-    return () => cancelAnimationFrame(animationFrameId)
-  }, [])
+  if (!mounted) {
+    return <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0" />
+  }
 
   return (
-    <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
-      {/* Raining Characters */}
-      {characters.map((char, index) => (
-        <span
-          key={index}
-          className={`absolute text-xs transition-all duration-200 ${
-            activeIndices.has(index)
-              ? "text-green-400 text-sm scale-110 font-bold opacity-60"
-              : "text-gray-700 font-light opacity-15"
-          }`}
+    <div 
+      className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0"
+      role="img"
+      aria-label="Animated matrix-style background with falling characters"
+    >
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full"
+        style={{
+          imageRendering: 'pixelated',
+          filter: enableGlitch ? 'contrast(1.1) brightness(1.05)' : 'none'
+        }}
+        aria-hidden="true"
+      />
+      
+      {/* Screen reader description */}
+      <div className="sr-only">
+        Decorative animated background featuring falling matrix-style characters 
+        with {intensity} intensity. Background includes {showTrails ? 'character trails' : 'no trails'} 
+        and {enableGlitch ? 'glitch effects' : 'no glitch effects'}.
+      </div>
+      
+      {/* Optional overlay effects */}
+      {showTrails && (
+        <div 
+          className="absolute inset-0 opacity-20"
           style={{
-            left: `${char.x}%`,
-            top: `${char.y}%`,
-            transform: `translate(-50%, -50%) ${activeIndices.has(index) ? 'scale(1.1)' : 'scale(1)'}`,
-            textShadow: activeIndices.has(index) 
-              ? '0 0 6px rgba(74, 222, 128, 0.4), 0 0 10px rgba(74, 222, 128, 0.2)' 
-              : 'none',
-            transition: 'color 0.2s, transform 0.2s, text-shadow 0.2s, opacity 0.2s',
-            willChange: 'transform, top',
-            fontSize: '0.9rem',
-            fontFamily: 'var(--font-jetbrains-mono)'
+            background: `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, transparent 20%, ${colors.background} 80%)`
           }}
-        >
-          {char.char}
-        </span>
-      ))}
+          aria-hidden="true"
+        />
+      )}
 
       <style jsx global>{`
         .dud {
-          color: #4ade80;
+          color: ${colors.primary};
           opacity: 0.7;
         }
       `}</style>

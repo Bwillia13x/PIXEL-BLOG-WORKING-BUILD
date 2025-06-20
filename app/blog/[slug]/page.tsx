@@ -2,7 +2,8 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { posts } from '@/app/data/posts'
-import ReactMarkdown from 'react-markdown'
+import { generatePostSEO } from '@/app/utils/seo'
+import BlogPostLayout from '@/app/components/BlogPostLayout'
 
 export async function generateStaticParams() {
   return posts.map((post) => ({
@@ -20,15 +21,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
   }
 
+  const seoData = generatePostSEO(post)
+  
   return {
-    title: post.title,
-    description: post.content.substring(0, 160) + '...',
-    openGraph: {
-      title: post.title,
-      description: post.content.substring(0, 160) + '...',
-      type: 'article',
-      publishedTime: post.date ? new Date(post.date).toISOString() : undefined,
-    },
+    title: seoData.title,
+    description: seoData.description,
+    keywords: seoData.keywords,
+    openGraph: seoData.openGraph,
+    twitter: seoData.twitter,
+    robots: seoData.robots,
+    alternates: {
+      canonical: seoData.canonical
+    }
   }
 }
 
@@ -41,32 +45,28 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <article>
-        <header className="mb-8">
-          <h1 className="text-4xl font-pixel mb-4 text-green-400">
-            {post.title}
-          </h1>
-          <div className="mb-4">
-            <span className="inline-block px-3 py-1 bg-green-600 text-black text-sm font-retro rounded">
-              {post.category}
-            </span>
-          </div>
-        </header>
-        
-        <div className="prose prose-invert prose-green max-w-none font-readable">
-          <ReactMarkdown>{post.content}</ReactMarkdown>
-        </div>
-
-        <footer className="mt-12 pt-8 border-t border-gray-700">
-          <Link 
-            href="/blog" 
-            className="text-green-400 hover:text-green-300 font-readable underline transition-colors"
-          >
-            ← Back to Blog
-          </Link>
-        </footer>
-      </article>
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <BlogPostLayout
+        post={post}
+        enableComments={false} // Set to true when ready to enable comments
+        enableAnalytics={true}
+        showRelatedPosts={true}
+        showSocialShare={true}
+      />
+      
+      {/* Back to Blog Link */}
+      <div className="mt-12 pt-8 border-t border-gray-700 text-center">
+        <Link 
+          href="/blog" 
+          className="
+            inline-flex items-center space-x-2 px-4 py-2 
+            pixel-border bg-gray-900/60 text-green-400 
+            hover:bg-gray-800/60 transition-colors duration-200 font-mono text-sm
+          "
+        >
+          <span>← Back to Blog</span>
+        </Link>
+      </div>
     </div>
   )
 }

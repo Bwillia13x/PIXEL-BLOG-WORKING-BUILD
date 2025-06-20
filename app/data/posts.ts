@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
+import { calculateReadingTime } from '@/app/utils/readingTime'
 
 export interface Post {
   id: string
@@ -9,6 +10,10 @@ export interface Post {
   category: string
   date?: string
   content: string
+  tags?: string[]
+  excerpt?: string
+  readTime?: string
+  published?: boolean
 }
 
 const postsDirectory = path.join(process.cwd(), 'content', 'blog')
@@ -19,6 +24,9 @@ function getPostData(fileName: string): Post {
   const fileContents = fs.readFileSync(fullPath, 'utf8')
   const { data, content } = matter(fileContents)
 
+  // Calculate reading time if not provided in frontmatter
+  const readingTime = data.readTime || calculateReadingTime(content).text
+
   return {
     id: slug,
     slug,
@@ -26,6 +34,10 @@ function getPostData(fileName: string): Post {
     category: (data.category as string) ?? 'Blog',
     date: data.date as string | undefined,
     content,
+    tags: Array.isArray(data.tags) ? data.tags : [],
+    excerpt: data.excerpt as string | undefined,
+    readTime,
+    published: data.published !== false, // Default to true unless explicitly false
   }
 }
 

@@ -37,3 +37,550 @@ body {
 .pixelated-border {
   box-shadow: 0 0 0 2px #4ade80, 0 0 0 4px #000, 0 0 0 6px #4ade80;
 }
+
+/* Pixel border for search components */
+.pixel-border {
+  border: 2px solid currentColor;
+  box-shadow: 
+    0 0 0 1px #000,
+    inset 0 0 0 1px #000;
+}
+
+/* Pixel hover effect */
+.pixel-hover:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 currentColor;
+}
+
+/* Pixel grid background */
+.pixel-grid {
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 10px,
+      rgba(74, 222, 128, 0.1) 10px,
+      rgba(74, 222, 128, 0.1) 11px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 10px,
+      rgba(74, 222, 128, 0.1) 10px,
+      rgba(74, 222, 128, 0.1) 11px
+    );
+}
+
+/* Line clamp utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Radial gradient utility */
+.bg-gradient-radial {
+  background: radial-gradient(var(--tw-gradient-stops));
+}
+
+/* Boot screen effects */
+.boot-scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(74, 222, 128, 0.05) 2px,
+    rgba(74, 222, 128, 0.05) 4px
+  );
+}
+
+/* CRT screen effect */
+.crt-screen {
+  position: relative;
+}
+
+.crt-screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(74, 222, 128, 0.03) 2px,
+      rgba(74, 222, 128, 0.03) 4px
+    );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Enhanced typing cursor */
+.typing-cursor {
+  animation: blink-cursor 1s infinite;
+}
+
+@keyframes blink-cursor {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Performance optimizations for background animations */
+.background-layer {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Hardware acceleration for canvas elements */
+canvas {
+  transform: translateZ(0);
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Optimized backdrop blur */
+.backdrop-blur-optimized {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Smooth animations with reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .background-layer {
+    animation: none !important;
+    transform: none !important;
+  }
+  
+  canvas {
+    display: none !important;
+  }
+  
+  .matrix-effect,
+  .particle-effect,
+  .geometric-overlay {
+    opacity: 0.1 !important;
+    animation: none !important;
+  }
+}
+
+/* GPU acceleration classes */
+.gpu-accelerated {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+/* Theme transition optimizations */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Background layer z-index management */
+.bg-layer-matrix { z-index: 1; }
+.bg-layer-particles { z-index: 2; }
+.bg-layer-geometric { z-index: 3; }
+.bg-layer-overlay { z-index: 4; }
+.bg-layer-content { z-index: 10; }
+.bg-layer-ui { z-index: 50; }
+
+/* Enhanced Navigation Styles */
+.nav-hamburger {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.nav-hamburger span {
+  display: block;
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background: #4ade80;
+  border-radius: 1px;
+  opacity: 1;
+  left: 0;
+  transform: rotate(0deg);
+  transition: 0.3s ease-in-out;
+}
+
+.nav-hamburger span:nth-child(1) {
+  top: 4px;
+}
+
+.nav-hamburger span:nth-child(2) {
+  top: 11px;
+}
+
+.nav-hamburger span:nth-child(3) {
+  top: 18px;
+}
+
+.nav-hamburger.open span:nth-child(1) {
+  top: 11px;
+  transform: rotate(135deg);
+}
+
+.nav-hamburger.open span:nth-child(2) {
+  opacity: 0;
+  left: -30px;
+}
+
+.nav-hamburger.open span:nth-child(3) {
+  top: 11px;
+  transform: rotate(-135deg);
+}
+
+/* Touch-friendly navigation */
+.nav-item-mobile {
+  min-height: 48px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(74, 222, 128, 0.1);
+}
+
+.nav-item-mobile:active {
+  background-color: rgba(74, 222, 128, 0.1);
+  transform: scale(0.98);
+}
+
+/* Pixel-style animations */
+@keyframes pixelGlow {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(74, 222, 128, 0.3);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 15px rgba(74, 222, 128, 0.6);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes pixelBounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-4px);
+  }
+  60% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes pixelSlide {
+  0% {
+    transform: translateX(-100%) scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(0) scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.pixel-glow:hover {
+  animation: pixelGlow 0.6s ease-in-out;
+}
+
+.pixel-bounce {
+  animation: pixelBounce 0.8s ease-in-out;
+}
+
+.pixel-slide-in {
+  animation: pixelSlide 0.4s ease-out;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 640px) {
+  .nav-container {
+    padding: 0.5rem;
+  }
+  
+  .nav-item {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  .breadcrumb-item {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .nav-container {
+    padding: 0.75rem;
+  }
+  
+  .nav-item {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .nav-container {
+    padding: 1rem;
+  }
+  
+  .nav-item {
+    padding: 1.25rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .nav-container {
+    padding: 1.5rem;
+  }
+  
+  .nav-item {
+    padding: 1.5rem;
+  }
+}
+
+/* Focus styles for accessibility */
+.nav-item:focus,
+.nav-item:focus-visible {
+  outline: 2px solid #4ade80;
+  outline-offset: 2px;
+  background-color: rgba(74, 222, 128, 0.1);
+}
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Loading states */
+@keyframes navItemLoad {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.nav-item-loading {
+  animation: navItemLoad 0.3s ease-out forwards;
+}
+
+/* Mobile menu backdrop */
+.mobile-menu-backdrop {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Sticky header optimization */
+.header-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.header-sticky.scrolled {
+  background: rgba(17, 24, 39, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+/* Safe area handling for mobile devices */
+@supports (padding: max(0px)) {
+  .nav-container {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+  
+  .mobile-menu {
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Accessibility enhancements */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0.5rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  border: 2px solid #4ade80;
+  background-color: #4ade80;
+  color: #000;
+  font-size: 0.875rem;
+  z-index: 10000;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .pixelated-border {
+    box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #000000;
+  }
+  
+  .nav-item:focus,
+  .nav-item:focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: 3px;
+    background-color: #000000;
+    color: #ffffff;
+  }
+  
+  button:focus,
+  a:focus {
+    outline: 3px solid #ffffff !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* Enhanced focus indicators */
+*:focus-visible {
+  outline: 2px solid #4ade80;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid #4ade80;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.2);
+}
+
+/* Skip link styling */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #4ade80;
+  color: #000;
+  padding: 8px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 10000;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Color contrast improvements */
+.text-gray-400 {
+  color: #9ca3af; /* Improved contrast */
+}
+
+.text-gray-500 {
+  color: #6b7280; /* Better contrast for small text */
+}
+
+/* Motion preference support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  /* Completely hide decorative animations */
+  .background-layer,
+  canvas,
+  [role="img"][aria-label*="animated"],
+  [role="img"][aria-label*="floating"] {
+    display: none !important;
+  }
+  
+  /* Keep functional animations but make them instant */
+  .nav-hamburger span {
+    transition: none !important;
+  }
+}
+
+/* Touch target size (minimum 44px) */
+button,
+a,
+[role="button"],
+[tabindex="0"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+@media (pointer: coarse) {
+  button,
+  a,
+  [role="button"],
+  [tabindex="0"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .fixed,
+  canvas,
+  [role="img"][aria-label*="animated"],
+  .background-layer {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  a {
+    color: blue !important;
+    text-decoration: underline !important;
+  }
+}
+
+/* Dark mode accessibility */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+/* Light mode accessibility */
+@media (prefers-color-scheme: light) {
+  :root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 255, 255, 255;
+    --background-end-rgb: 255, 255, 255;
+  }
+}
