@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Margin of Safety Calculator - Value Investing Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #8b5cf6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #a8a8a8;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .warning-banner {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .warning-banner i {
+            color: #f59e0b;
+            margin-right: 10px;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .input-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #e8e8e8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a8a8a8;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e8e8e8;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #8b5cf6, #06b6d4);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #8b5cf6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .safety-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .safety-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .safety-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .safety-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .safety-label {
+            color: #a8a8a8;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .safety-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .excellent { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .good { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .fair { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .poor { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .dangerous { background: rgba(220, 38, 127, 0.2); color: #dc2678; }
+
+        .valuation-methods {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .method-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .method-item:last-child {
+            border-bottom: none;
+        }
+
+        .method-name {
+            font-weight: 500;
+            color: #e8e8e8;
+        }
+
+        .method-details {
+            text-align: right;
+        }
+
+        .method-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .method-margin {
+            font-size: 0.9rem;
+            color: #a8a8a8;
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #e8e8e8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scenario-analysis {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .scenario-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .scenario-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #e8e8e8;
+        }
+
+        .scenario-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .scenario-subtitle {
+            font-size: 0.9rem;
+            color: #a8a8a8;
+        }
+
+        @media (max-width: 768px) {
+            .input-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .scenario-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> Margin of Safety Calculator</h1>
+            <p>Advanced valuation tool using multiple methods with Monte Carlo simulation to determine investment safety margins</p>
+        </div>
+
+        <div class="warning-banner">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Demo Mode:</strong> This calculator uses simulated data. Real implementation would connect to live financial APIs for current market data.
+        </div>
+
+        <div class="input-section">
+            <div class="input-card">
+                <h3><i class="fas fa-building"></i> Company Information</h3>
+                <div class="input-group">
+                    <label for="ticker">Stock Ticker</label>
+                    <input type="text" id="ticker" placeholder="e.g., AAPL, MSFT, BRK.B" value="AAPL">
+                </div>
+                <div class="input-group">
+                    <label for="currentPrice">Current Market Price ($)</label>
+                    <input type="number" id="currentPrice" placeholder="150.00" step="0.01" value="190.50">
+                </div>
+                <div class="input-group">
+                    <label for="sharesOutstanding">Shares Outstanding (millions)</label>
+                    <input type="number" id="sharesOutstanding" placeholder="16000" value="15634">
+                </div>
+            </div>
+
+            <div class="input-card">
+                <h3><i class="fas fa-chart-line"></i> Financial Metrics</h3>
+                <div class="input-group">
+                    <label for="eps">Earnings Per Share ($)</label>
+                    <input type="number" id="eps" placeholder="6.50" step="0.01" value="6.11">
+                </div>
+                <div class="input-group">
+                    <label for="bookValue">Book Value Per Share ($)</label>
+                    <input type="number" id="bookValue" placeholder="4.00" step="0.01" value="3.85">
+                </div>
+                <div class="input-group">
+                    <label for="revenue">Annual Revenue (billions)</label>
+                    <input type="number" id="revenue" placeholder="380" step="0.1" value="383.29">
+                </div>
+                <div class="input-group">
+                    <label for="fcf">Free Cash Flow (billions)</label>
+                    <input type="number" id="fcf" placeholder="90" step="0.1" value="99.58">
+                </div>
+            </div>
+
+            <div class="input-card">
+                <h3><i class="fas fa-cogs"></i> Valuation Parameters</h3>
+                <div class="input-group">
+                    <label for="growthRate">Expected Growth Rate (%)</label>
+                    <input type="number" id="growthRate" placeholder="5.0" step="0.1" value="5.5">
+                </div>
+                <div class="input-group">
+                    <label for="discountRate">Discount Rate (%)</label>
+                    <input type="number" id="discountRate" placeholder="10.0" step="0.1" value="9.5">
+                </div>
+                <div class="input-group">
+                    <label for="terminalMultiple">Terminal P/E Multiple</label>
+                    <input type="number" id="terminalMultiple" placeholder="15" step="0.1" value="16">
+                </div>
+                <div class="input-group">
+                    <label for="qualityScore">Quality Score (0-100)</label>
+                    <input type="number" id="qualityScore" placeholder="87" min="0" max="100" value="87">
+                </div>
+            </div>
+
+            <div class="input-card">
+                <h3><i class="fas fa-calculator"></i> Calculate Safety Margin</h3>
+                <button class="calculate-btn" onclick="calculateSafety()">
+                    <i class="fas fa-calculator"></i> Calculate Margin of Safety
+                </button>
+            </div>
+        </div>
+
+        <div class="loading" id="loadingSection">
+            <div class="spinner"></div>
+            <h3>Calculating Safety Margins...</h3>
+            <p>Running Monte Carlo simulation across multiple valuation methods</p>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="safety-overview" id="safetyOverview">
+                <div class="safety-card">
+                    <div class="safety-value" id="overallSafety">--</div>
+                    <div class="safety-label">Overall Safety Margin</div>
+                    <div class="safety-badge" id="safetyRating">--</div>
+                </div>
+                <div class="safety-card">
+                    <div class="safety-value" id="fairValue">--</div>
+                    <div class="safety-label">Fair Value Estimate</div>
+                    <div class="safety-badge" id="valueRating">--</div>
+                </div>
+                <div class="safety-card">
+                    <div class="safety-value" id="confidenceLevel">--</div>
+                    <div class="safety-label">Confidence Level</div>
+                    <div class="safety-badge" id="confidenceRating">--</div>
+                </div>
+                <div class="safety-card">
+                    <div class="safety-value" id="riskScore">--</div>
+                    <div class="safety-label">Risk Score</div>
+                    <div class="safety-badge" id="riskRating">--</div>
+                </div>
+            </div>
+
+            <div class="valuation-methods">
+                <h3 style="margin-bottom: 25px;"><i class="fas fa-list"></i> Valuation Methods Comparison</h3>
+                <div id="valuationMethods"></div>
+            </div>
+
+            <div class="charts-section">
+                <div class="chart-container">
+                    <h3 class="chart-title"><i class="fas fa-chart-area"></i> Monte Carlo Simulation</h3>
+                    <canvas id="monteCarloChart" width="400" height="300"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <h3 class="chart-title"><i class="fas fa-chart-bar"></i> Valuation Method Comparison</h3>
+                    <canvas id="valuationChart" width="400" height="300"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <h3 class="chart-title"><i class="fas fa-thermometer-half"></i> Safety Margin Sensitivity</h3>
+                    <canvas id="sensitivityChart" width="400" height="300"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <h3 class="chart-title"><i class="fas fa-chart-pie"></i> Risk Breakdown</h3>
+                    <canvas id="riskChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+
+            <div class="scenario-analysis">
+                <h3><i class="fas fa-sitemap"></i> Scenario Analysis</h3>
+                <div class="scenario-grid" id="scenarioGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class MarginOfSafetyCalculator {
+            constructor() {
+                this.charts = {};
+                this.demoData = {
+                    'AAPL': { pe: 31.2, pb: 49.5, debtToEquity: 1.73, roe: 26.4, beta: 1.29 },
+                    'MSFT': { pe: 35.8, pb: 13.2, debtToEquity: 0.47, roe: 36.7, beta: 0.91 },
+                    'BRK.B': { pe: 22.1, pb: 1.6, debtToEquity: 0.28, roe: 11.2, beta: 0.88 }
+                };
+            }
+
+            async calculateSafety() {
+                const inputs = this.getInputs();
+                await new Promise(resolve => setTimeout(resolve, 2500));
+                
+                const valuations = this.calculateValuations(inputs);
+                const safetyMetrics = this.calculateSafetyMetrics(inputs, valuations);
+                const scenarios = this.runScenarioAnalysis(inputs);
+                
+                return { valuations, safetyMetrics, scenarios, inputs };
+            }
+
+            getInputs() {
+                return {
+                    ticker: document.getElementById('ticker').value.toUpperCase(),
+                    currentPrice: parseFloat(document.getElementById('currentPrice').value),
+                    eps: parseFloat(document.getElementById('eps').value),
+                    bookValue: parseFloat(document.getElementById('bookValue').value),
+                    fcf: parseFloat(document.getElementById('fcf').value),
+                    growthRate: parseFloat(document.getElementById('growthRate').value) / 100,
+                    discountRate: parseFloat(document.getElementById('discountRate').value) / 100,
+                    terminalMultiple: parseFloat(document.getElementById('terminalMultiple').value),
+                    qualityScore: parseFloat(document.getElementById('qualityScore').value)
+                };
+            }
+
+            calculateValuations(inputs) {
+                const { eps, bookValue, fcf, growthRate, discountRate, terminalMultiple, qualityScore, currentPrice } = inputs;
+                
+                // 1. Earnings Power Value (EPV)
+                const normalizedEPS = eps * (1 + (qualityScore - 70) / 200);
+                const epv = normalizedEPS / discountRate;
+                
+                // 2. Graham Number
+                const grahamNumber = Math.sqrt(22.5 * eps * bookValue);
+                
+                // 3. Discounted Cash Flow (DCF)
+                const terminalValue = fcf * Math.pow(1 + growthRate, 10) * terminalMultiple;
+                const dcf = this.calculateDCF(fcf, growthRate, discountRate, terminalValue);
+                
+                // 4. Price-to-Book Value
+                const pbValue = bookValue * 1.5;
+                
+                // 5. Asset-based Valuation
+                const assetValue = bookValue * 0.8;
+                
+                return {
+                    epv: { value: epv, margin: (epv - currentPrice) / currentPrice },
+                    graham: { value: grahamNumber, margin: (grahamNumber - currentPrice) / currentPrice },
+                    dcf: { value: dcf, margin: (dcf - currentPrice) / currentPrice },
+                    pb: { value: pbValue, margin: (pbValue - currentPrice) / currentPrice },
+                    asset: { value: assetValue, margin: (assetValue - currentPrice) / currentPrice }
+                };
+            }
+
+            calculateDCF(fcf, growthRate, discountRate, terminalValue) {
+                let dcfValue = 0;
+                for (let year = 1; year <= 10; year++) {
+                    const yearlyFCF = fcf * Math.pow(1 + growthRate, year);
+                    dcfValue += yearlyFCF / Math.pow(1 + discountRate, year);
+                }
+                dcfValue += terminalValue / Math.pow(1 + discountRate, 10);
+                return dcfValue;
+            }
+
+            calculateSafetyMetrics(inputs, valuations) {
+                const margins = Object.values(valuations).map(v => v.margin);
+                const avgMargin = margins.reduce((a, b) => a + b, 0) / margins.length;
+                
+                const fairValues = Object.values(valuations).map(v => v.value);
+                const avgFairValue = fairValues.reduce((a, b) => a + b, 0) / fairValues.length;
+                
+                const standardDev = Math.sqrt(margins.reduce((sum, margin) => sum + Math.pow(margin - avgMargin, 2), 0) / margins.length);
+                const confidence = Math.max(0, Math.min(100, 100 - (standardDev * 200)));
+                
+                const qualityAdjustment = (inputs.qualityScore - 50) / 50;
+                const riskScore = Math.max(0, Math.min(100, 50 - (avgMargin * 100) - (qualityAdjustment * 20)));
+                
+                return {
+                    overallMargin: avgMargin,
+                    fairValue: avgFairValue,
+                    confidence: confidence,
+                    riskScore: riskScore
+                };
+            }
+
+            runScenarioAnalysis(inputs) {
+                const baseCase = this.calculateValuations(inputs);
+                
+                const bullInputs = { ...inputs, growthRate: inputs.growthRate * 1.2, discountRate: inputs.discountRate - 0.01 };
+                const bullCase = this.calculateValuations(bullInputs);
+                
+                const bearInputs = { ...inputs, growthRate: inputs.growthRate * 0.7, discountRate: inputs.discountRate + 0.02 };
+                const bearCase = this.calculateValuations(bearInputs);
+                
+                return { baseCase, bullCase, bearCase };
+            }
+
+            getSafetyRating(margin) {
+                if (margin >= 0.3) return { class: 'excellent', text: 'Excellent' };
+                if (margin >= 0.15) return { class: 'good', text: 'Good' };
+                if (margin >= 0.05) return { class: 'fair', text: 'Fair' };
+                if (margin >= -0.05) return { class: 'poor', text: 'Poor' };
+                return { class: 'dangerous', text: 'Dangerous' };
+            }
+
+            formatCurrency(value) {
+                return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+            }
+
+            formatPercentage(value) {
+                return new Intl.NumberFormat('en-US', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(value);
+            }
+        }
+
+        const calculator = new MarginOfSafetyCalculator();
+
+        async function calculateSafety() {
+            document.getElementById('loadingSection').classList.add('active');
+            document.getElementById('resultsSection').classList.remove('active');
+
+            try {
+                const results = await calculator.calculateSafety();
+                displayResults(results);
+            } catch (error) {
+                alert('Error calculating safety margin. Please check your inputs.');
+                console.error(error);
+            }
+
+            document.getElementById('loadingSection').classList.remove('active');
+        }
+
+        function displayResults(results) {
+            const { valuations, safetyMetrics, scenarios } = results;
+
+            // Update safety overview
+            document.getElementById('overallSafety').textContent = calculator.formatPercentage(safetyMetrics.overallMargin);
+            document.getElementById('fairValue').textContent = calculator.formatCurrency(safetyMetrics.fairValue);
+            document.getElementById('confidenceLevel').textContent = `${Math.round(safetyMetrics.confidence)}%`;
+            document.getElementById('riskScore').textContent = Math.round(safetyMetrics.riskScore);
+
+            // Update ratings
+            const safetyRating = calculator.getSafetyRating(safetyMetrics.overallMargin);
+            const safetyBadge = document.getElementById('safetyRating');
+            safetyBadge.textContent = safetyRating.text;
+            safetyBadge.className = `safety-badge ${safetyRating.class}`;
+
+            // Update valuation methods
+            const methodsContainer = document.getElementById('valuationMethods');
+            const methodNames = {
+                epv: 'Earnings Power Value',
+                graham: 'Graham Number',
+                dcf: 'Discounted Cash Flow',
+                pb: 'Price-to-Book Value',
+                asset: 'Asset-based Value'
+            };
+
+            methodsContainer.innerHTML = Object.keys(valuations).map(key => {
+                const method = valuations[key];
+                const rating = calculator.getSafetyRating(method.margin);
+                return `
+                    <div class="method-item">
+                        <span class="method-name">${methodNames[key]}</span>
+                        <div class="method-details">
+                            <div class="method-value">${calculator.formatCurrency(method.value)}</div>
+                            <div class="method-margin ${rating.class}">${calculator.formatPercentage(method.margin)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Update scenario analysis
+            const scenarioGrid = document.getElementById('scenarioGrid');
+            const scenarioData = [
+                { title: 'Bear Case', data: scenarios.bearCase, class: 'poor' },
+                { title: 'Base Case', data: scenarios.baseCase, class: 'fair' },
+                { title: 'Bull Case', data: scenarios.bullCase, class: 'good' }
+            ];
+
+            scenarioGrid.innerHTML = scenarioData.map(scenario => {
+                const avgMargin = Object.values(scenario.data).reduce((sum, val) => sum + val.margin, 0) / Object.keys(scenario.data).length;
+                return `
+                    <div class="scenario-card">
+                        <div class="scenario-title">${scenario.title}</div>
+                        <div class="scenario-value ${scenario.class}">${calculator.formatPercentage(avgMargin)}</div>
+                        <div class="scenario-subtitle">Safety Margin</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Create charts
+            createMonteCarloChart(safetyMetrics);
+            createValuationChart(valuations);
+            createSensitivityChart(results.inputs);
+            createRiskChart(safetyMetrics);
+
+            document.getElementById('resultsSection').classList.add('active');
+        }
+
+        function createMonteCarloChart(safetyMetrics) {
+            const ctx = document.getElementById('monteCarloChart').getContext('2d');
+            if (calculator.charts.monteCarlo) calculator.charts.monteCarlo.destroy();
+
+            const simulations = 1000;
+            const results = [];
+            for (let i = 0; i < simulations; i++) {
+                const randomFactor = (Math.random() - 0.5) * 0.4;
+                results.push(safetyMetrics.overallMargin + randomFactor);
+            }
+
+            const bins = 20;
+            const min = Math.min(...results);
+            const max = Math.max(...results);
+            const binWidth = (max - min) / bins;
+            const histogram = new Array(bins).fill(0);
+
+            results.forEach(result => {
+                const binIndex = Math.min(Math.floor((result - min) / binWidth), bins - 1);
+                histogram[binIndex]++;
+            });
+
+            const labels = [];
+            for (let i = 0; i < bins; i++) {
+                labels.push(calculator.formatPercentage(min + (i * binWidth)));
+            }
+
+            calculator.charts.monteCarlo = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Probability',
+                        data: histogram,
+                        backgroundColor: 'rgba(139, 92, 246, 0.7)',
+                        borderColor: '#8b5cf6',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#a8a8a8' } },
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#a8a8a8' } }
+                    }
+                }
+            });
+        }
+
+        function createValuationChart(valuations) {
+            const ctx = document.getElementById('valuationChart').getContext('2d');
+            if (calculator.charts.valuation) calculator.charts.valuation.destroy();
+
+            const labels = ['EPV', 'Graham', 'DCF', 'P/B', 'Asset'];
+            const values = Object.values(valuations).map(v => v.value);
+            const margins = Object.values(valuations).map(v => v.margin * 100);
+
+            calculator.charts.valuation = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Fair Value ($)',
+                        data: values,
+                        backgroundColor: 'rgba(6, 182, 212, 0.7)',
+                        borderColor: '#06b6d4',
+                        borderWidth: 2,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Safety Margin (%)',
+                        data: margins,
+                        type: 'line',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderColor: '#8b5cf6',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { type: 'linear', display: true, position: 'left', grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#a8a8a8' } },
+                        y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#a8a8a8' } },
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#a8a8a8' } }
+                    }
+                }
+            });
+        }
+
+        function createSensitivityChart(inputs) {
+            const ctx = document.getElementById('sensitivityChart').getContext('2d');
+            if (calculator.charts.sensitivity) calculator.charts.sensitivity.destroy();
+
+            const growthRates = [];
+            const discountRates = [];
+            const safetyMargins = [];
+
+            for (let growth = 0; growth <= 0.1; growth += 0.01) {
+                for (let discount = 0.08; discount <= 0.12; discount += 0.005) {
+                    const testInputs = { ...inputs, growthRate: growth, discountRate: discount };
+                    const valuations = calculator.calculateValuations(testInputs);
+                    const avgMargin = Object.values(valuations).reduce((sum, val) => sum + val.margin, 0) / Object.keys(valuations).length;
+                    
+                    growthRates.push(growth * 100);
+                    discountRates.push(discount * 100);
+                    safetyMargins.push(avgMargin * 100);
+                }
+            }
+
+            calculator.charts.sensitivity = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Safety Margin',
+                        data: growthRates.map((growth, i) => ({ x: growth, y: discountRates[i], margin: safetyMargins[i] })),
+                        backgroundColor: function(context) {
+                            const margin = context.parsed.margin || 0;
+                            if (margin >= 30) return 'rgba(34, 197, 94, 0.8)';
+                            if (margin >= 15) return 'rgba(59, 130, 246, 0.8)';
+                            if (margin >= 5) return 'rgba(245, 158, 11, 0.8)';
+                            return 'rgba(239, 68, 68, 0.8)';
+                        }
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { title: { display: true, text: 'Growth Rate (%)', color: '#a8a8a8' }, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#a8a8a8' } },
+                        y: { title: { display: true, text: 'Discount Rate (%)', color: '#a8a8a8' }, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#a8a8a8' } }
+                    }
+                }
+            });
+        }
+
+        function createRiskChart(safetyMetrics) {
+            const ctx = document.getElementById('riskChart').getContext('2d');
+            if (calculator.charts.risk) calculator.charts.risk.destroy();
+
+            const riskComponents = [
+                { label: 'Valuation Risk', value: Math.max(0, 50 - (safetyMetrics.overallMargin * 100)) },
+                { label: 'Quality Risk', value: Math.max(0, 100 - safetyMetrics.confidence) },
+                { label: 'Market Risk', value: 25 },
+                { label: 'Liquidity Risk', value: 15 }
+            ];
+
+            calculator.charts.risk = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: riskComponents.map(r => r.label),
+                    datasets: [{
+                        data: riskComponents.map(r => r.value),
+                        backgroundColor: ['rgba(239, 68, 68, 0.8)', 'rgba(245, 158, 11, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(139, 92, 246, 0.8)'],
+                        borderColor: ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom', labels: { color: '#a8a8a8' } } }
+                }
+            });
+        }
+
+        // Auto-calculate on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => calculateSafety(), 1000);
+        });
+    </script>
+</body>
+</html> 

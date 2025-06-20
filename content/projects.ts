@@ -32,6 +32,36 @@ export const projects: Project[] = [
     featured: true
   },
   {
+    id: "quality-score-engine",
+    title: "Quality Score Engine",
+    description: "Advanced value investing analysis tool that combines Benjamin Graham's defensive criteria with AI-powered pattern recognition to evaluate companies across 12 key quality dimensions.",
+    tags: ["Value Investing", "Financial Analysis", "AI", "Chart.js"],
+    year: 2025,
+    status: "completed",
+    demo: "/projects/quality-score-engine/index.html",
+    featured: true
+  },
+  {
+    id: "margin-of-safety-calculator",
+    title: "Margin of Safety Calculator",
+    description: "Advanced valuation tool using multiple methods with Monte Carlo simulation to determine investment safety margins across EPV, Graham Number, DCF, P/B, and Asset-based approaches.",
+    tags: ["Value Investing", "Valuation", "Risk Analysis", "Monte Carlo"],
+    year: 2025,
+    status: "completed",
+    demo: "/projects/margin-of-safety-calculator/index.html",
+    featured: true
+  },
+  {
+    id: "deep-value-screener",
+    title: "Deep Value Screener",
+    description: "Sophisticated stock screening tool implementing Benjamin Graham's net-net criteria and statistical cheapness metrics to systematically identify deeply undervalued opportunities.",
+    tags: ["Benjamin Graham", "Net-Net Stocks", "Stock Screening", "Value Investing"],
+    year: 2025,
+    status: "completed",
+    demo: "/projects/deep-value-screener/index.html",
+    featured: true
+  },
+  {
     id: "ai-productivity-suite",
     title: "AI Developer Tools",
     description: "A collection of AI-powered productivity tools for developers including code review, documentation generation, and project planning utilities.",

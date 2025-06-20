@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Value Screener - Benjamin Graham Net-Net Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #8b5cf6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #a8a8a8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .warning-banner {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .warning-banner i {
+            color: #f59e0b;
+            margin-right: 10px;
+        }
+
+        .criteria-info {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .criteria-item {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .criteria-title {
+            font-weight: 600;
+            color: #e8e8e8;
+            margin-bottom: 8px;
+        }
+
+        .criteria-desc {
+            color: #a8a8a8;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .screening-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .control-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #e8e8e8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a8a8a8;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .filter-group input, .filter-group select {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e8e8e8;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group input:focus, .filter-group select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+
+        .screen-btn {
+            width: 100%;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #8b5cf6, #06b6d4);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .screen-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #8b5cf6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .results-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            color: #06b6d4;
+        }
+
+        .summary-label {
+            color: #a8a8a8;
+            font-size: 0.9rem;
+        }
+
+        .results-table {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-x: auto;
+        }
+
+        .table-container {
+            min-height: 400px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.02);
+            color: #e8e8e8;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        th:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        td {
+            color: #c8c8c8;
+        }
+
+        .ticker {
+            font-weight: 600;
+            color: #06b6d4;
+        }
+
+        .positive { color: #22c55e; }
+        .negative { color: #ef4444; }
+        .neutral { color: #f59e0b; }
+
+        .value-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .net-net { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .cheap { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .fair { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .expensive { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+        @media (max-width: 768px) {
+            .screening-controls {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .results-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-search"></i> Deep Value Screener</h1>
+            <p>Advanced stock screening tool using Benjamin Graham's net-net criteria and statistical cheapness metrics to identify deeply undervalued opportunities</p>
+        </div>
+
+        <div class="warning-banner">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Demo Mode:</strong> This screener uses simulated market data. Real implementation would connect to live financial databases for current screening results.
+        </div>
+
+        <div class="criteria-info">
+            <h3 style="margin-bottom: 20px;"><i class="fas fa-info-circle"></i> Graham's Deep Value Criteria</h3>
+            <div class="criteria-grid">
+                <div class="criteria-item">
+                    <div class="criteria-title">Net-Net Working Capital</div>
+                    <div class="criteria-desc">Market cap < 67% of net working capital (current assets - total liabilities)</div>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-title">Low P/E Ratio</div>
+                    <div class="criteria-desc">Price-to-earnings ratio below market average, ideally under 15x</div>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-title">Low P/B Ratio</div>
+                    <div class="criteria-desc">Price-to-book value below 1.2x, indicating discount to net assets</div>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-title">Financial Strength</div>
+                    <div class="criteria-desc">Debt-to-equity under 50%, current ratio above 2.0</div>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-title">Earnings Stability</div>
+                    <div class="criteria-desc">Positive earnings in at least 7 of last 10 years</div>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-title">Dividend History</div>
+                    <div class="criteria-desc">Uninterrupted dividend payments for 20+ years (optional filter)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="screening-controls">
+            <div class="control-card">
+                <h3><i class="fas fa-filter"></i> Valuation Filters</h3>
+                <div class="filter-group">
+                    <label for="maxPE">Maximum P/E Ratio</label>
+                    <input type="number" id="maxPE" placeholder="15.0" step="0.1" value="15.0">
+                </div>
+                <div class="filter-group">
+                    <label for="maxPB">Maximum P/B Ratio</label>
+                    <input type="number" id="maxPB" placeholder="1.2" step="0.1" value="1.2">
+                </div>
+                <div class="filter-group">
+                    <label for="maxPS">Maximum P/S Ratio</label>
+                    <input type="number" id="maxPS" placeholder="2.0" step="0.1" value="2.0">
+                </div>
+                <div class="filter-group">
+                    <label for="netNetOnly">Net-Net Stocks Only</label>
+                    <select id="netNetOnly">
+                        <option value="false">All Stocks</option>
+                        <option value="true">Net-Net Only</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-card">
+                <h3><i class="fas fa-chart-line"></i> Financial Strength</h3>
+                <div class="filter-group">
+                    <label for="minCurrentRatio">Minimum Current Ratio</label>
+                    <input type="number" id="minCurrentRatio" placeholder="2.0" step="0.1" value="2.0">
+                </div>
+                <div class="filter-group">
+                    <label for="maxDebtEquity">Maximum Debt/Equity</label>
+                    <input type="number" id="maxDebtEquity" placeholder="0.5" step="0.1" value="0.5">
+                </div>
+                <div class="filter-group">
+                    <label for="minROE">Minimum ROE (%)</label>
+                    <input type="number" id="minROE" placeholder="10" step="0.1" value="10">
+                </div>
+                <div class="filter-group">
+                    <label for="minMarketCap">Min Market Cap ($M)</label>
+                    <input type="number" id="minMarketCap" placeholder="100" value="100">
+                </div>
+            </div>
+
+            <div class="control-card">
+                <h3><i class="fas fa-cogs"></i> Quality Filters</h3>
+                <div class="filter-group">
+                    <label for="minEarningsYears">Min Profitable Years (of 10)</label>
+                    <input type="number" id="minEarningsYears" placeholder="7" min="1" max="10" value="7">
+                </div>
+                <div class="filter-group">
+                    <label for="dividendHistory">Dividend History</label>
+                    <select id="dividendHistory">
+                        <option value="any">Any</option>
+                        <option value="current">Currently Paying</option>
+                        <option value="long">20+ Year History</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="minQualityScore">Min Quality Score</label>
+                    <input type="number" id="minQualityScore" placeholder="60" min="0" max="100" value="60">
+                </div>
+                <div class="filter-group">
+                    <label for="sector">Sector Filter</label>
+                    <select id="sector">
+                        <option value="all">All Sectors</option>
+                        <option value="industrial">Industrial</option>
+                        <option value="consumer">Consumer</option>
+                        <option value="financial">Financial</option>
+                        <option value="technology">Technology</option>
+                        <option value="healthcare">Healthcare</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-card">
+                <h3><i class="fas fa-play"></i> Run Screen</h3>
+                <button class="screen-btn" onclick="runDeepValueScreen()">
+                    <i class="fas fa-search"></i> Screen for Deep Value Opportunities
+                </button>
+                <div style="margin-top: 15px; font-size: 0.9rem; color: #a8a8a8; text-align: center;">
+                    Analyzing 2,847 stocks with current criteria
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loadingSection">
+            <div class="spinner"></div>
+            <h3>Screening Deep Value Opportunities...</h3>
+            <p>Analyzing financial data across multiple criteria and calculating net-net values</p>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="results-summary">
+                <div class="summary-card">
+                    <div class="summary-value" id="totalMatches">--</div>
+                    <div class="summary-label">Total Matches</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-value" id="netNetCount">--</div>
+                    <div class="summary-label">Net-Net Stocks</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-value" id="avgPE">--</div>
+                    <div class="summary-label">Avg P/E Ratio</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-value" id="avgDiscount">--</div>
+                    <div class="summary-label">Avg Discount</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-value" id="avgQuality">--</div>
+                    <div class="summary-label">Avg Quality Score</div>
+                </div>
+            </div>
+
+            <div class="results-table">
+                <h3 style="margin-bottom: 25px;"><i class="fas fa-table"></i> Deep Value Screening Results</h3>
+                <div class="table-container">
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable(0)">Ticker <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(1)">Company <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(2)">Price <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(3)">P/E <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(4)">P/B <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(5)">P/S <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(6)">Current Ratio <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(7)">D/E <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(8)">ROE <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(9)">Net-Net <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(10)">Quality <i class="fas fa-sort"></i></th>
+                                <th onclick="sortTable(11)">Value Type <i class="fas fa-sort"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class DeepValueScreener {
+            constructor() {
+                this.sortDirection = {};
+                this.currentResults = [];
+                this.demoStocks = this.generateDemoStocks();
+            }
+
+            generateDemoStocks() {
+                const companies = [
+                    {ticker: 'GRCL', name: 'Gracell Biotechnologies', sector: 'healthcare'},
+                    {ticker: 'PPHM', name: 'Prometheus Pharmaceuticals', sector: 'healthcare'},
+                    {ticker: 'INDO', name: 'Indonesia Energy Corp', sector: 'industrial'},
+                    {ticker: 'CTIB', name: 'Continental Bank', sector: 'financial'},
+                    {ticker: 'NMIH', name: 'National Mortgage Insurance', sector: 'financial'},
+                    {ticker: 'BKEP', name: 'BluKnight Energy Partners', sector: 'industrial'},
+                    {ticker: 'MDVL', name: 'MediVation Labs', sector: 'healthcare'},
+                    {ticker: 'SENB', name: 'Seneca Foods Corp', sector: 'consumer'},
+                    {ticker: 'PCSA', name: 'Processa Pharmaceuticals', sector: 'healthcare'},
+                    {ticker: 'XOMA', name: 'XOMA Corporation', sector: 'healthcare'},
+                    {ticker: 'HCDI', name: 'Harbor Custom Development', sector: 'consumer'},
+                    {ticker: 'ELOX', name: 'Eloxx Pharmaceuticals', sector: 'healthcare'},
+                    {ticker: 'BSGM', name: 'BioSig Technologies', sector: 'technology'},
+                    {ticker: 'KTOV', name: 'Kitov Pharmaceuticals', sector: 'healthcare'},
+                    {ticker: 'WISA', name: 'WiSA Technologies', sector: 'technology'},
+                    {ticker: 'PBPB', name: 'Potbelly Corporation', sector: 'consumer'},
+                    {ticker: 'SHIP', name: 'Seanergy Maritime Holdings', sector: 'industrial'},
+                    {ticker: 'PLBY', name: 'PLBY Group Inc', sector: 'consumer'},
+                    {ticker: 'ITIC', name: 'Investors Title Company', sector: 'financial'},
+                    {ticker: 'GASS', name: 'StealthGas Inc', sector: 'industrial'},
+                    {ticker: 'NEWT', name: 'Newtek Business Services', sector: 'financial'},
+                    {ticker: 'ECOR', name: 'electroCore Inc', sector: 'healthcare'},
+                    {ticker: 'TPCO', name: 'Tribune Publishing Company', sector: 'consumer'},
+                    {ticker: 'MAYS', name: 'J.W. Mays Inc', sector: 'consumer'},
+                    {ticker: 'LGTY', name: 'Logility Inc', sector: 'technology'}
+                ];
+
+                return companies.map(company => ({
+                    ...company,
+                    price: parseFloat((Math.random() * 20 + 0.5).toFixed(2)),
+                    pe: parseFloat((Math.random() * 25 + 3).toFixed(1)),
+                    pb: parseFloat((Math.random() * 2.5 + 0.2).toFixed(2)),
+                    ps: parseFloat((Math.random() * 3 + 0.1).toFixed(2)),
+                    currentRatio: parseFloat((Math.random() * 4 + 0.5).toFixed(2)),
+                    debtEquity: parseFloat((Math.random() * 1.5).toFixed(2)),
+                    roe: parseFloat((Math.random() * 30 - 5).toFixed(1)),
+                    netNet: Math.random() > 0.7, // 30% chance of being net-net
+                    qualityScore: Math.floor(Math.random() * 40 + 40), // 40-80 range
+                    profitableYears: Math.floor(Math.random() * 5 + 5), // 5-10 range
+                    dividendYears: Math.floor(Math.random() * 30),
+                    marketCap: Math.floor(Math.random() * 2000 + 50) // $50M - $2B
+                }));
+            }
+
+            async runScreen() {
+                // Get filter criteria
+                const criteria = {
+                    maxPE: parseFloat(document.getElementById('maxPE').value) || 999,
+                    maxPB: parseFloat(document.getElementById('maxPB').value) || 999,
+                    maxPS: parseFloat(document.getElementById('maxPS').value) || 999,
+                    netNetOnly: document.getElementById('netNetOnly').value === 'true',
+                    minCurrentRatio: parseFloat(document.getElementById('minCurrentRatio').value) || 0,
+                    maxDebtEquity: parseFloat(document.getElementById('maxDebtEquity').value) || 999,
+                    minROE: parseFloat(document.getElementById('minROE').value) || -999,
+                    minMarketCap: parseFloat(document.getElementById('minMarketCap').value) || 0,
+                    minEarningsYears: parseInt(document.getElementById('minEarningsYears').value) || 0,
+                    dividendHistory: document.getElementById('dividendHistory').value,
+                    minQualityScore: parseInt(document.getElementById('minQualityScore').value) || 0,
+                    sector: document.getElementById('sector').value
+                };
+
+                // Simulate screening delay
+                await new Promise(resolve => setTimeout(resolve, 3000));
+
+                // Filter stocks based on criteria
+                let filteredStocks = this.demoStocks.filter(stock => {
+                    if (stock.pe > criteria.maxPE) return false;
+                    if (stock.pb > criteria.maxPB) return false;
+                    if (stock.ps > criteria.maxPS) return false;
+                    if (criteria.netNetOnly && !stock.netNet) return false;
+                    if (stock.currentRatio < criteria.minCurrentRatio) return false;
+                    if (stock.debtEquity > criteria.maxDebtEquity) return false;
+                    if (stock.roe < criteria.minROE) return false;
+                    if (stock.marketCap < criteria.minMarketCap) return false;
+                    if (stock.profitableYears < criteria.minEarningsYears) return false;
+                    if (stock.qualityScore < criteria.minQualityScore) return false;
+                    
+                    if (criteria.dividendHistory === 'current' && stock.dividendYears === 0) return false;
+                    if (criteria.dividendHistory === 'long' && stock.dividendYears < 20) return false;
+                    
+                    if (criteria.sector !== 'all' && stock.sector !== criteria.sector) return false;
+
+                    return true;
+                });
+
+                // Add value type classification
+                filteredStocks = filteredStocks.map(stock => ({
+                    ...stock,
+                    valueType: this.classifyValueType(stock)
+                }));
+
+                this.currentResults = filteredStocks;
+                return {
+                    stocks: filteredStocks,
+                    summary: this.calculateSummary(filteredStocks)
+                };
+            }
+
+            classifyValueType(stock) {
+                if (stock.netNet) return 'net-net';
+                if (stock.pe < 10 && stock.pb < 0.8) return 'cheap';
+                if (stock.pe < 15 && stock.pb < 1.2) return 'fair';
+                return 'expensive';
+            }
+
+            calculateSummary(stocks) {
+                if (stocks.length === 0) {
+                    return {
+                        totalMatches: 0,
+                        netNetCount: 0,
+                        avgPE: 0,
+                        avgDiscount: 0,
+                        avgQuality: 0
+                    };
+                }
+
+                const netNetCount = stocks.filter(s => s.netNet).length;
+                const avgPE = stocks.reduce((sum, s) => sum + s.pe, 0) / stocks.length;
+                const avgPB = stocks.reduce((sum, s) => sum + s.pb, 0) / stocks.length;
+                const avgDiscount = (1 - avgPB) * 100; // Simplified discount calculation
+                const avgQuality = stocks.reduce((sum, s) => sum + s.qualityScore, 0) / stocks.length;
+
+                return {
+                    totalMatches: stocks.length,
+                    netNetCount: netNetCount,
+                    avgPE: avgPE.toFixed(1),
+                    avgDiscount: avgDiscount.toFixed(1),
+                    avgQuality: Math.round(avgQuality)
+                };
+            }
+
+            sortTable(columnIndex) {
+                const table = document.getElementById('resultsTable');
+                const tbody = table.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                
+                const isAscending = !this.sortDirection[columnIndex];
+                this.sortDirection[columnIndex] = isAscending;
+
+                rows.sort((a, b) => {
+                    const aValue = a.cells[columnIndex].textContent.replace(/[$,%]/g, '');
+                    const bValue = b.cells[columnIndex].textContent.replace(/[$,%]/g, '');
+                    
+                    const aNum = parseFloat(aValue);
+                    const bNum = parseFloat(bValue);
+                    
+                    if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return isAscending ? aNum - bNum : bNum - aNum;
+                    }
+                    
+                    return isAscending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+                });
+
+                // Clear and repopulate tbody
+                tbody.innerHTML = '';
+                rows.forEach(row => tbody.appendChild(row));
+
+                // Update sort indicators
+                const headers = table.querySelectorAll('th');
+                headers.forEach((header, index) => {
+                    const icon = header.querySelector('i');
+                    if (index === columnIndex) {
+                        icon.className = isAscending ? 'fas fa-sort-up' : 'fas fa-sort-down';
+                    } else {
+                        icon.className = 'fas fa-sort';
+                    }
+                });
+            }
+
+            formatCurrency(value) {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD'
+                }).format(value);
+            }
+
+            formatPercent(value) {
+                return `${value}%`;
+            }
+        }
+
+        const screener = new DeepValueScreener();
+
+        async function runDeepValueScreen() {
+            // Show loading
+            document.getElementById('loadingSection').classList.add('active');
+            document.getElementById('resultsSection').classList.remove('active');
+
+            try {
+                const results = await screener.runScreen();
+                displayResults(results);
+            } catch (error) {
+                alert('Error running screen. Please check your criteria.');
+                console.error(error);
+            }
+
+            document.getElementById('loadingSection').classList.remove('active');
+        }
+
+        function displayResults(results) {
+            const { stocks, summary } = results;
+
+            // Update summary cards
+            document.getElementById('totalMatches').textContent = summary.totalMatches;
+            document.getElementById('netNetCount').textContent = summary.netNetCount;
+            document.getElementById('avgPE').textContent = `${summary.avgPE}x`;
+            document.getElementById('avgDiscount').textContent = `${summary.avgDiscount}%`;
+            document.getElementById('avgQuality').textContent = summary.avgQuality;
+
+            // Update results table
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = stocks.map(stock => `
+                <tr>
+                    <td class="ticker">${stock.ticker}</td>
+                    <td>${stock.name}</td>
+                    <td>${screener.formatCurrency(stock.price)}</td>
+                    <td class="${stock.pe < 10 ? 'positive' : stock.pe < 15 ? 'neutral' : 'negative'}">${stock.pe}x</td>
+                    <td class="${stock.pb < 0.8 ? 'positive' : stock.pb < 1.2 ? 'neutral' : 'negative'}">${stock.pb}x</td>
+                    <td class="${stock.ps < 1 ? 'positive' : stock.ps < 2 ? 'neutral' : 'negative'}">${stock.ps}x</td>
+                    <td class="${stock.currentRatio > 2 ? 'positive' : stock.currentRatio > 1.5 ? 'neutral' : 'negative'}">${stock.currentRatio}</td>
+                    <td class="${stock.debtEquity < 0.3 ? 'positive' : stock.debtEquity < 0.6 ? 'neutral' : 'negative'}">${stock.debtEquity}</td>
+                    <td class="${stock.roe > 15 ? 'positive' : stock.roe > 10 ? 'neutral' : stock.roe > 0 ? 'negative' : 'negative'}">${stock.roe}%</td>
+                    <td>${stock.netNet ? '<span class="positive">✓</span>' : '<span class="negative">✗</span>'}</td>
+                    <td class="${stock.qualityScore > 70 ? 'positive' : stock.qualityScore > 60 ? 'neutral' : 'negative'}">${stock.qualityScore}</td>
+                    <td><span class="value-badge ${stock.valueType}">${stock.valueType}</span></td>
+                </tr>
+            `).join('');
+
+            // Show results
+            document.getElementById('resultsSection').classList.add('active');
+        }
+
+        function sortTable(columnIndex) {
+            screener.sortTable(columnIndex);
+        }
+
+        // Auto-run screen on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => runDeepValueScreen(), 1000);
+        });
+    </script>
+</body>
+</html> 
