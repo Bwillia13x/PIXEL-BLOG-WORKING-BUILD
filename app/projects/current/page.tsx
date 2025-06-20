@@ -8,6 +8,25 @@ export const metadata: Metadata = {
 
 // TODO: Move this to a separate data file
 const currentProjects = [
+  // Recently completed projects
+  {
+    id: "portfolio-stress-testing",
+    title: "Portfolio Stress Testing Dashboard",
+    description: "Advanced risk analysis tool that simulates portfolio performance during historical market crises with Monte Carlo simulation and comprehensive risk metrics.",
+    status: "completed",
+    progress: 100,
+    tags: ["Risk Management", "Portfolio Analysis", "Monte Carlo", "Chart.js"],
+    startDate: "2025-01",
+    completedDate: "2025-01-19",
+    highlights: [
+      "Historical crisis simulation (2008, COVID-19, Dot-com, 1970s)",
+      "Monte Carlo simulation with 1,000+ iterations",
+      "Beta-adjusted risk calculations and VaR analysis",
+      "Interactive visualizations with Chart.js",
+      "Real-time portfolio analysis under 3 seconds"
+    ],
+    demo: "/projects/portfolio-stress-testing/index.html"
+  },
   // Sample current project structure
   {
     id: "pixel-blog-template",
@@ -55,17 +74,17 @@ export default function CurrentProjectsPage() {
         </Link>
       </div>
 
-      {/* Current/Active Projects */}
+      {/* Recently Completed Projects */}
       <section className="mb-12">
-        <h2 className="text-2xl font-pixel mb-6">In Progress</h2>
-        {currentProjects.length > 0 ? (
+        <h2 className="text-2xl font-pixel mb-6">Recently Completed</h2>
+        {currentProjects.filter(p => p.status === 'completed').length > 0 ? (
           <div className="grid gap-6">
-            {currentProjects.map((project) => (
+            {currentProjects.filter(p => p.status === 'completed').map((project) => (
               <div key={project.id} className="bg-gray-800 rounded-lg p-6">
                 <div className="mb-4">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-xl font-pixel">{project.title}</h3>
-                    <span className="inline-block px-2 py-1 bg-yellow-600 text-black text-xs font-mono rounded">
+                    <span className="inline-block px-2 py-1 bg-green-600 text-black text-xs font-mono rounded">
                       {project.status}
                     </span>
                   </div>
@@ -94,11 +113,11 @@ export default function CurrentProjectsPage() {
                   </div>
 
                   <div className="text-xs font-mono text-gray-400 mb-3">
-                    Started: {project.startDate} • Expected: {project.expectedCompletion}
+                    Started: {project.startDate} • {project.completedDate ? `Completed: ${project.completedDate}` : `Expected: ${project.expectedCompletion}`}
                   </div>
 
                   {project.highlights && (
-                    <div>
+                    <div className="mb-4">
                       <h4 className="font-pixel text-sm mb-2">Key Features:</h4>
                       <ul className="text-sm font-mono space-y-1">
                         {project.highlights.map((highlight, index) => (
@@ -108,6 +127,100 @@ export default function CurrentProjectsPage() {
                           </li>
                         ))}
                       </ul>
+                    </div>
+                  )}
+
+                  {project.demo && (
+                    <div className="mt-auto">
+                      <a 
+                        href={project.demo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block px-4 py-2 bg-blue-600 text-white font-pixel rounded hover:bg-blue-500 transition-colors"
+                      >
+                        🚀 Live Demo
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-gray-800 rounded-lg p-6 text-center">
+            <p className="font-mono">No recently completed projects.</p>
+          </div>
+        )}
+      </section>
+
+      {/* Current/Active Projects */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-pixel mb-6">In Progress</h2>
+        {currentProjects.filter(p => p.status === 'in-progress').length > 0 ? (
+          <div className="grid gap-6">
+            {currentProjects.filter(p => p.status === 'in-progress').map((project) => (
+              <div key={project.id} className="bg-gray-800 rounded-lg p-6">
+                <div className="mb-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-xl font-pixel">{project.title}</h3>
+                    <span className={`inline-block px-2 py-1 text-black text-xs font-mono rounded ${
+                      project.status === 'completed' ? 'bg-green-600' : 'bg-yellow-600'
+                    }`}>
+                      {project.status}
+                    </span>
+                  </div>
+                  <p className="font-mono text-sm mb-3">{project.description}</p>
+                  
+                  {/* Progress Bar */}
+                  <div className="mb-3">
+                    <div className="flex justify-between text-xs font-mono mb-1">
+                      <span>Progress</span>
+                      <span>{project.progress}%</span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-2">
+                      <div 
+                        className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${project.progress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {project.tags.map((tag) => (
+                      <span key={tag} className="inline-block px-2 py-1 bg-green-600 text-black text-xs font-mono rounded">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="text-xs font-mono text-gray-400 mb-3">
+                    Started: {project.startDate} • {project.completedDate ? `Completed: ${project.completedDate}` : `Expected: ${project.expectedCompletion}`}
+                  </div>
+
+                  {project.highlights && (
+                    <div className="mb-4">
+                      <h4 className="font-pixel text-sm mb-2">Key Features:</h4>
+                      <ul className="text-sm font-mono space-y-1">
+                        {project.highlights.map((highlight, index) => (
+                          <li key={index} className="flex items-center">
+                            <span className="text-green-400 mr-2">▶</span>
+                            {highlight}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {project.demo && (
+                    <div className="mt-auto">
+                      <a 
+                        href={project.demo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block px-4 py-2 bg-blue-600 text-white font-pixel rounded hover:bg-blue-500 transition-colors"
+                      >
+                        🚀 Live Demo
+                      </a>
                     </div>
                   )}
                 </div>
