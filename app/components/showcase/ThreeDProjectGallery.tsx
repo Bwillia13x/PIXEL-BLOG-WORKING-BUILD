@@ -42,7 +42,7 @@ export default function ThreeDProjectGallery({
   const rendererRef = useRef<any>(null)
   const cameraRef = useRef<any>(null)
   const projectMeshesRef = useRef<Map<string, any>>(new Map())
-  const animationFrameRef = useRef<number>()
+  const animationFrameRef = useRef<number | undefined>(undefined)
   const mouseRef = useRef({ x: 0, y: 0 })
   const raycasterRef = useRef<any>(null)
   const hoveredProjectRef = useRef<string | null>(null)

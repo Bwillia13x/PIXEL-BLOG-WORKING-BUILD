@@ -125,7 +125,7 @@ export default function SEOOptimizer({
   const [targetKeyword, setTargetKeyword] = useState('')
   const [autoOptimize, setAutoOptimize] = useState(false)
   const [showAdvanced, setShowAdvanced] = useState(false)
-  const analysisTimeoutRef = useRef<NodeJS.Timeout>()
+  const analysisTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Debounced analysis trigger
   useEffect(() => {
@@ -133,8 +133,8 @@ export default function SEOOptimizer({
       clearTimeout(analysisTimeoutRef.current)
     }
 
-    analysisTimeoutRef.current = setTimeout(() => {
-      performSEOAnalysis()
+    analysisTimeoutRef.current = setTimeout(async () => {
+      await performSEOAnalysis()
     }, 1000)
 
     return () => {

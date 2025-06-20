@@ -520,3 +520,6 @@ export default function ContentManagementSystem({
     </div>
   )
 }
+
+// Export types at the end
+export type { CMSPost, UploadedImage }

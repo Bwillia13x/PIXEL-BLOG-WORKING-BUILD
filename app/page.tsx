@@ -8,7 +8,7 @@ export default function Home() {
     <div>
       {/* Hero Section */}
       <section className="text-center mb-12">
-        <h2 className="text-2xl font-pixel mb-4">Welcome to Pixel Wisdom</h2>
+        <h2 className="text-3xl font-pixel mb-4">Welcome to Pixel Wisdom</h2>
         <p className="font-readable text-lg mb-6 max-w-2xl mx-auto">
           Your gateway to modern development, AI-driven tools, and creative coding. 
           Explore projects, read insights, and join the journey through the digital frontier.
@@ -16,13 +16,13 @@ export default function Home() {
         <div className="flex flex-wrap justify-center gap-4">
           <Link 
             href="/projects"
-            className="px-6 py-2 bg-green-600 text-black font-pixel rounded hover:bg-green-500 transition-colors"
+            className="w-full sm:w-auto px-6 py-2 bg-green-600 text-black font-pixel rounded hover:bg-green-500 transition-colors text-center"
           >
             View Projects
           </Link>
           <Link 
             href="/blog"
-            className="px-6 py-2 bg-gray-700 text-green-400 font-pixel rounded hover:bg-gray-600 transition-colors"
+            className="w-full sm:w-auto px-6 py-2 bg-gray-700 text-white font-pixel rounded hover:bg-gray-600 transition-colors text-center"
           >
             Read Blog
           </Link>
@@ -31,11 +31,11 @@ export default function Home() {
 
       {/* Latest Content Highlights */}
       <section className="mb-12">
-        <h2 className="text-2xl font-pixel mb-6">Latest Pixelated Wisdom</h2>
+        <h2 className="text-3xl font-pixel mb-6">Latest Pixelated Wisdom</h2>
         {categories.map((category) => (
           <div key={category} className="mb-8">
-            <h3 className="text-xl font-pixel mb-4">{category}</h3>
-            <div className="grid gap-6">
+            <h3 className="text-2xl font-pixel mb-4">{category}</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {posts
                 .filter((post) => post.category === category)
                 .slice(0, 3)
@@ -52,7 +52,7 @@ export default function Home() {
                   </Link>
                 ))}
             </div>
-            <Link href={`/category/${category.toLowerCase()}`} className="inline-block mt-4 font-pixel text-sm underline">
+            <Link href={`/category/${category.toLowerCase()}`} className="inline-block mt-4 font-pixel text-sm text-white underline hover:text-green-400 transition-colors">
               See all {category} posts
             </Link>
           </div>

@@ -227,7 +227,7 @@ const NavMenu = () => {
                   <motion.div
                     layoutId="activeTab"
                     className="absolute inset-0 bg-green-400/10 border-2 border-green-400 rounded"
-                    style={{ zIndex: -1 }}
+                    style={{ zIndex: 0 }}
                   />
                 )}
               </Link>

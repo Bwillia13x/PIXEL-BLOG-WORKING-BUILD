@@ -95,17 +95,21 @@ export default function InteractiveCodeSnippets({
 }: InteractiveCodeSnippetsProps) {
   const { theme } = useTheme()
   const editorRef = useRef<HTMLDivElement>(null)
+  
   const [selectedSnippet, setSelectedSnippet] = useState<CodeSnippet | null>(null)
-  const [editedCode, setEditedCode] = useState<string>('')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('all')
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all')
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [sortMode, setSortMode] = useState<SortMode>('newest')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('')
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('')
-  const [showPreview, setShowPreview] = useState(false)
-  const [executionOutput, setExecutionOutput] = useState<string>('')
+  const [editedCode, setEditedCode] = useState('')
+  const [executionOutput, setExecutionOutput] = useState('')
   const [isExecuting, setIsExecuting] = useState(false)
   const [copied, setCopied] = useState<string | null>(null)
+  const [showPreview, setShowPreview] = useState(false)
+  const [localShowLineNumbers, setLocalShowLineNumbers] = useState(showLineNumbers)
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   // Filter and sort snippets
   const filteredAndSortedSnippets = useMemo(() => {
@@ -606,8 +610,8 @@ export default function InteractiveCodeSnippets({
                     <label className="flex items-center space-x-2 text-xs">
                       <input
                         type="checkbox"
-                        checked={showLineNumbers}
-                        onChange={(e) => setShowLineNumbers?.(e.target.checked)}
+                        checked={localShowLineNumbers}
+                        onChange={(e) => setLocalShowLineNumbers?.(e.target.checked)}
                         className="pixel-checkbox"
                       />
                       <span className="text-gray-400">Line Numbers</span>
@@ -647,7 +651,7 @@ export default function InteractiveCodeSnippets({
                     </div>
                   )}
 
-                  {showLineNumbers && (
+                  {localShowLineNumbers && (
                     <div className="absolute left-0 top-0 p-4 pointer-events-none">
                       <div className="flex flex-col text-xs font-mono text-gray-500 select-none">
                         {(enableLiveEdit ? editedCode : selectedSnippet.code).split('\n').map((_, index) => (

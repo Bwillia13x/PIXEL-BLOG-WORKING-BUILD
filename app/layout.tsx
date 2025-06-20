@@ -160,28 +160,28 @@ export default function RootLayout({
                     <nav aria-label="Footer navigation" className="flex justify-center space-x-6 text-sm">
                       <a 
                         href="/privacy" 
-                        className="text-gray-400 hover:text-green-400 transition-colors"
+                        className="text-gray-300 hover:text-green-400 transition-colors"
                         rel="noopener"
                       >
                         Privacy
                       </a>
                       <a 
                         href="/terms" 
-                        className="text-gray-400 hover:text-green-400 transition-colors"
+                        className="text-gray-300 hover:text-green-400 transition-colors"
                         rel="noopener"
                       >
                         Terms
                       </a>
                       <a 
                         href="/sitemap.xml" 
-                        className="text-gray-400 hover:text-green-400 transition-colors"
+                        className="text-gray-300 hover:text-green-400 transition-colors"
                         rel="noopener"
                       >
                         Sitemap
                       </a>
                       <a 
                         href="/feed.xml" 
-                        className="text-gray-400 hover:text-green-400 transition-colors"
+                        className="text-gray-300 hover:text-green-400 transition-colors"
                         rel="noopener"
                       >
                         RSS

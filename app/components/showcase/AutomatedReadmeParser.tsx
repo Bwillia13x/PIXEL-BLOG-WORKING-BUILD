@@ -278,10 +278,11 @@ export default function AutomatedReadmeParser({
 
     // Save final section
     if (currentSection) {
-      sections.push({
-        ...currentSection,
+      const finalSection: ReadmeSection = {
+        ...(currentSection as ReadmeSection),
         content: sectionContent.join('\n').trim()
-      } as ReadmeSection)
+      }
+      sections.push(finalSection)
     }
 
     // Generate table of contents

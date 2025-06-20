@@ -56,7 +56,7 @@ function PostMeta({ post, readingTime, views }: PostMetaProps) {
       transition={{ duration: 0.4, delay: 0.1 }}
       className="pixel-border bg-gray-900/40 backdrop-blur-sm p-4 mb-8"
     >
-      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 font-mono">
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300 font-mono">
         {post.date && (
           <div className="flex items-center space-x-1">
             <CalendarIcon className="h-4 w-4" />
@@ -149,7 +149,7 @@ function ReadingProgress({ targetRef }: { targetRef: React.RefObject<HTMLDivElem
     <motion.div
       initial={{ scaleX: 0 }}
       animate={{ scaleX: 1 }}
-      className="fixed top-0 left-0 right-0 z-50 h-1 bg-gray-800"
+              className="fixed top-0 left-0 right-0 z-20 h-1 bg-gray-800"
     >
       <motion.div
         className="h-full bg-gradient-to-r from-green-400 to-cyan-400"
@@ -245,7 +245,7 @@ export default function BlogPostLayout({
             transition={{ duration: 0.6 }}
             className="text-center space-y-4"
           >
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-mono font-bold text-white leading-tight">
+            <h1 className="text-3xl md:text-4xl lg:text-4xl font-mono font-bold text-white leading-tight">
               {post.title}
             </h1>
             
@@ -398,7 +398,7 @@ export default function BlogPostLayout({
         </div>
 
         {/* Sidebar */}
-        <aside className="lg:col-span-1 space-y-6">
+        <aside className="block lg:col-span-1 space-y-6">
           {/* Table of Contents */}
           {toc.length > 0 && (
             <motion.div

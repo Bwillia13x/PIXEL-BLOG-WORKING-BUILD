@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { MagnifyingGlassIcon, CommandLineIcon } from '@heroicons/react/24/outline'
 import { useSearch } from '@/app/hooks/useSearch'
@@ -100,16 +101,15 @@ export default function QuickSearch({ className = "" }: QuickSearchProps) {
 
       {/* Search Modal/Dropdown */}
       {isOpen && (
-        <>
-          {/* Backdrop */}
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden" />
-          
-          {/* Search Panel */}
-          <div className="
-            absolute top-full left-0 right-0 mt-2 z-50
-            md:w-96 md:left-auto md:right-0
-            pixel-border bg-gray-900/95 backdrop-blur-md shadow-2xl
-          ">
+        <> 
+          {/* Backdrop (portal) */}
+          {createPortal(
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden" />,
+            document.body
+          )}
+          {/* Search Panel (portal) */}
+          {createPortal(
+            <div className="fixed top-16 left-4 right-4 z-50 md:static md:inset-auto md:mt-2 md:left-auto md:right-0 md:z-50 pixel-border bg-gray-900/95 backdrop-blur-md shadow-2xl">
             {/* Search Input */}
             <div className="p-4 border-b border-gray-700">
               <div className="flex items-center space-x-2">
@@ -121,7 +121,7 @@ export default function QuickSearch({ className = "" }: QuickSearchProps) {
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search posts and projects..."
                   className="
-                    flex-1 bg-transparent text-white placeholder-gray-400 
+                    flex-1 bg-transparent text-white placeholder-gray-300 
                     focus:outline-none font-mono text-sm
                   "
                   autoComplete="off"
@@ -157,7 +157,7 @@ export default function QuickSearch({ className = "" }: QuickSearchProps) {
                             <h4 className="font-mono text-sm text-white truncate">
                               {item.title}
                             </h4>
-                            <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                            <p className="text-xs text-gray-300 mt-1 line-clamp-2">
                               {('content' in item ? item.content : 'description' in item ? item.description : '')?.slice(0, 100)}...
                             </p>
                             <div className="flex items-center space-x-2 mt-2">
@@ -196,7 +196,7 @@ export default function QuickSearch({ className = "" }: QuickSearchProps) {
                 </div>
               ) : query.trim() ? (
                 <div className="p-4 text-center">
-                  <p className="text-gray-400 font-mono text-sm">
+                  <p className="text-gray-300 font-mono text-sm">
                     No results found for "{query}"
                   </p>
                   <Link
@@ -213,7 +213,7 @@ export default function QuickSearch({ className = "" }: QuickSearchProps) {
               ) : (
                 <div className="p-4">
                   <div className="text-center mb-4">
-                    <p className="text-gray-400 font-mono text-xs mb-2">
+                    <p className="text-gray-300 font-mono text-xs mb-2">
                       Quick Actions
                     </p>
                   </div>
@@ -253,7 +253,9 @@ export default function QuickSearch({ className = "" }: QuickSearchProps) {
                 </div>
               )}
             </div>
-          </div>
+            </div>,
+            document.body
+          )}
         </>
       )}
     </div>

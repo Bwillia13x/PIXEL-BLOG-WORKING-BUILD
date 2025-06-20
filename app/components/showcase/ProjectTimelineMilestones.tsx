@@ -121,6 +121,8 @@ export default function ProjectTimelineMilestones({
   const [zoomLevel, setZoomLevel] = useState(1)
   const [showDetails, setShowDetails] = useState(false)
   const [draggedMilestone, setDraggedMilestone] = useState<string | null>(null)
+  const [localViewMode, setViewMode] = useState<'timeline' | 'kanban'>(viewMode as 'timeline' | 'kanban')
+  const [hoveredMilestone, setHoveredMilestone] = useState<string | null>(null)
 
   // Filter and sort milestones
   const filteredMilestones = useMemo(() => {
@@ -597,7 +599,7 @@ export default function ProjectTimelineMilestones({
                 key={mode}
                 onClick={() => setViewMode(mode)}
                 className={`px-3 py-2 font-mono text-xs transition-colors ${
-                  viewMode === mode
+                  localViewMode === mode
                     ? 'bg-green-600/60 text-white'
                     : 'bg-gray-700/60 text-green-400 hover:bg-gray-600/60'
                 }`}
@@ -641,8 +643,8 @@ export default function ProjectTimelineMilestones({
 
       {/* Main Content */}
       <div ref={timelineRef} className="min-h-96">
-        {viewMode === 'timeline' && renderTimelineView()}
-        {viewMode === 'kanban' && renderKanbanView()}
+        {localViewMode === 'timeline' && renderTimelineView()}
+        {localViewMode === 'kanban' && renderKanbanView()}
       </div>
 
       {/* Milestone Details */}

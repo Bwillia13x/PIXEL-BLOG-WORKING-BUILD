@@ -101,12 +101,13 @@ export default function TechnologyStackVisualization({
   const { theme } = useTheme()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const animationFrameRef = useRef<number>()
+  const animationFrameRef = useRef<number | undefined>(undefined)
   const [hoveredTech, setHoveredTech] = useState<string | null>(null)
   const [selectedTech, setSelectedTech] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [sortBy, setSortBy] = useState<'name' | 'proficiency' | 'usage' | 'popularity'>('proficiency')
+  const [sortBy, setSortBy] = useState<'proficiency' | 'usage' | 'popularity' | 'name'>('proficiency')
   const [groupBy, setGroupBy] = useState<'category' | 'proficiency' | 'usage'>('category')
+  const [localShowConnections, setLocalShowConnections] = useState(showConnections)
 
   // Filter technologies based on category and search
   const filteredTechnologies = useMemo(() => {
@@ -258,7 +259,7 @@ export default function TechnologyStackVisualization({
       ctx.clearRect(0, 0, rect.width, rect.height)
 
       // Draw connections
-      if (showConnections) {
+      if (localShowConnections) {
         techConnections.forEach(connection => {
           const fromNode = networkNodes.find(n => n.id === connection.from)
           const toNode = networkNodes.find(n => n.id === connection.to)
@@ -311,7 +312,7 @@ export default function TechnologyStackVisualization({
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [viewMode, networkNodes, techConnections, hoveredTech, selectedTech, showConnections])
+  }, [viewMode, networkNodes, techConnections, hoveredTech, selectedTech, localShowConnections])
 
   // Handle canvas interactions
   useEffect(() => {
@@ -324,7 +325,7 @@ export default function TechnologyStackVisualization({
       const x = event.clientX - rect.left
       const y = event.clientY - rect.top
 
-      let foundNode = null
+      let foundNode: typeof networkNodes[number] | null = null
       for (const node of networkNodes) {
         const distance = Math.sqrt((x - node.x) ** 2 + (y - node.y) ** 2)
         if (distance <= node.radius + 5) {
@@ -334,9 +335,10 @@ export default function TechnologyStackVisualization({
       }
 
       if (foundNode) {
-        setHoveredTech(foundNode.id)
+        const node = foundNode
+        setHoveredTech(node.id)
         canvas.style.cursor = 'pointer'
-        const tech = technologies.find(t => t.id === foundNode.id)
+        const tech = technologies.find(t => t.id === node.id)
         if (tech) onTechHover?.(tech)
       } else {
         setHoveredTech(null)
@@ -624,14 +626,14 @@ export default function TechnologyStackVisualization({
       {/* Controls */}
       <div className="absolute bottom-4 left-4 space-x-2">
         <button
-          onClick={() => setShowConnections(!showConnections)}
+          onClick={() => setLocalShowConnections(!localShowConnections)}
           className={`px-3 py-1 font-mono text-xs rounded transition-colors pixel-border-sm ${
-            showConnections
+            localShowConnections
               ? 'bg-green-600/60 text-white'
               : 'bg-gray-700/60 text-green-400 hover:bg-gray-600/60'
           }`}
         >
-          {showConnections ? 'Hide' : 'Show'} Connections
+          {localShowConnections ? 'Hide' : 'Show'} Connections
         </button>
       </div>
     </div>

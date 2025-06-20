@@ -34,14 +34,14 @@ export default function ProjectsPage() {
       </div>
 
       {projects.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
         </div>
       ) : (
         <div className="bg-gray-800 rounded-lg p-8 text-center">
-          <h3 className="text-xl font-pixel mb-4">Projects Coming Soon</h3>
+          <h3 className="text-2xl font-pixel mb-4">Projects Coming Soon</h3>
           <p className="font-mono mb-4">
             I&apos;m currently working on some exciting projects that will be showcased here.
           </p>

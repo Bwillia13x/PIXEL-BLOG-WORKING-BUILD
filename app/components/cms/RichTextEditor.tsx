@@ -89,7 +89,7 @@ export default function RichTextEditor({
 }: RichTextEditorProps) {
   const { theme } = useTheme()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const autoSaveRef = useRef<NodeJS.Timeout>()
+  const autoSaveRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   const [state, setState] = useState<EditorState>({
     content: initialValue,

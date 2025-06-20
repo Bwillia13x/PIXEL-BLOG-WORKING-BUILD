@@ -128,8 +128,8 @@ export default function AnalyticsIntegration({
   const userId = useRef<string>('')
   const startTime = useRef<number>(Date.now())
   const eventQueue = useRef<AnalyticsEvent[]>([])
-  const flushTimer = useRef<NodeJS.Timeout>()
-  const engagementTimer = useRef<NodeJS.Timeout>()
+  const flushTimer = useRef<NodeJS.Timeout | undefined>(undefined)
+  const engagementTimer = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Initialize analytics
   useEffect(() => {
