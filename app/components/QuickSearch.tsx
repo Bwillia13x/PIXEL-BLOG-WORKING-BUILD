@@ -15,7 +15,11 @@ export default function QuickSearch({ className = "" }: QuickSearchProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   
-  const searchInstance = useSearch({ debounceMs: 300 })
+  const searchInstance = useSearch({ 
+    debounceMs: 300,
+    initialPosts: [], // Empty for now - will be populated when data is available
+    initialProjects: [] // Empty for now - will be populated when data is available
+  })
   
   // Update search when query changes
   const filteredResults = query.trim() ? 

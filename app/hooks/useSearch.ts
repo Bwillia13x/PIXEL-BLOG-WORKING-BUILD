@@ -1,9 +1,30 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { posts, Post } from '@/app/data/posts'
-import { projects, currentProjects, plannedProjects, Project, CurrentProject } from '@/content/projects'
 
-export type SearchableItem = (Post & { type: 'post' }) | (Project & { type: 'project' }) | (CurrentProject & { type: 'project' })
+// Define types without importing server-side modules
+export interface Post {
+  id: string
+  slug: string
+  title: string
+  category: string
+  date?: string
+  content: string
+  tags?: string[]
+  excerpt?: string
+  readTime?: string
+  published?: boolean
+}
+
+export interface Project {
+  id: string
+  title: string
+  description: string
+  tags: string[]
+  status: 'completed' | 'in-progress' | 'planned'
+  year?: number
+}
+
+export type SearchableItem = (Post & { type: 'post' }) | (Project & { type: 'project' })
 
 export interface SearchFilters {
   query: string
@@ -20,18 +41,20 @@ export interface SearchFilters {
 export interface UseSearchOptions {
   debounceMs?: number
   enableUrlState?: boolean
+  initialPosts?: Post[]
+  initialProjects?: Project[]
 }
 
-function normalizeSearchableItem(item: Post | Project | CurrentProject, type: 'post' | 'project'): SearchableItem {
+function normalizeSearchableItem(item: Post | Project, type: 'post' | 'project'): SearchableItem {
   if (type === 'post') {
     const post = item as Post
     return {
       ...post,
       type: 'post',
-      tags: [], // Posts don't have tags in current structure, will extract from frontmatter
+      tags: post.tags || [],
     }
   } else {
-    const project = item as Project | CurrentProject
+    const project = item as Project
     return {
       ...project,
       type: 'project',
@@ -64,7 +87,7 @@ function highlightText(text: string, query: string): string {
 }
 
 export function useSearch(options: UseSearchOptions = {}) {
-  const { debounceMs = 300, enableUrlState = false } = options
+  const { debounceMs = 300, enableUrlState = false, initialPosts = [], initialProjects = [] } = options
   const searchParams = useSearchParams()
   const router = useRouter()
   
@@ -116,18 +139,17 @@ export function useSearch(options: UseSearchOptions = {}) {
     const items: SearchableItem[] = []
     
     // Add posts
-    posts.forEach(post => {
+    initialPosts.forEach(post => {
       items.push(normalizeSearchableItem(post, 'post'))
     })
     
     // Add projects
-    const allProjects = [...projects, ...currentProjects, ...plannedProjects]
-    allProjects.forEach(project => {
+    initialProjects.forEach(project => {
       items.push(normalizeSearchableItem(project, 'project'))
     })
     
     return items
-  }, [])
+  }, [initialPosts, initialProjects])
   
   // Get unique categories and tags
   const availableFilters = useMemo(() => {

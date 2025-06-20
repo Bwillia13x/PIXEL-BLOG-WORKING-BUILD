@@ -25,7 +25,7 @@ function getPostData(fileName: string): Post {
   const { data, content } = matter(fileContents)
 
   // Calculate reading time if not provided in frontmatter
-  const readingTime = data.readTime || calculateReadingTime(content).text
+  const readTime = data.readTime || calculateReadingTime(content).text
 
   return {
     id: slug,
