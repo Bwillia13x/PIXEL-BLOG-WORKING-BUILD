@@ -62,6 +62,16 @@ export const projects: Project[] = [
     featured: true
   },
   {
+    id: "portfolio-stress-testing",
+    title: "Portfolio Stress Testing Dashboard",
+    description: "Advanced risk analysis tool that simulates portfolio performance during historical market crises with Monte Carlo simulation, beta-adjusted calculations, and comprehensive risk metrics.",
+    tags: ["Risk Management", "Portfolio Analysis", "Monte Carlo", "Crisis Simulation"],
+    year: 2025,
+    status: "completed",
+    demo: "/projects/portfolio-stress-testing/index.html",
+    featured: true
+  },
+  {
     id: "ai-productivity-suite",
     title: "AI Developer Tools",
     description: "A collection of AI-powered productivity tools for developers including code review, documentation generation, and project planning utilities.",

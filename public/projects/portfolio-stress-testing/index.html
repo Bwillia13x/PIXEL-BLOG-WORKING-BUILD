@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Stress Testing Dashboard - Value Investing Risk Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #8b5cf6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #a8a8a8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .tab-navigation {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #a8a8a8;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(45deg, #8b5cf6, #06b6d4);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e8e8e8;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .portfolio-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .input-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #e8e8e8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stock-input {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 60px;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .stock-input input {
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e8e8e8;
+            font-size: 0.9rem;
+        }
+
+        .stock-input input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+
+        .add-btn, .remove-btn {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .add-btn {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            color: white;
+        }
+
+        .remove-btn {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .sample-btn {
+            width: 100%;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #8b5cf6, #06b6d4);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .sample-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .portfolio-summary {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            color: #06b6d4;
+        }
+
+        .summary-label {
+            color: #a8a8a8;
+            font-size: 0.9rem;
+        }
+
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .scenario-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .scenario-card.selected {
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.1);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
+        }
+
+        .scenario-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.1);
+        }
+
+        .scenario-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #e8e8e8;
+        }
+
+        .scenario-description {
+            color: #a8a8a8;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .scenario-impact {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ef4444;
+        }
+
+        .results-section {
+            display: grid;
+            gap: 30px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .metric-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 15px;
+            background: linear-gradient(45deg, #8b5cf6, #06b6d4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            color: #a8a8a8;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .metric-description {
+            color: #a8a8a8;
+            font-size: 0.8rem;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #e8e8e8;
+        }
+
+        .chart-wrapper {
+            height: 400px;
+            position: relative;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #8b5cf6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .positive { color: #22c55e; }
+        .negative { color: #ef4444; }
+        .neutral { color: #f59e0b; }
+
+        .export-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #8b5cf6, #06b6d4);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .portfolio-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .stock-input {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-navigation {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="export-btn" onclick="exportResults()">
+        <i class="fas fa-download"></i> Export Results
+    </button>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> Portfolio Stress Testing</h1>
+            <p>Advanced risk analysis dashboard for value investors - Test your portfolio against historical market crises and economic scenarios</p>
+        </div>
+
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="switchTab('portfolio')">
+                <i class="fas fa-chart-pie"></i> Portfolio
+            </button>
+            <button class="tab-btn" onclick="switchTab('scenarios')">
+                <i class="fas fa-exclamation-triangle"></i> Scenarios
+            </button>
+            <button class="tab-btn" onclick="switchTab('results')">
+                <i class="fas fa-shield-alt"></i> Stress Test
+            </button>
+        </div>
+
+        <!-- Portfolio Tab -->
+        <div id="portfolio-tab" class="tab-content active">
+            <div class="portfolio-section">
+                <div class="input-card">
+                    <h3><i class="fas fa-plus-circle"></i> Add Stocks to Portfolio</h3>
+                    <div id="stock-inputs">
+                        <div class="stock-input">
+                            <input type="text" placeholder="Ticker (e.g., AAPL)" class="ticker-input">
+                            <input type="number" placeholder="Shares" class="shares-input">
+                            <input type="number" placeholder="Purchase Price" class="price-input" step="0.01">
+                            <button class="add-btn" onclick="addStock()"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                    <button class="sample-btn" onclick="loadSamplePortfolio()">
+                        <i class="fas fa-magic"></i> Load Sample Value Portfolio
+                    </button>
+                </div>
+
+                <div class="input-card">
+                    <h3><i class="fas fa-list"></i> Current Holdings</h3>
+                    <div id="portfolio-holdings">
+                        <p style="color: #a8a8a8; text-align: center; padding: 20px;">
+                            Add stocks to see your portfolio holdings
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="portfolio-summary" class="portfolio-summary" style="display: none;">
+                <h3 style="margin-bottom: 20px;"><i class="fas fa-chart-line"></i> Portfolio Summary</h3>
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-value" id="total-value">$0</div>
+                        <div class="summary-label">Total Value</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value" id="total-stocks">0</div>
+                        <div class="summary-label">Holdings</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value" id="largest-position">0%</div>
+                        <div class="summary-label">Largest Position</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value" id="portfolio-beta">1.00</div>
+                        <div class="summary-label">Portfolio Beta</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scenarios Tab -->
+        <div id="scenarios-tab" class="tab-content">
+            <div class="scenario-grid">
+                <div class="scenario-card selected" data-scenario="2008">
+                    <div class="scenario-title">2008 Financial Crisis</div>
+                    <div class="scenario-description">
+                        Global banking crisis triggered by subprime mortgages. Market declined 57% over 18 months with massive volatility and credit freeze.
+                    </div>
+                    <div class="scenario-impact">Market Impact: -57%</div>
+                </div>
+
+                <div class="scenario-card" data-scenario="covid">
+                    <div class="scenario-title">COVID-19 Crash (2020)</div>
+                    <div class="scenario-description">
+                        Pandemic-induced economic shutdown causing rapid 34% market decline in 33 days, followed by unprecedented monetary stimulus.
+                    </div>
+                    <div class="scenario-impact">Market Impact: -34%</div>
+                </div>
+
+                <div class="scenario-card" data-scenario="dotcom">
+                    <div class="scenario-title">Dot-com Bubble (2000-2002)</div>
+                    <div class="scenario-description">
+                        Technology stock bubble burst leading to 78% decline in NASDAQ and widespread tech company failures over 2.5 years.
+                    </div>
+                    <div class="scenario-impact">Market Impact: -49%</div>
+                </div>
+
+                <div class="scenario-card" data-scenario="inflation">
+                    <div class="scenario-title">1970s Stagflation</div>
+                    <div class="scenario-description">
+                        High inflation combined with economic stagnation, oil crises, and rising interest rates creating challenging investment environment.
+                    </div>
+                    <div class="scenario-impact">Real Returns: -7% annually</div>
+                </div>
+
+                <div class="scenario-card" data-scenario="custom">
+                    <div class="scenario-title">Custom Scenario</div>
+                    <div class="scenario-description">
+                        Define your own stress test parameters including market decline percentage, duration, and recovery characteristics.
+                    </div>
+                    <div class="scenario-impact">User Defined</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Tab -->
+        <div id="results-tab" class="tab-content">
+            <div class="loading" id="loading-section">
+                <div class="spinner"></div>
+                <h3>Running Portfolio Stress Test...</h3>
+                <p>Analyzing portfolio performance under selected crisis scenario</p>
+            </div>
+
+            <div class="results-section" id="results-content" style="display: none;">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-arrow-down"></i></div>
+                        <div class="metric-value negative" id="max-drawdown">-0%</div>
+                        <div class="metric-label">Maximum Drawdown</div>
+                        <div class="metric-description">Largest peak-to-trough decline</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="metric-value" id="final-value">$0</div>
+                        <div class="metric-label">Final Portfolio Value</div>
+                        <div class="metric-description">Value after stress scenario</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-clock"></i></div>
+                        <div class="metric-value" id="recovery-time">0</div>
+                        <div class="metric-label">Recovery Time (Months)</div>
+                        <div class="metric-description">Time to reach previous peak</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="metric-value" id="sharpe-ratio">0.00</div>
+                        <div class="metric-label">Stress-Adjusted Sharpe</div>
+                        <div class="metric-description">Risk-adjusted performance</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="metric-value negative" id="var-95">$0</div>
+                        <div class="metric-label">Value at Risk (95%)</div>
+                        <div class="metric-description">Potential loss with 95% confidence</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-shield-alt"></i></div>
+                        <div class="metric-value" id="portfolio-beta-stress">1.00</div>
+                        <div class="metric-label">Beta vs Market</div>
+                        <div class="metric-description">Relative volatility to market</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Portfolio Performance During Crisis</div>
+                    <div class="chart-wrapper">
+                        <canvas id="performance-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title">Monte Carlo Simulation Results</div>
+                    <div class="chart-wrapper">
+                        <canvas id="monte-carlo-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class PortfolioStressTester {
+            constructor() {
+                this.portfolio = [];
+                this.selectedScenario = '2008';
+                this.scenarios = {
+                    '2008': { name: '2008 Financial Crisis', decline: -0.57, duration: 547, volatility: 0.89 },
+                    'covid': { name: 'COVID-19 Crash', decline: -0.34, duration: 33, volatility: 1.2 },
+                    'dotcom': { name: 'Dot-com Bubble', decline: -0.49, duration: 929, volatility: 0.75 },
+                    'inflation': { name: '1970s Stagflation', decline: -0.07, duration: 3650, volatility: 0.45 },
+                    'custom': { name: 'Custom Scenario', decline: -0.30, duration: 365, volatility: 0.8 }
+                };
+                this.initializeEventListeners();
+            }
+
+            initializeEventListeners() {
+                // Scenario selection
+                document.querySelectorAll('.scenario-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('selected'));
+                        card.classList.add('selected');
+                        this.selectedScenario = card.dataset.scenario;
+                    });
+                });
+
+                // Add stock on Enter key
+                document.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && e.target.classList.contains('price-input')) {
+                        this.addStock();
+                    }
+                });
+            }
+
+            addStock() {
+                const tickerInput = document.querySelector('.ticker-input');
+                const sharesInput = document.querySelector('.shares-input');
+                const priceInput = document.querySelector('.price-input');
+
+                const ticker = tickerInput.value.toUpperCase().trim();
+                const shares = parseInt(sharesInput.value);
+                const price = parseFloat(priceInput.value);
+
+                if (!ticker || !shares || !price) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+
+                // Simulate current price (in real app, would fetch from API)
+                const currentPrice = price * (0.8 + Math.random() * 0.4); // ±20% from purchase price
+
+                const stock = {
+                    ticker,
+                    shares,
+                    purchasePrice: price,
+                    currentPrice: currentPrice,
+                    value: shares * currentPrice,
+                    beta: this.estimateBeta(ticker)
+                };
+
+                this.portfolio.push(stock);
+                this.updatePortfolioDisplay();
+
+                // Clear inputs
+                tickerInput.value = '';
+                sharesInput.value = '';
+                priceInput.value = '';
+                tickerInput.focus();
+            }
+
+            estimateBeta(ticker) {
+                // Simplified beta estimation based on ticker patterns
+                const techStocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA'];
+                const defensiveStocks = ['JNJ', 'PG', 'KO', 'WMT', 'VZ', 'T'];
+                const financialStocks = ['JPM', 'BAC', 'WFC', 'GS', 'MS'];
+
+                if (techStocks.includes(ticker)) return 1.1 + Math.random() * 0.4;
+                if (defensiveStocks.includes(ticker)) return 0.4 + Math.random() * 0.3;
+                if (financialStocks.includes(ticker)) return 1.2 + Math.random() * 0.5;
+                return 0.8 + Math.random() * 0.6; // Default range
+            }
+
+            removeStock(index) {
+                this.portfolio.splice(index, 1);
+                this.updatePortfolioDisplay();
+            }
+
+            updatePortfolioDisplay() {
+                const holdingsDiv = document.getElementById('portfolio-holdings');
+                const summaryDiv = document.getElementById('portfolio-summary');
+
+                if (this.portfolio.length === 0) {
+                    holdingsDiv.innerHTML = `
+                        <p style="color: #a8a8a8; text-align: center; padding: 20px;">
+                            Add stocks to see your portfolio holdings
+                        </p>
+                    `;
+                    summaryDiv.style.display = 'none';
+                    return;
+                }
+
+                // Update holdings display
+                holdingsDiv.innerHTML = this.portfolio.map((stock, index) => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 10px;">
+                        <div>
+                            <strong style="color: #06b6d4;">${stock.ticker}</strong>
+                            <span style="color: #a8a8a8; margin-left: 10px;">${stock.shares} shares @ $${stock.currentPrice.toFixed(2)}</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: #e8e8e8; font-weight: 600;">$${stock.value.toFixed(0)}</div>
+                            <button onclick="stressTester.removeStock(${index})" style="background: #ef4444; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; margin-top: 4px;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Update summary
+                const totalValue = this.portfolio.reduce((sum, stock) => sum + stock.value, 0);
+                const totalStocks = this.portfolio.length;
+                const largestPosition = Math.max(...this.portfolio.map(s => s.value)) / totalValue * 100;
+                const portfolioBeta = this.calculatePortfolioBeta();
+
+                document.getElementById('total-value').textContent = `$${totalValue.toFixed(0)}`;
+                document.getElementById('total-stocks').textContent = totalStocks;
+                document.getElementById('largest-position').textContent = `${largestPosition.toFixed(1)}%`;
+                document.getElementById('portfolio-beta').textContent = portfolioBeta.toFixed(2);
+
+                summaryDiv.style.display = 'block';
+            }
+
+            calculatePortfolioBeta() {
+                if (this.portfolio.length === 0) return 1.0;
+                
+                const totalValue = this.portfolio.reduce((sum, stock) => sum + stock.value, 0);
+                return this.portfolio.reduce((weightedBeta, stock) => {
+                    const weight = stock.value / totalValue;
+                    return weightedBeta + (stock.beta * weight);
+                }, 0);
+            }
+
+            loadSamplePortfolio() {
+                this.portfolio = [
+                    { ticker: 'BRK.B', shares: 100, purchasePrice: 280, currentPrice: 295, value: 29500, beta: 0.85 },
+                    { ticker: 'JNJ', shares: 150, purchasePrice: 160, currentPrice: 165, value: 24750, beta: 0.65 },
+                    { ticker: 'PG', shares: 120, purchasePrice: 140, currentPrice: 155, value: 18600, beta: 0.55 },
+                    { ticker: 'KO', shares: 200, purchasePrice: 55, currentPrice: 58, value: 11600, beta: 0.75 },
+                    { ticker: 'WMT', shares: 80, purchasePrice: 145, currentPrice: 152, value: 12160, beta: 0.45 },
+                    { ticker: 'AAPL', shares: 50, purchasePrice: 170, currentPrice: 185, value: 9250, beta: 1.25 },
+                    { ticker: 'MSFT', shares: 40, purchasePrice: 310, currentPrice: 335, value: 13400, beta: 1.15 }
+                ];
+                this.updatePortfolioDisplay();
+            }
+
+            async runStressTest() {
+                if (this.portfolio.length === 0) {
+                    alert('Please add stocks to your portfolio first');
+                    return;
+                }
+
+                // Show loading
+                document.getElementById('loading-section').classList.add('active');
+                document.getElementById('results-content').style.display = 'none';
+
+                // Simulate analysis delay
+                await new Promise(resolve => setTimeout(resolve, 3000));
+
+                const scenario = this.scenarios[this.selectedScenario];
+                const results = this.calculateStressTestResults(scenario);
+                this.displayResults(results);
+
+                // Hide loading and show results
+                document.getElementById('loading-section').classList.remove('active');
+                document.getElementById('results-content').style.display = 'block';
+            }
+
+            calculateStressTestResults(scenario) {
+                const totalValue = this.portfolio.reduce((sum, stock) => sum + stock.value, 0);
+                const portfolioBeta = this.calculatePortfolioBeta();
+                
+                // Simulate stress test calculations
+                const maxDrawdown = scenario.decline * portfolioBeta;
+                const finalValue = totalValue * (1 + maxDrawdown);
+                const recoveryTime = Math.round(scenario.duration * 0.6 / 30); // Recovery typically 60% of decline duration
+                const sharpeRatio = Math.max(-2, (0.08 + maxDrawdown) / (scenario.volatility * portfolioBeta));
+                const var95 = totalValue * 0.05 * scenario.volatility * portfolioBeta;
+
+                return {
+                    maxDrawdown: maxDrawdown * 100,
+                    finalValue,
+                    recoveryTime,
+                    sharpeRatio,
+                    var95,
+                    portfolioBeta,
+                    scenario: scenario.name
+                };
+            }
+
+            displayResults(results) {
+                document.getElementById('max-drawdown').textContent = `${results.maxDrawdown.toFixed(1)}%`;
+                document.getElementById('final-value').textContent = `$${results.finalValue.toFixed(0)}`;
+                document.getElementById('recovery-time').textContent = `${results.recoveryTime}`;
+                document.getElementById('sharpe-ratio').textContent = results.sharpeRatio.toFixed(2);
+                document.getElementById('var-95').textContent = `$${Math.abs(results.var95).toFixed(0)}`;
+                document.getElementById('portfolio-beta-stress').textContent = results.portfolioBeta.toFixed(2);
+
+                // Create performance chart
+                this.createPerformanceChart(results);
+                this.createMonteCarloChart(results);
+            }
+
+            createPerformanceChart(results) {
+                const ctx = document.getElementById('performance-chart').getContext('2d');
+                
+                // Generate timeline data
+                const days = 365;
+                const data = [];
+                const marketData = [];
+                
+                for (let i = 0; i <= days; i++) {
+                    const progress = i / days;
+                    const volatility = Math.sin(progress * Math.PI * 8) * 0.1;
+                    
+                    const marketValue = 100 * (1 + (results.maxDrawdown / 100) * Math.sin(progress * Math.PI) + volatility);
+                    const portfolioValue = 100 * (1 + (results.maxDrawdown / 100) * results.portfolioBeta * Math.sin(progress * Math.PI) + volatility * results.portfolioBeta);
+                    
+                    data.push(portfolioValue);
+                    marketData.push(marketValue);
+                }
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: days + 1}, (_, i) => i),
+                        datasets: [{
+                            label: 'Portfolio Value',
+                            data: data,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.1
+                        }, {
+                            label: 'Market Index',
+                            data: marketData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: '#e8e8e8' }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: { display: true, text: 'Days', color: '#e8e8e8' },
+                                ticks: { color: '#a8a8a8' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            },
+                            y: {
+                                title: { display: true, text: 'Value (Indexed to 100)', color: '#e8e8e8' },
+                                ticks: { color: '#a8a8a8' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            createMonteCarloChart(results) {
+                const ctx = document.getElementById('monte-carlo-chart').getContext('2d');
+                
+                // Generate Monte Carlo simulation data
+                const simulations = 1000;
+                const outcomes = [];
+                
+                for (let i = 0; i < simulations; i++) {
+                    const randomFactor = (Math.random() - 0.5) * 2; // -1 to 1
+                    const outcome = results.maxDrawdown * (1 + randomFactor * 0.3);
+                    outcomes.push(outcome);
+                }
+
+                // Create histogram bins
+                const bins = 20;
+                const minOutcome = Math.min(...outcomes);
+                const maxOutcome = Math.max(...outcomes);
+                const binSize = (maxOutcome - minOutcome) / bins;
+                
+                const histogram = new Array(bins).fill(0);
+                const labels = [];
+                
+                for (let i = 0; i < bins; i++) {
+                    const binStart = minOutcome + i * binSize;
+                    labels.push(`${binStart.toFixed(1)}%`);
+                }
+                
+                outcomes.forEach(outcome => {
+                    const binIndex = Math.min(Math.floor((outcome - minOutcome) / binSize), bins - 1);
+                    histogram[binIndex]++;
+                });
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Frequency',
+                            data: histogram,
+                            backgroundColor: 'rgba(139, 92, 246, 0.6)',
+                            borderColor: '#8b5cf6',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: '#e8e8e8' }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: { display: true, text: 'Portfolio Drawdown (%)', color: '#e8e8e8' },
+                                ticks: { color: '#a8a8a8' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            },
+                            y: {
+                                title: { display: true, text: 'Frequency', color: '#e8e8e8' },
+                                ticks: { color: '#a8a8a8' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            exportResults() {
+                const results = {
+                    portfolio: this.portfolio,
+                    scenario: this.selectedScenario,
+                    timestamp: new Date().toISOString(),
+                    summary: {
+                        totalValue: this.portfolio.reduce((sum, stock) => sum + stock.value, 0),
+                        portfolioBeta: this.calculatePortfolioBeta(),
+                        selectedScenario: this.scenarios[this.selectedScenario]
+                    }
+                };
+
+                const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `portfolio-stress-test-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Global functions
+        const stressTester = new PortfolioStressTester();
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+
+            // Run stress test if switching to results tab
+            if (tabName === 'results') {
+                stressTester.runStressTest();
+            }
+        }
+
+        function addStock() {
+            stressTester.addStock();
+        }
+
+        function loadSamplePortfolio() {
+            stressTester.loadSamplePortfolio();
+        }
+
+        function exportResults() {
+            stressTester.exportResults();
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            console.log('Portfolio Stress Testing Dashboard loaded successfully');
+        });
+    </script>
+</body>
+</html>
