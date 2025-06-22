@@ -14,7 +14,9 @@ import {
   TreePine,
   Check,
   ChevronDown,
-  Accessibility
+  Accessibility,
+  Sunset,
+  Zap
 } from 'lucide-react'
 import { useEnhancedTheme } from '../contexts/EnhancedThemeContext'
 import { useAccessibilityContext } from './AccessibilityProvider'
@@ -26,9 +28,25 @@ interface ThemeOption {
   icon: React.ComponentType<{ className?: string }>
   color: string
   seasonal?: boolean
+  isNew?: boolean
 }
 
 const themeOptions: ThemeOption[] = [
+  {
+    id: 'neon-green',
+    name: 'Neon Green',
+    description: 'The classic matrix-inspired green terminal',
+    icon: Zap,
+    color: '#00ff41'
+  },
+  {
+    id: 'cyber-sunset',
+    name: 'Cyber Sunset',
+    description: 'Vibrant magenta and orange cyberpunk vibes',
+    icon: Sunset,
+    color: '#ff0080',
+    isNew: true
+  },
   {
     id: 'default',
     name: 'Classic Green',

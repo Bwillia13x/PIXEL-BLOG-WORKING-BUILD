@@ -4,6 +4,7 @@ date: "2025-06-19"
 excerpt: "Launching a sophisticated tool that combines Benjamin Graham's defensive investing principles with modern AI pattern recognition to evaluate company quality across 12 key dimensions."
 tags: ["Value Investing", "Financial Analysis", "AI", "Benjamin Graham", "Quality Score"]
 featured: true
+published: true
 ---
 
 # Introducing the Quality Score Engine: AI-Powered Value Investing Analysis

@@ -4,6 +4,7 @@ date: "2025-01-28"
 excerpt: "Deep dive into BG-IAP, a specialized valuation platform that streamlines Bruce Greenwald's Earnings Power Value framework using AI and Monte Carlo simulations."
 tags: ["Investment Analysis", "Valuation", "EPV", "Bruce Greenwald", "Finance Technology", "AI"]
 featured: true
+published: true
 ---
 
 ## Elevator Pitch & Pain Points

@@ -56,6 +56,7 @@ const ThemeToggle = ({
           bg-gray-900/80 hover:bg-gray-800/90 hover:border-green-400/40 transition-all duration-300 
           focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-gray-900
           disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm overflow-hidden
+          button-press glow-on-focus icon-interactive card-hover-lift gpu-optimized
           ${className}
         `}
         aria-label={`Switch to ${isLight ? 'dark' : 'light'} theme`}
@@ -111,7 +112,7 @@ const ThemeToggle = ({
                   scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
                 }}
               >
-                <SunIcon className="w-6 h-6 text-amber-400 group-hover:text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)] transition-all duration-300" aria-hidden="true" />
+                <SunIcon className="w-6 h-6 text-amber-400 group-hover:text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)] transition-all duration-300 icon-pulse-on-focus" aria-hidden="true" />
               </motion.div>
             ) : (
               <motion.div
@@ -125,7 +126,7 @@ const ThemeToggle = ({
                   ease: "easeInOut" 
                 }}
               >
-                <MoonIcon className="w-6 h-6 text-blue-400 group-hover:text-blue-300 drop-shadow-[0_0_8px_rgba(96,165,250,0.6)] transition-all duration-300" aria-hidden="true" />
+                <MoonIcon className="w-6 h-6 text-blue-400 group-hover:text-blue-300 drop-shadow-[0_0_8px_rgba(96,165,250,0.6)] transition-all duration-300 icon-pulse-on-focus" aria-hidden="true" />
               </motion.div>
             )}
           </motion.div>

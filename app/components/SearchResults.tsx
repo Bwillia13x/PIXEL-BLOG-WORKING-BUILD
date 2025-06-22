@@ -2,16 +2,37 @@
 
 import Link from 'next/link'
 import { CalendarIcon, TagIcon, FolderIcon, LinkIcon } from '@heroicons/react/24/outline'
-import { SearchableItem } from '@/app/hooks/useSearch'
+interface SearchResult {
+  id: string
+  title: string
+  content: string
+  type: 'post' | 'project'
+  category?: string
+  tags: string[]
+  date?: string
+  slug: string
+  excerpt?: string
+  readTime?: string
+  published?: boolean
+  status?: string
+  demoUrl?: string
+  repoUrl?: string
+  score: number
+  highlights: {
+    title?: string
+    content?: string
+    excerpt?: string
+  }
+}
 
 interface SearchResultsProps {
-  results: SearchableItem[]
+  results: SearchResult[]
   isLoading: boolean
   query: string
 }
 
 interface SearchResultItemProps {
-  item: SearchableItem
+  item: SearchResult
 }
 
 function SearchResultItem({ item }: SearchResultItemProps) {

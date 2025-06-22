@@ -4,6 +4,7 @@ date: "2025-01-28"
 excerpt: "Deep dive into Summit, an AI-driven study companion that generates flashcards from lecture content, provides tutoring support, and tracks learning progress using LangChain and RAG architecture."
 tags: ["EdTech", "AI Education", "Study Tools", "Machine Learning", "LangChain", "RAG Architecture"]
 featured: true
+published: true
 ---
 
 ## Origin Story: Tackling Academic Overwhelm

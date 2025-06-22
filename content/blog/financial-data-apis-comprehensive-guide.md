@@ -4,6 +4,7 @@ date: "2025-06-14"
 excerpt: "A detailed comparison of 7 financial data APIs for building AI-powered investment platforms, including free tiers, pricing, and integration recommendations."
 tags: ["FinTech", "API", "AI", "Data Analysis", "Investment", "Python"]
 featured: true
+published: true
 ---
 
 Building an AI-augmented valuation platform requires access to comprehensive financial data. After extensive research into financial data providers, I've compiled this detailed comparison to help developers choose the right APIs for their projects.

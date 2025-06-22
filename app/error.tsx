@@ -18,7 +18,7 @@ export default function Error({
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center p-8 bg-gray-800 rounded-lg max-w-md">
-        <h2 className="text-3xl font-pixel text-red-400 mb-4">System Error</h2>
+        <h2 className="text-3xl pixel-head text-red-400 mb-4">System Error</h2>
         <div className="font-mono text-gray-300 mb-6">
           <p className="mb-2">
             The pixels have collided! Something went wrong on our end.

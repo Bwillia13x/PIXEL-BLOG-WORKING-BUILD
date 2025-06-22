@@ -72,12 +72,13 @@ export interface ThemeConfig {
   }
 }
 
-// Predefined retro color schemes
-export const RETRO_THEMES: Record<string, ThemeConfig> = {
-  matrix: {
-    id: 'matrix',
-    name: 'Matrix Green',
-    description: 'Classic green-on-black terminal aesthetic from The Matrix',
+// Organized Color System - Main Themes
+export const COLOR_SYSTEMS = {
+  // Default Neon Green Theme (Matrix-inspired)
+  neonGreen: {
+    id: 'neon-green',
+    name: 'Neon Green',
+    description: 'The classic matrix-inspired green terminal aesthetic with optimal contrast',
     colors: {
       primary: '#00ff41',
       primaryHover: '#00cc33',
@@ -116,7 +117,7 @@ export const RETRO_THEMES: Record<string, ThemeConfig> = {
     },
     fonts: {
       primary: 'JetBrains Mono, Consolas, monospace',
-      secondary: 'VT323, monospace',
+      secondary: 'Inter, system-ui, sans-serif',
       mono: 'JetBrains Mono, monospace'
     },
     effects: {
@@ -134,9 +135,83 @@ export const RETRO_THEMES: Record<string, ThemeConfig> = {
       author: 'Pixel Wisdom',
       version: '1.0.0',
       created: new Date().toISOString(),
-      tags: ['retro', 'terminal', 'matrix', 'green']
+      tags: ['default', 'matrix', 'green', 'neon', 'terminal']
     }
   },
+
+  // New Cyber-Sunset Theme (Magenta-Orange)
+  cyberSunset: {
+    id: 'cyber-sunset',
+    name: 'Cyber Sunset',
+    description: 'Vibrant magenta and orange tones creating a cyberpunk sunset atmosphere',
+    colors: {
+      primary: '#ff0080',
+      primaryHover: '#e6006b',
+      primaryFocus: '#ff3399',
+      
+      background: '#000000',
+      backgroundSecondary: '#1a0a0f',
+      backgroundTertiary: '#2a1520',
+      backgroundOverlay: 'rgba(0, 0, 0, 0.9)',
+      
+      surface: '#1f0f15',
+      surfaceHover: '#2f1f25',
+      surfaceActive: '#3f2f35',
+      
+      text: '#ff0080',
+      textSecondary: '#ff3399',
+      textTertiary: '#cc0066',
+      textInverse: '#000000',
+      
+      border: '#ff0080',
+      borderSecondary: '#ff3399',
+      borderAccent: '#ff6600',
+      
+      success: '#00ff80',
+      warning: '#ff6600',
+      error: '#ff4040',
+      info: '#8000ff',
+      
+      accent1: '#ff6600', // Sunset orange
+      accent2: '#8000ff', // Deep purple
+      accent3: '#ffff00', // Electric yellow
+      
+      glow: '#ff0080',
+      shadow: 'rgba(255, 0, 128, 0.4)',
+      gradient: 'linear-gradient(135deg, #000000 0%, #2a0a15 50%, #1a0a0f 100%)'
+    },
+    fonts: {
+      primary: 'JetBrains Mono, Consolas, monospace',
+      secondary: 'Inter, system-ui, sans-serif',
+      mono: 'JetBrains Mono, monospace'
+    },
+    effects: {
+      scanlines: true,
+      glow: true,
+      pixelBorder: true,
+      crtEffect: false
+    },
+    accessibility: {
+      contrastRatio: 12.8,
+      reduceMotion: false,
+      highContrast: false
+    },
+    metadata: {
+      author: 'Pixel Wisdom',
+      version: '1.0.0',
+      created: new Date().toISOString(),
+      tags: ['cyberpunk', 'sunset', 'magenta', 'orange', 'vibrant']
+    }
+  }
+} as const
+
+// Legacy theme compatibility - keeping existing themes
+export const RETRO_THEMES: Record<string, ThemeConfig> = {
+  // Default theme points to our organized neon green
+  matrix: COLOR_SYSTEMS.neonGreen,
+  
+  // New cyber sunset theme
+  cyberSunset: COLOR_SYSTEMS.cyberSunset,
 
   amber: {
     id: 'amber',
@@ -180,7 +255,7 @@ export const RETRO_THEMES: Record<string, ThemeConfig> = {
     },
     fonts: {
       primary: 'JetBrains Mono, Consolas, monospace',
-      secondary: 'VT323, monospace',
+      secondary: 'Inter, system-ui, sans-serif',
       mono: 'JetBrains Mono, monospace'
     },
     effects: {
@@ -244,7 +319,7 @@ export const RETRO_THEMES: Record<string, ThemeConfig> = {
     },
     fonts: {
       primary: 'JetBrains Mono, Consolas, monospace',
-      secondary: 'Orbitron, monospace',
+      secondary: 'Inter, system-ui, sans-serif',
       mono: 'JetBrains Mono, monospace'
     },
     effects: {
@@ -372,7 +447,7 @@ export const RETRO_THEMES: Record<string, ThemeConfig> = {
     },
     fonts: {
       primary: 'JetBrains Mono, Consolas, monospace',
-      secondary: 'Orbitron, monospace',
+      secondary: 'Inter, system-ui, sans-serif',
       mono: 'JetBrains Mono, monospace'
     },
     effects: {
@@ -436,7 +511,7 @@ export const RETRO_THEMES: Record<string, ThemeConfig> = {
     },
     fonts: {
       primary: 'JetBrains Mono, Consolas, monospace',
-      secondary: 'Orbitron, monospace',
+      secondary: 'Inter, system-ui, sans-serif',
       mono: 'JetBrains Mono, monospace'
     },
     effects: {
@@ -459,62 +534,35 @@ export const RETRO_THEMES: Record<string, ThemeConfig> = {
   }
 }
 
-// Default theme (Matrix)
-export const DEFAULT_THEME = RETRO_THEMES.matrix
+// Default theme configuration
+export const DEFAULT_THEME = COLOR_SYSTEMS.neonGreen
 
-// Utility functions for theme management
-export function getThemeById(id: string): ThemeConfig | null {
-  return RETRO_THEMES[id] || null
+// Theme utilities
+export function getThemeById(id: string): ThemeConfig | undefined {
+  return RETRO_THEMES[id] || Object.values(COLOR_SYSTEMS).find(theme => theme.id === id)
 }
 
 export function getAllThemes(): ThemeConfig[] {
   return Object.values(RETRO_THEMES)
 }
 
-export function validateTheme(theme: Partial<ThemeConfig>): boolean {
-  // Basic validation - ensure required fields exist
-  return !!(
-    theme.id &&
-    theme.name &&
-    theme.colors &&
-    theme.colors.primary &&
-    theme.colors.background &&
-    theme.colors.text
+export function getMainThemes(): ThemeConfig[] {
+  return Object.values(COLOR_SYSTEMS)
+}
+
+export function validateTheme(theme: any): theme is ThemeConfig {
+  return (
+    typeof theme === 'object' &&
+    theme !== null &&
+    typeof theme.id === 'string' &&
+    typeof theme.name === 'string' &&
+    typeof theme.colors === 'object' &&
+    typeof theme.fonts === 'object' &&
+    typeof theme.effects === 'object' &&
+    typeof theme.accessibility === 'object'
   )
 }
 
-// Accessibility helpers
-export function calculateContrast(foreground: string, background: string): number {
-  // Simplified contrast calculation (in real implementation, use proper color contrast algorithm)
-  const getLuminance = (color: string) => {
-    // Remove # if present
-    const hex = color.replace('#', '')
-    const r = parseInt(hex.substr(0, 2), 16) / 255
-    const g = parseInt(hex.substr(2, 2), 16) / 255
-    const b = parseInt(hex.substr(4, 2), 16) / 255
-    
-    const toLinear = (val: number) => val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4)
-    
-    return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b)
-  }
-  
-  const l1 = getLuminance(foreground)
-  const l2 = getLuminance(background)
-  const lighter = Math.max(l1, l2)
-  const darker = Math.min(l1, l2)
-  
-  return (lighter + 0.05) / (darker + 0.05)
-}
-
-export function isAccessibilityCompliant(theme: ThemeConfig): boolean {
-  const textContrast = calculateContrast(theme.colors.text, theme.colors.background)
-  const primaryContrast = calculateContrast(theme.colors.primary, theme.colors.background)
-  
-  // WCAG AA standard requires 4.5:1 for normal text, 3:1 for large text
-  return textContrast >= 4.5 && primaryContrast >= 3.0
-}
-
-// Theme export/import helpers
 export function exportTheme(theme: ThemeConfig): string {
   return JSON.stringify(theme, null, 2)
 }
@@ -522,11 +570,96 @@ export function exportTheme(theme: ThemeConfig): string {
 export function importTheme(jsonString: string): ThemeConfig | null {
   try {
     const theme = JSON.parse(jsonString)
-    if (validateTheme(theme)) {
-      return theme
-    }
-  } catch (error) {
-    console.error('Failed to parse theme JSON:', error)
+    return validateTheme(theme) ? theme : null
+  } catch {
+    return null
   }
-  return null
+}
+
+// Theme comparison utilities
+export function getThemeContrastRatio(theme: ThemeConfig): number {
+  return theme.accessibility.contrastRatio
+}
+
+export function isAccessibleTheme(theme: ThemeConfig): boolean {
+  return theme.accessibility.contrastRatio >= 7.0 // WCAG AA Large Text standard
+}
+
+// New function for accessibility compliance checking
+export function isAccessibilityCompliant(theme: ThemeConfig): boolean {
+  const {
+    contrastRatio,
+    highContrast,
+  } = theme.accessibility
+
+  // Check WCAG contrast requirements
+  const hasGoodContrast = contrastRatio >= 4.5 // AA level
+  const hasExcellentContrast = contrastRatio >= 7.0 // AAA level
+  
+  // Additional checks for specific color combinations
+  const hasReadableText = checkColorContrast(theme.colors.text, theme.colors.background) >= 4.5
+  const hasReadableSecondaryText = checkColorContrast(theme.colors.textSecondary, theme.colors.background) >= 3.0
+  const hasReadableBorders = checkColorContrast(theme.colors.border, theme.colors.background) >= 3.0
+  
+  return hasGoodContrast && hasReadableText && hasReadableSecondaryText && hasReadableBorders
+}
+
+// Helper function to calculate color contrast ratio
+function checkColorContrast(foreground: string, background: string): number {
+  // Convert hex to RGB
+  const getRGB = (color: string) => {
+    const hex = color.replace('#', '')
+    const num = parseInt(hex, 16)
+    return {
+      r: (num >> 16) & 255,
+      g: (num >> 8) & 255,
+      b: num & 255
+    }
+  }
+
+  // Calculate relative luminance
+  const getLuminance = (color: { r: number; g: number; b: number }) => {
+    const { r, g, b } = color
+    const [rs, gs, bs] = [r, g, b].map(c => {
+      c = c / 255
+      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
+    })
+    return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs
+  }
+
+  try {
+    const fg = getRGB(foreground)
+    const bg = getRGB(background)
+    
+    const fgLuminance = getLuminance(fg)
+    const bgLuminance = getLuminance(bg)
+    
+    const contrast = fgLuminance > bgLuminance 
+      ? (fgLuminance + 0.05) / (bgLuminance + 0.05)
+      : (bgLuminance + 0.05) / (fgLuminance + 0.05)
+    
+    return contrast
+  } catch (error) {
+    console.warn('Error calculating contrast ratio:', error)
+    return 1 // Fallback to poor contrast
+  }
+}
+
+export function getThemeByTags(tags: string[]): ThemeConfig[] {
+  return getAllThemes().filter(theme =>
+    tags.some(tag => theme.metadata.tags.includes(tag))
+  )
+}
+
+// Color system utilities
+export function getColorSystemVariants(): { id: string; name: string; description: string }[] {
+  return Object.values(COLOR_SYSTEMS).map(theme => ({
+    id: theme.id,
+    name: theme.name,
+    description: theme.description
+  }))
+}
+
+export function isMainColorSystem(themeId: string): boolean {
+  return Object.keys(COLOR_SYSTEMS).some(key => COLOR_SYSTEMS[key as keyof typeof COLOR_SYSTEMS].id === themeId)
 }

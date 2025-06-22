@@ -207,23 +207,23 @@ const NavMenu = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               whileHover={{ 
-                scale: 1.08, 
-                y: -4,
-                transition: { type: "spring", stiffness: 400, damping: 10 }
+                scale: 1.05, 
+                y: -2,
+                transition: { type: "spring", stiffness: 300, damping: 25 }
               }}
-              whileTap={{ scale: 0.92 }}
+              whileTap={{ scale: 0.95 }}
               style={{ 
                 opacity: 1,
-                transform: 'none'
+                transform: 'none',
+                willChange: 'transform'
               }}
-              tabIndex={0}
             >
               <Link
                 href={item.href}
-                className={`group relative flex flex-col items-center p-4 rounded-lg transition-all duration-500 overflow-hidden focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-gray-900 ${
+                className={`group relative flex flex-col items-center p-4 rounded-lg transition-all duration-300 overflow-hidden focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-gray-900 ${
                   active 
                     ? 'bg-green-600/15 text-green-400 border-2 border-green-400/50 shadow-lg shadow-green-400/20' 
-                    : 'bg-gray-900/80 hover:bg-gray-800/90 border-2 border-gray-600/40 hover:border-green-400/60 hover:shadow-lg hover:shadow-green-400/20 backdrop-blur-sm'
+                    : 'bg-gray-900/80 border-2 border-gray-600/40 backdrop-blur-sm hover:bg-gray-800/90 hover:border-green-400/60 hover:shadow-lg hover:shadow-green-400/20'
                 }`}
                 title={`${item.description} (Alt+${item.shortcut})`}
                 aria-label={`${item.label}: ${item.description}. Press Alt+${item.shortcut} for quick access.`}
@@ -247,21 +247,21 @@ const NavMenu = () => {
                   </div>
                 )}
                 
-                <Icon className={`w-6 h-6 mb-2 transition-all duration-500 relative z-10 ${
-                  active ? 'text-green-400 drop-shadow-lg' : 'text-gray-300 group-hover:text-green-400 group-hover:scale-125 group-hover:drop-shadow-[0_0_8px_rgba(74,222,128,0.6)]'
+                <Icon className={`w-6 h-6 mb-2 transition-all duration-300 ease-out relative z-10 ${
+                  active ? 'text-green-400 drop-shadow-lg' : 'text-gray-300 group-hover:text-green-400 group-hover:scale-110 group-hover:drop-shadow-[0_0_6px_rgba(74,222,128,0.6)]'
                 }`} />
-                <span className={`font-pixel text-xs relative z-10 transition-all duration-500 ${
-                  active ? 'text-green-400' : 'text-gray-300 group-hover:text-green-400 group-hover:drop-shadow-[0_0_4px_rgba(74,222,128,0.8)]'
+                <span className={`font-pixel text-xs relative z-10 transition-all duration-300 ease-out ${
+                  active ? 'text-green-400' : 'text-gray-300 group-hover:text-green-400 group-hover:drop-shadow-[0_0_4px_rgba(74,222,128,0.6)]'
                 }`}>{item.label}</span>
                 
                 {/* Keyboard shortcut indicator */}
-                <span className="absolute -top-2 -right-2 w-5 h-5 bg-green-600/90 text-black text-[10px] font-pixel rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100 shadow-lg">
+                <span className="absolute -top-2 -right-2 w-5 h-5 bg-green-600/90 text-black text-[10px] font-pixel rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transform scale-90 group-hover:scale-100 transition-all duration-300 ease-out shadow-lg pointer-events-none">
                   {item.shortcut}
                 </span>
                 
                 {/* Enhanced hover glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-green-400/0 via-green-400/5 to-green-400/10 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-lg" />
-                <div className="absolute inset-0 bg-green-400/5 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-lg blur-sm" />
+                <div className="absolute inset-0 bg-gradient-to-br from-green-400/0 via-green-400/5 to-green-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out rounded-lg" />
+                <div className="absolute inset-0 bg-green-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out rounded-lg blur-sm" />
                 
                 {/* Active indicator with animation */}
                 {active && (

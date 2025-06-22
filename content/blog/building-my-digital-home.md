@@ -4,6 +4,7 @@ date: "2025-06-14"
 excerpt: "The story behind building this pixel-themed portfolio site using Next.js, AI tools, and modern web development practices."
 tags: ["Web Development", "Next.js", "AI Tools", "Portfolio"]
 featured: true
+published: true
 ---
 
 Welcome to my digital space! I'm excited to share the story behind building this site and the journey that brought me here.

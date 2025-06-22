@@ -4,6 +4,7 @@ date: "2025-01-13"
 excerpt: "Launching the third pillar of our value investing platform - an advanced screening tool implementing Benjamin Graham's legendary net-net criteria to systematically identify deeply undervalued opportunities."
 tags: ["value-investing", "benjamin-graham", "stock-screening", "net-net", "financial-analysis"]
 featured: true
+published: true
 ---
 
 # Deep Value Screener: Benjamin Graham's Net-Net Strategy Automated

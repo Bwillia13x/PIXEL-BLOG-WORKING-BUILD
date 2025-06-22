@@ -39,8 +39,8 @@ const parseMarkdown = (content: string): string => {
   let html = content
     // Headers
     .replace(/^### (.*$)/gim, '<h3 class="text-lg font-pixel text-green-400 mb-2 mt-4">$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2 class="text-xl font-pixel text-green-400 mb-3 mt-6">$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-pixel text-green-400 mb-4 mt-8">$1</h1>')
+    .replace(/^## (.*$)/gim, '<h2 class="text-xl pixel-head text-green-400 mb-3 mt-6">$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1 class="text-2xl pixel-head text-green-400 mb-4 mt-8">$1</h1>')
     
     // Bold and Italic
     .replace(/\*\*\*(.*?)\*\*\*/g, '<strong class="font-bold"><em class="italic">$1</em></strong>')

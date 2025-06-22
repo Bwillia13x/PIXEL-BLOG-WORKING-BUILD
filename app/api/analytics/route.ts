@@ -18,18 +18,18 @@ export async function POST(request: NextRequest) {
       }
 
       // Parse and sanitize data
-      let rawData
+      let rawData: any = {}
       try {
-        rawData = await request.json()
+        // Only attempt to parse if content-type indicates JSON and body is present
+        const contentType = request.headers.get('content-type') || ''
+        const contentLength = Number(request.headers.get('content-length') || 0)
+        if (contentType.includes('application/json') && contentLength > 0) {
+          rawData = await request.json()
+        }
       } catch (parseError) {
-        console.error('JSON parsing error:', parseError)
-        SecurityMonitor.logSecurityEvent('validation_error', {
-          error: 'Invalid JSON format'
-        }, request)
-        return createSecureResponse(
-          { error: 'Invalid JSON format' },
-          400
-        )
+        console.warn('JSON parsing error in /api/analytics (ignored):', parseError)
+        // Fallback to empty object so we still respond quickly
+        rawData = {}
       }
       
       const sanitizedData = InputSanitizer.sanitizeJson(JSON.stringify(rawData))
@@ -48,6 +48,11 @@ export async function POST(request: NextRequest) {
       const requiredFields = ['event', 'timestamp']
       const missingFields = requiredFields.filter(field => !sanitizedData[field])
       
+      // If payload is empty, treat as no-op and respond quickly
+      if (Object.keys(rawData).length === 0 || missingFields.length === requiredFields.length) {
+        return createSecureResponse({ success: true, noop: true })
+      }
+
       if (missingFields.length > 0) {
         return createSecureResponse(
           { error: 'Missing required fields', fields: missingFields },

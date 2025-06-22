@@ -6,6 +6,7 @@ import { AccessibilityPanel } from '../components/themes/AccessibilityFeatures';
 import { CinematicTransitionManager } from '../components/themes/CinematicTransitions';
 import { ThemeVisualEffects } from '../components/themes/AdvancedVisualEffects';
 import { MatrixTextReveal } from '@/app/components/design-system/PixelAnimations';
+import PageHeader from '@/app/components/PageHeader';
 
 export default function AdvancedThemesPage() {
   return (
@@ -15,21 +16,16 @@ export default function AdvancedThemesPage() {
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950" />
           <div className="relative max-w-6xl mx-auto px-6 py-20">
-            <div className="text-center mb-12">
-              <h1 className="text-2xl md:text-4xl lg:text-6xl font-pixel text-retro-green mb-6">
-                <MatrixTextReveal 
-                  text="ADVANCED THEMES" 
-                  speed={60}
-                  delay={400}
-                  scrambleDuration={300}
-                  className="inline-block"
-                />
-              </h1>
-              <p className="text-lg text-gray-400 font-mono max-w-2xl mx-auto">
-                Professional-grade theme system with real-time editing, visual effects, 
-                seasonal variations, accessibility features, and cinematic transitions.
-              </p>
-            </div>
+            <PageHeader 
+              title="ADVANCED THEMES"
+              subtitle="Professional-grade theme system with real-time editing, visual effects, seasonal variations, accessibility features, and cinematic transitions."
+              animationType="matrix"
+              animationSpeed={60}
+              animationDelay={400}
+              titleClassName="text-2xl md:text-3xl lg:text-4xl"
+              subtitleClassName="text-lg text-gray-400 font-mono max-w-2xl mx-auto"
+              className="mb-12"
+            />
 
             {/* Features Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">

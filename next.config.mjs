@@ -1,141 +1,58 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enhanced Image Optimization
   images: {
-    // Enable image optimization for better performance
-    formats: ['image/webp', 'image/avif'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    // Enable multiple formats for better compression
+    formats: ['image/avif', 'image/webp'],
+    
+    // Optimize image quality based on device capabilities
+    deviceSizes: [640, 750, 828, 1080, 1200, 1400, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // Add domains for external images if needed
+    
+    // Enable advanced optimization
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    
+    // Optimize for different connection speeds
+    minimumCacheTTL: 31536000, // 1 year cache
+    
+    // Enable responsive loading
+    loader: 'default',
+    
+    // Size optimization
+    unoptimized: false,
+    
+    // Remote patterns for external images
     remotePatterns: [
-      // Example: Enable if you use external image sources
       {
         protocol: 'https',
-        hostname: 'raw.githubusercontent.com',
-      },
-      {
-        protocol: 'http',
-        hostname: 'localhost',
+        hostname: '**',
       },
     ],
-    minimumCacheTTL: 31536000, // 1 year
   },
+  
+  // Performance optimizations
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  
+  // Compress HTML in production
+  compress: true,
+  
+  // Enable React strict mode
+  reactStrictMode: true,
   
   // Enable experimental features for better performance
   experimental: {
     optimizePackageImports: ['lucide-react'],
     webVitalsAttribution: ['CLS', 'LCP'],
   },
-
-  // Disable ESLint during builds
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-
-  // Bundle analysis configuration
-  ...(process.env.ANALYZE === 'true' && {
-    productionBrowserSourceMaps: true,
-  }),
-
-  // Optimize webpack for development and exclude problematic directories
-  webpack: (config, { dev, isServer }) => {
-    // Bundle analysis setup
-    if (process.env.ANALYZE === 'true') {
-      config.optimization = {
-        ...config.optimization,
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            default: {
-              minChunks: 2,
-              priority: -20,
-              reuseExistingChunk: true,
-            },
-            vendor: {
-              test: /[\\/]node_modules[\\/]/,
-              name: 'vendors',
-              priority: -10,
-              chunks: 'all',
-            },
-            common: {
-              minChunks: 2,
-              priority: -5,
-              reuseExistingChunk: true,
-            },
-          },
-        },
-      }
-    }
-
-    if (dev) {
-      // Exclude problematic directories from file watching
-      config.watchOptions = {
-        ...config.watchOptions,
-        ignored: [
-          '**/node_modules/**',
-          '**/.git/**',
-          '**/.next/**',
-          '**/public/projects/**',
-          '**/*.log',
-          '**/dist/**',
-          '**/build/**',
-          '**/.vercel/**',
-          '**/.env*',
-        ],
-        // Reduce polling frequency
-        poll: 1000,
-        // Add aggregation timeout to batch changes
-        aggregateTimeout: 300,
-      }
-    }
-
-    // Optimize for client-side performance
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-      };
-    }
-
-    return config
-  },
-
-  // Performance optimizations
-  poweredByHeader: false,
-  compress: true,
-
-  // Headers for performance
+  
+  // Headers for better caching
   async headers() {
     return [
       {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
-          },
-        ],
-      },
-      {
-        source: '/api/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=300, s-maxage=600',
-          },
-        ],
-      },
-      {
-        source: '/static/(.*)',
+        source: '/_next/image(.*)',
         headers: [
           {
             key: 'Cache-Control',
@@ -143,19 +60,58 @@ const nextConfig = {
           },
         ],
       },
-    ];
-  },
-
-  // Redirects for clean URLs
-  async redirects() {
-    return [
       {
-        source: '/blog/',
-        destination: '/blog',
-        permanent: true,
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
       },
-    ];
+      {
+        source: '/images/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, s-maxage=31536000',
+          },
+        ],
+      },
+    ]
   },
+  
+  // Webpack optimizations
+  webpack: (config, { dev, isServer }) => {
+    // Optimize for production
+    if (!dev && !isServer) {
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+            },
+            common: {
+              minChunks: 2,
+              chunks: 'all',
+              enforce: true,
+            },
+          },
+        },
+      }
+    }
+    
+    return config
+  },
+  
+  // Bundle analysis configuration
+  ...(process.env.ANALYZE === 'true' && {
+    productionBrowserSourceMaps: true,
+  }),
 }
 
 export default nextConfig

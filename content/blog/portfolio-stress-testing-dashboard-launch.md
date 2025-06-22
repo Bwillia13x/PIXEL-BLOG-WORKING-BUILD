@@ -6,6 +6,7 @@ excerpt: "Introducing our most sophisticated risk analysis tool yet - a comprehe
 tags: ["Risk Management", "Portfolio Analysis", "Value Investing", "Monte Carlo Simulation"]
 featured: true
 readTime: "8 min read"
+published: true
 ---
 
 # Portfolio Stress Testing Dashboard: Advanced Risk Analysis for Value Investors

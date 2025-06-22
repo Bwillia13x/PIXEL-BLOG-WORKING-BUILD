@@ -62,17 +62,30 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
         initial={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
-        className="fixed inset-0 z-[9999] bg-black flex items-center justify-center"
+        className="fixed top-0 left-0 right-0 bottom-0 z-[99999] bg-black"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: 99999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#000000'
+        }}
       >
-        <div className="text-center space-y-6 sm:space-y-8 px-4">
+        <div className="text-center space-y-6 sm:space-y-8 px-4 max-w-md w-full">
           {/* Logo/Title */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-green-400 font-pixel text-xl sm:text-2xl md:text-3xl"
+            className="text-green-400 font-pixel text-xl sm:text-2xl md:text-3xl mb-8"
             style={{
-              textShadow: '0 0 20px rgba(74, 222, 128, 0.8)'
+              textShadow: '0 0 20px rgba(74, 222, 128, 0.8)',
+              fontFamily: 'var(--font-press-start-2p), monospace'
             }}
           >
             PIXEL WISDOM
@@ -83,19 +96,19 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="w-full max-w-xs mx-auto px-4 sm:px-0"
+            className="w-full max-w-xs mx-auto"
           >
-            <div className="h-2 bg-gray-800 border border-green-400/50 overflow-hidden">
+            <div className="relative h-3 bg-gray-800 border-2 border-green-400/50 overflow-hidden rounded-sm mb-3 loading-progress-bar">
               <motion.div
                 className="h-full bg-gradient-to-r from-green-400 to-green-300"
                 style={{
                   width: `${progress}%`,
-                  boxShadow: '0 0 10px rgba(74, 222, 128, 0.8)'
+                  boxShadow: '0 0 15px rgba(74, 222, 128, 0.8)'
                 }}
                 transition={{ type: "spring", stiffness: 50 }}
               />
             </div>
-            <div className="flex justify-between text-xs sm:text-sm font-mono text-green-400/70 mt-2">
+            <div className="flex justify-between text-xs sm:text-sm font-mono text-green-400/70">
               <span>LOADING</span>
               <span>{progress}%</span>
             </div>
@@ -106,7 +119,7 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="text-green-400/80 font-mono text-xs sm:text-sm tracking-wider"
+            className="text-green-400/80 font-mono text-xs sm:text-sm tracking-wider min-h-[20px]"
           >
             {currentText}
           </motion.div>
@@ -116,12 +129,16 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            className="flex justify-center space-x-1"
+            className="flex justify-center space-x-2 py-4"
           >
             {[...Array(3)].map((_, i) => (
               <motion.div
                 key={i}
-                className="w-2 h-2 bg-green-400"
+                className="w-3 h-3 bg-green-400 rounded-sm pixel-loading-dot"
+                style={{
+                  boxShadow: '0 0 8px rgba(74, 222, 128, 0.6)',
+                  animationDelay: `${i * 0.2}s`
+                }}
                 animate={{
                   opacity: [0.3, 1, 0.3],
                   scale: [0.8, 1.2, 0.8]
@@ -140,7 +157,7 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-green-400 font-mono text-xs sm:text-sm"
+              className="text-green-400 font-mono text-xs sm:text-sm mt-4"
             >
               Welcome to the Matrix
             </motion.div>
@@ -148,7 +165,10 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
         </div>
 
         {/* Scanlines Effect */}
-        <div className="absolute inset-0 pointer-events-none opacity-10">
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-10 loading-scanlines"
+          style={{ zIndex: 1 }}
+        >
           <div 
             className="w-full h-full"
             style={{
@@ -164,7 +184,10 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
         </div>
 
         {/* Pixel particles */}
-        <div className="absolute inset-0 pointer-events-none">
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{ zIndex: 2 }}
+        >
           {Array.from({ length: 12 }).map((_, i) => (
             <motion.div
               key={i}
@@ -172,6 +195,7 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
+                boxShadow: '0 0 4px rgba(74, 222, 128, 0.8)'
               }}
               animate={{
                 opacity: [0, 0.8, 0],
@@ -186,6 +210,15 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
             />
           ))}
         </div>
+
+        {/* Matrix-style border effect */}
+        <div 
+          className="absolute inset-4 border border-green-400/30 pointer-events-none"
+          style={{ 
+            zIndex: 3,
+            boxShadow: 'inset 0 0 20px rgba(74, 222, 128, 0.2)'
+          }}
+        />
       </motion.div>
     </AnimatePresence>
   )

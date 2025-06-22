@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import { Mail } from 'lucide-react'
 import ContactForm from '../components/ContactForm'
+import ContactAnalytics from '../components/ContactAnalytics'
 import { MatrixTextReveal } from '@/app/components/design-system/PixelAnimations'
 import { CircuitParallax } from '../components/ParallaxBackground'
+import PageHeader from '@/app/components/PageHeader'
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -14,21 +16,15 @@ export default function ContactPage() {
     <div className="max-w-3xl mx-auto relative">
       {/* Parallax Background */}
       <CircuitParallax intensity="subtle" />
-      <h1 className="text-2xl md:text-3xl lg:text-4xl font-pixel mb-8 text-center text-green-400">
-        <MatrixTextReveal 
-          text="Get In Touch" 
-          speed={75}
-          delay={300}
-          scrambleDuration={250}
-          className="inline-block"
-        />
-      </h1>
       
-      <div className="mb-8 text-center">
-        <p className="font-readable text-lg text-gray-300">
-          Whether you have a project idea, want to collaborate, or just want to chat about tech - I&apos;d love to hear from you!
-        </p>
-      </div>
+      <PageHeader 
+        title="Get In Touch"
+        subtitle="Whether you have a project idea, want to collaborate, or just want to chat about tech - I'd love to hear from you!"
+        animationType="matrix"
+        animationSpeed={75}
+        titleClassName="text-2xl md:text-3xl lg:text-4xl"
+        subtitleClassName="font-readable text-lg text-gray-300"
+      />
 
       <div className="grid md:grid-cols-2 gap-8">
         {/* Contact Info */}
@@ -41,15 +37,41 @@ export default function ContactPage() {
               <div>
                 <p className="font-readable text-sm text-gray-400">Email</p>
                 <p className="font-readable text-gray-300">hello@pixelwisdom.dev</p>
+                <div className="flex items-center space-x-2 mt-1">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <p className="font-readable text-xs text-green-400">Usually responds within 24 hours</p>
+                </div>
               </div>
             </div>
             
-            {/* Social Links - Configure in site config */}
-            <div className="text-center p-4 bg-gray-700 rounded border border-gray-600">
-              <p className="font-readable text-sm text-gray-300 mb-2">Connect with me:</p>
-              <p className="font-readable text-xs text-gray-400">
-                Social links will be added here once configured in the site settings.
-              </p>
+            {/* Social Links */}
+            <div className="space-y-3">
+              <h3 className="font-pixel text-sm text-green-400">Find me elsewhere:</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <a 
+                  href="https://github.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-2 p-3 bg-gray-700 rounded border border-gray-600 hover:border-green-400/50 transition-all duration-300 group"
+                >
+                  <svg className="w-5 h-5 text-gray-400 group-hover:text-green-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.300 24 12c0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                  <span className="text-sm text-gray-300 group-hover:text-green-400">GitHub</span>
+                </a>
+                
+                <a 
+                  href="https://linkedin.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-2 p-3 bg-gray-700 rounded border border-gray-600 hover:border-green-400/50 transition-all duration-300 group"
+                >
+                  <svg className="w-5 h-5 text-gray-400 group-hover:text-green-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                  <span className="text-sm text-gray-300 group-hover:text-green-400">LinkedIn</span>
+                </a>
+              </div>
             </div>
           </div>
 
@@ -69,8 +91,13 @@ export default function ContactPage() {
         <ContactForm />
       </div>
 
+      {/* Contact Analytics */}
+      <div className="mt-12">
+        <ContactAnalytics />
+      </div>
+
       {/* FAQ Section */}
-      <div className="mt-12 bg-gray-800 rounded-lg p-6 border border-green-400/20 hover:border-green-400/40 transition-all duration-300">
+      <div className="mt-8 bg-gray-800 rounded-lg p-6 border border-green-400/20 hover:border-green-400/40 transition-all duration-300">
         <h2 className="text-xl font-pixel mb-6 text-green-400">Frequently Asked Questions</h2>
         
         <div className="space-y-4">

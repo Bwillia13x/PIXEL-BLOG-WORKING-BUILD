@@ -81,19 +81,19 @@ export const TypewriterText: React.FC<TypewriterTextProps> = ({
   }
 
   useEffect(() => {
-    if (cursor) {
+    if (cursor && !isComplete) {
       const cursorTimer = setInterval(() => {
         setShowCursor(prev => !prev)
       }, 530)
       return () => clearInterval(cursorTimer)
     }
-  }, [cursor])
+  }, [cursor, isComplete])
 
   return (
     <span className={className}>
       {displayedText}
-      {cursor && (!isComplete || showCursor) && (
-        <span className="animate-pulse text-green-400 font-mono">
+      {cursor && !isComplete && (
+        <span className="text-green-400 font-mono">
           {cursorChar}
         </span>
       )}

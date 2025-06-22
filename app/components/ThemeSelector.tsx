@@ -16,7 +16,7 @@ import {
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline'
 import { useTheme } from '@/app/contexts/ThemeContext'
-import { ThemeConfig, isAccessibilityCompliant } from '@/app/lib/themes'
+import { ThemeConfig, isAccessibleTheme } from '@/app/lib/themes'
 
 interface ThemeSelectorProps {
   compact?: boolean
@@ -55,7 +55,7 @@ function ThemePreview({
     setIsPreviewMode(false)
   }
 
-  const isAccessible = isAccessibilityCompliant(theme)
+  const isAccessible = isAccessibleTheme(theme)
 
   return (
     <motion.div
@@ -586,7 +586,7 @@ export default function ThemeSelector({
                         <div>Author: {currentTheme.metadata.author}</div>
                         <div className="flex items-center space-x-2">
                           <span>Accessible:</span>
-                          {isAccessibilityCompliant(currentTheme) ? (
+                          {isAccessibleTheme(currentTheme) ? (
                             <CheckIcon className="h-3 w-3 text-green-400" />
                           ) : (
                             <ExclamationTriangleIcon className="h-3 w-3 text-yellow-400" />

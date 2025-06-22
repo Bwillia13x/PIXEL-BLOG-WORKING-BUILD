@@ -15,7 +15,7 @@ import {
   SparklesIcon
 } from '@heroicons/react/24/outline'
 import { useTheme } from '@/app/contexts/ThemeContext'
-import { ThemeConfig, ThemeColors, calculateContrast, isAccessibilityCompliant, RETRO_THEMES } from '@/app/lib/themes'
+import { ThemeConfig, ThemeColors, isAccessibleTheme, RETRO_THEMES } from '@/app/lib/themes'
 
 interface ThemeCreatorProps {
   isOpen: boolean
@@ -757,7 +757,7 @@ export default function ThemeCreator({
                   <div>Colors: {Object.keys(themeData.colors || {}).length}/19</div>
                   <div className="flex items-center space-x-2">
                     <span>Accessible:</span>
-                    {themeData as ThemeConfig && isAccessibilityCompliant(themeData as ThemeConfig) ? (
+                    {themeData as ThemeConfig && isAccessibleTheme(themeData as ThemeConfig) ? (
                       <CheckIcon className="h-3 w-3 text-green-400" />
                     ) : (
                       <ExclamationTriangleIcon className="h-3 w-3 text-yellow-400" />

@@ -29,6 +29,29 @@ export function LoadingProvider({
   const [isLoading, setIsLoading] = useState(enableLoading)
   const [showChildren, setShowChildren] = useState(!enableLoading)
 
+  // Manage body class for loading state
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    if (isLoading && enableLoading) {
+      document.body.classList.add('loading-active')
+      // Prevent scroll restoration during loading
+      if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual'
+      }
+    } else {
+      document.body.classList.remove('loading-active')
+      // Restore scroll behavior
+      if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'auto'
+      }
+    }
+
+    return () => {
+      document.body.classList.remove('loading-active')
+    }
+  }, [isLoading, enableLoading])
+
   // Skip loading in development Fast Refresh or if disabled
   useEffect(() => {
     if (!enableLoading) {
@@ -53,11 +76,15 @@ export function LoadingProvider({
   const handleLoadingComplete = () => {
     setIsLoading(false)
     setShowChildren(true)
-    // Mark that loading has completed
-    document.body.setAttribute('data-loading-complete', 'true')
-    // Store in session to prevent re-loading during development
+    
+    // Clean up loading state
     if (typeof window !== 'undefined') {
+      document.body.classList.remove('loading-active')
+      document.body.setAttribute('data-loading-complete', 'true')
       sessionStorage.setItem('pixel-wisdom-loaded', 'true')
+      
+      // Smooth scroll to top after loading
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
@@ -69,10 +96,12 @@ export function LoadingProvider({
   return (
     <LoadingContext.Provider value={contextValue}>
       {isLoading && enableLoading && (
-        <BriefLoadingScreen 
-          onComplete={handleLoadingComplete}
-          duration={duration}
-        />
+        <div className="loading-screen-container">
+          <BriefLoadingScreen 
+            onComplete={handleLoadingComplete}
+            duration={duration}
+          />
+        </div>
       )}
       {showChildren && (
         <div data-loading-complete="true">

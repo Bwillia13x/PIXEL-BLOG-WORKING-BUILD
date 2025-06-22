@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { projects } from '@/content/projects'
+import PageHeader from '@/app/components/PageHeader'
 
 export const metadata: Metadata = {
   title: 'Interactive Projects',
@@ -12,25 +13,28 @@ export default function InteractiveProjectsPage() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-pixel mb-4">Interactive Project Showcase</h1>
-        <p className="text-xl font-mono text-gray-300 mb-6">
-          Experience live demonstrations of my projects directly in your browser
-        </p>
-        <div className="flex justify-center gap-4">
-          <Link 
-            href="/projects" 
-            className="px-4 py-2 bg-gray-700 text-green-400 font-mono rounded hover:bg-gray-600 transition-colors"
-          >
-            ← All Projects
-          </Link>
-          <Link 
-            href="/projects/current" 
-            className="px-4 py-2 bg-blue-600 text-white font-mono rounded hover:bg-blue-500 transition-colors"
-          >
-            Current Projects
-          </Link>
-        </div>
+      <PageHeader 
+        title="Interactive Project Showcase"
+        subtitle="Experience live demonstrations of my projects directly in your browser"
+        animationType="matrix"
+        titleClassName="text-2xl md:text-3xl lg:text-4xl"
+        subtitleClassName="text-xl font-mono text-gray-300"
+        className="mb-12"
+      />
+      
+      <div className="flex justify-center gap-4 mb-12">
+        <Link 
+          href="/projects" 
+          className="px-4 py-2 bg-gray-700 text-green-400 font-mono rounded hover:bg-gray-600 transition-colors"
+        >
+          ← All Projects
+        </Link>
+        <Link 
+          href="/projects/current" 
+          className="px-4 py-2 bg-blue-600 text-white font-mono rounded hover:bg-blue-500 transition-colors"
+        >
+          Current Projects
+        </Link>
       </div>
 
       {interactiveProjects.length > 0 ? (

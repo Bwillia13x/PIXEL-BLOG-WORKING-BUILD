@@ -493,11 +493,11 @@ export async function GET(request: NextRequest) {
       }
 
       const url = new URL(request.url)
-      const query = InputSanitizer.sanitizeString(url.searchParams.get('q') || '')
-      const type = url.searchParams.getAll('type')
-      const category = url.searchParams.getAll('category')
-      const tags = url.searchParams.getAll('tags')
-      const status = url.searchParams.getAll('status')
+      const query = InputSanitizer.sanitizeString(url.searchParams.get('query') || url.searchParams.get('q') || '')
+      const type = url.searchParams.get('type')?.split(',').filter(Boolean) || []
+      const category = url.searchParams.get('category')?.split(',').filter(Boolean) || []
+      const tags = url.searchParams.get('tags')?.split(',').filter(Boolean) || []
+      const status = url.searchParams.get('status')?.split(',').filter(Boolean) || []
       const dateFrom = url.searchParams.get('dateFrom')
       const dateTo = url.searchParams.get('dateTo')
       const sort = url.searchParams.get('sort') as SearchParams['sort'] || 'relevance'
@@ -540,12 +540,20 @@ export async function GET(request: NextRequest) {
         }, request)
       }
 
+      // Get available filters from all items for the frontend
+      const availableFilters = {
+        categories: stats.categories || [],
+        tags: stats.tags || [],
+        statuses: ['completed', 'in-progress', 'planned']
+      }
+
       return createSecureResponse({
         results: searchResults,
-        totalResults: searchResults.length,
+        total: searchResults.length,
         query: searchParams.query,
         filters: searchParams.filters,
         sort: searchParams.sort,
+        availableFilters,
         pagination: {
           limit: searchParams.limit,
           offset: searchParams.offset,

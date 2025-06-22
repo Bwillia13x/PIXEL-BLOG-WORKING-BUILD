@@ -27,7 +27,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
 
   return (
     <motion.article 
-      className="group relative"
+      className="group relative h-full flex flex-col gpu-optimized"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       initial={{ opacity: 0, y: 20 }}
@@ -49,9 +49,9 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
         transition={{ duration: 0.5, ease: "easeOut" }}
       />
       
-      {/* Enhanced main card */}
+      {/* Enhanced main card with improved proportions */}
       <motion.div 
-        className="relative h-full border border-gray-700 rounded-lg p-6 bg-gray-900/60 backdrop-blur-sm transition-all duration-500 overflow-hidden"
+        className="relative h-full flex flex-col border border-gray-700 rounded-lg p-4 sm:p-5 lg:p-6 bg-gray-900/60 backdrop-blur-sm transition-all duration-500 overflow-hidden"
         animate={{
           backgroundColor: isHovered ? 'rgba(31, 41, 55, 0.8)' : 'rgba(17, 24, 39, 0.6)',
           borderColor: isHovered ? 'rgba(74, 222, 128, 0.4)' : 'rgba(75, 85, 99, 1)',
@@ -62,13 +62,14 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
         
         {/* Enhanced header with category and metadata */}
         <motion.div 
-          className="flex flex-wrap items-center justify-between gap-3 mb-5"
+          className="flex flex-wrap items-start justify-between gap-2 mb-3 sm:mb-4"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >
           <motion.span 
-            className="px-3 py-1.5 bg-green-600 text-black text-xs font-pixel rounded-md shadow-lg"
+            className="px-2 py-1 sm:px-3 sm:py-1.5 bg-green-600 text-black text-xs font-pixel rounded-md shadow-lg flex-shrink-0"
+            style={{ textShadow: 'none' }}
             whileHover={{ 
               scale: 1.05,
               backgroundColor: '#059669',
@@ -79,10 +80,10 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
             {post.category}
           </motion.span>
           
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3 text-xs text-gray-400 min-w-0">
             {post.date && (
               <motion.span 
-                className="font-mono tracking-wide"
+                className="font-mono tracking-wide truncate"
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: 0.2 }}
@@ -95,24 +96,30 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
               </motion.span>
             )}
             {post.readTime && (
-              <>
-                <span className="text-gray-600">•</span>
-                <motion.span 
-                  className="font-mono text-green-400 font-medium"
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: 0.25 }}
-                >
-                  {post.readTime}
-                </motion.span>
-              </>
+              <motion.span 
+                className="font-mono text-green-400 font-medium truncate"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.25 }}
+              >
+                {post.readTime}
+              </motion.span>
             )}
           </div>
         </motion.div>
         
-        {/* Enhanced title with better typography */}
+        {/* Enhanced title with strict two-line clipping */}
         <motion.h3 
-          className="text-xl font-pixel mb-4 text-green-400 line-clamp-2 leading-relaxed"
+          className="text-lg sm:text-xl font-pixel mb-3 sm:mb-4 text-green-400 leading-tight"
+          style={{
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            lineHeight: '1.3',
+            minHeight: '2.6em', // Ensures consistent height for 2 lines
+            maxHeight: '2.6em'
+          }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.15 }}
@@ -121,37 +128,40 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
             textShadow: '0 0 8px rgba(74, 222, 128, 0.6)'
           }}
         >
-          <Link href={`/blog/${post.slug}`} className="transition-all duration-300 hover:drop-shadow-lg">
+          <Link href={`/blog/${post.slug}`} className="transition-all duration-300 hover:drop-shadow-lg block">
             {post.title}
           </Link>
         </motion.h3>
         
-        {/* Enhanced content excerpt with better readability */}
+        {/* Enhanced content excerpt with responsive sizing */}
         <motion.p 
-          className="text-gray-300 font-sans mb-5 leading-loose line-clamp-3 text-sm tracking-wide"
+          className="text-gray-300 font-sans mb-4 leading-relaxed text-sm tracking-wide flex-grow"
+          style={{
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            lineHeight: '1.6'
+          }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}
-          style={{ 
-            lineHeight: '1.7',
-            letterSpacing: '0.025em'
-          }}
         >
-          {post.excerpt || post.content.substring(0, 150) + '...'}
+          {post.excerpt || post.content.substring(0, 120) + '...'}
         </motion.p>
         
-        {/* Enhanced tags with staggered animations */}
+        {/* Enhanced tags with responsive layout */}
         {post.tags && post.tags.length > 0 && (
           <motion.div 
-            className="flex flex-wrap gap-2 mb-5"
+            className="flex flex-wrap gap-1.5 sm:gap-2 mb-4"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.25 }}
           >
-            {post.tags.slice(0, 3).map((tag, index) => (
+            {post.tags.slice(0, 2).map((tag, index) => (
               <motion.span 
                 key={tag}
-                className="px-3 py-1.5 bg-gray-800/80 text-green-400 text-xs font-mono rounded-md border border-green-400/20 backdrop-blur-sm"
+                className="px-2 py-1 bg-gray-800/80 text-green-400 text-xs font-mono rounded border border-green-400/20 backdrop-blur-sm truncate tag-hover cursor-default"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: 0.3 + index * 0.05 }}
@@ -165,14 +175,14 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
                 #{tag}
               </motion.span>
             ))}
-            {post.tags.length > 3 && (
+            {post.tags.length > 2 && (
               <motion.span 
-                className="px-3 py-1.5 text-gray-500 text-xs font-mono"
+                className="px-2 py-1 text-gray-500 text-xs font-mono"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.45 }}
+                transition={{ duration: 0.3, delay: 0.4 }}
               >
-                +{post.tags.length - 3} more
+                +{post.tags.length - 2}
               </motion.span>
             )}
           </motion.div>
@@ -187,7 +197,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
           >
             <Link 
               href={`/blog/${post.slug}`}
-              className="group/link relative inline-flex items-center text-green-400 font-pixel text-sm transition-all duration-300 overflow-hidden"
+              className="group/link relative inline-flex items-center text-green-400 font-pixel text-sm transition-all duration-300 overflow-hidden button-press glow-on-focus icon-interactive"
               onMouseEnter={() => setIsReadMoreHovered(true)}
               onMouseLeave={() => setIsReadMoreHovered(false)}
             >
@@ -202,106 +212,28 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
                 transition={{ duration: 0.3, ease: "easeOut" }}
               />
               
-              {/* Text with glow effect */}
-              <motion.span
-                className="relative z-10 pr-2"
-                animate={{
-                  color: isReadMoreHovered ? '#6ee7b7' : '#4ade80',
-                  textShadow: isReadMoreHovered ? '0 0 8px rgba(74, 222, 128, 0.6)' : '0 0 0px rgba(74, 222, 128, 0)'
-                }}
-                transition={{ duration: 0.3 }}
-              >
-                Read More
-              </motion.span>
-              
-              {/* Animated arrow with multiple effects */}
-              <motion.span 
-                className="relative z-10 flex items-center"
-                animate={{
-                  x: isReadMoreHovered ? 4 : 0
-                }}
-                transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
-              >
+              {/* Text content */}
+              <span className="relative z-10 flex items-center space-x-2">
+                <span>READ MORE</span>
                 <motion.span
-                  animate={{
-                    rotate: isReadMoreHovered ? 0 : 0,
-                    scale: isReadMoreHovered ? 1.1 : 1
-                  }}
+                  className="icon-pulse-on-focus"
+                  animate={{ x: isReadMoreHovered ? 4 : 0 }}
                   transition={{ duration: 0.2 }}
                 >
                   →
                 </motion.span>
-                
-                {/* Pixel trail effect */}
-                <AnimatePresence>
-                  {isReadMoreHovered && (
-                    <motion.div className="absolute left-0 flex space-x-1">
-                      {[0, 1, 2].map((i) => (
-                        <motion.div
-                          key={i}
-                          className="w-0.5 h-0.5 bg-green-400 rounded-full"
-                          initial={{ opacity: 0, x: -4, scale: 0 }}
-                          animate={{ 
-                            opacity: [0, 1, 0],
-                            x: [0, 8, 16],
-                            scale: [0, 1, 0]
-                          }}
-                          exit={{ opacity: 0 }}
-                          transition={{
-                            duration: 0.6,
-                            delay: i * 0.1,
-                            ease: "easeOut"
-                          }}
-                        />
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.span>
+              </span>
+              
+              {/* Underline animation */}
+              <motion.div
+                className="absolute bottom-0 left-0 h-0.5 bg-green-400"
+                initial={{ width: '0%' }}
+                animate={{ width: isReadMoreHovered ? '100%' : '0%' }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+              />
             </Link>
           </motion.div>
         </div>
-        
-        {/* Enhanced pixel corner decorations */}
-        <motion.div 
-          className="absolute top-3 right-3 w-2 h-2 bg-green-400 rounded-sm"
-          initial={{ opacity: 0.2, scale: 1 }}
-          animate={{ 
-            opacity: isHovered ? 0.6 : 0.2,
-            scale: isHovered ? 1.2 : 1,
-            boxShadow: isHovered ? '0 0 6px rgba(74, 222, 128, 0.8)' : '0 0 0px rgba(74, 222, 128, 0)'
-          }}
-          transition={{ duration: 0.3 }}
-        />
-        <motion.div 
-          className="absolute bottom-3 left-3 w-2 h-2 bg-green-400 rounded-sm"
-          initial={{ opacity: 0.2, scale: 1 }}
-          animate={{ 
-            opacity: isHovered ? 0.6 : 0.2,
-            scale: isHovered ? 1.2 : 1,
-            boxShadow: isHovered ? '0 0 6px rgba(74, 222, 128, 0.8)' : '0 0 0px rgba(74, 222, 128, 0)'
-          }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-        />
-        
-        {/* Subtle scan line effect */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-b from-green-400/0 via-green-400/5 to-green-400/0 pointer-events-none"
-          initial={{ y: '-100%', opacity: 0 }}
-          animate={isHovered ? { 
-            y: '100%', 
-            opacity: [0, 0.3, 0]
-          } : {
-            y: '-100%',
-            opacity: 0
-          }}
-          transition={{ 
-            duration: 1.5, 
-            ease: "easeInOut",
-            repeat: isHovered ? Infinity : 0,
-            repeatDelay: 2
-          }}
-        />
       </motion.div>
     </motion.article>
   )

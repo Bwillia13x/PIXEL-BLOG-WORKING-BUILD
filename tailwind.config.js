@@ -10,10 +10,10 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-jetbrains-mono)", "monospace"],
+        sans: ["var(--font-inter)", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
         mono: ["var(--font-jetbrains-mono)", "monospace"],
-        pixel: ["var(--font-press-start-2p)"],
-        retro: ["var(--font-vt323)"],
+        pixel: ["var(--font-press-start-2p)", "monospace"],
+        retro: ["var(--font-vt323)", "monospace"],
       },
       colors: {
         "retro-green": "#4ade80",

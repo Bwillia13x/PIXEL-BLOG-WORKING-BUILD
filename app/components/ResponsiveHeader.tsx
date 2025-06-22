@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import NavMenu from './NavMenu'
+import EnhancedNavMenu from './EnhancedNavMenu'
 import BreadcrumbNav from './BreadcrumbNav'
-import ThemeToggle from './ThemeToggle'
-import QuickSearch from './QuickSearch'
+import CommandPalette from './CommandPalette'
+import ColorSystemToggle from './ColorSystemToggle'
 import { ChevronUp, ChevronDown } from 'lucide-react'
+import { useScrollDirection } from '@/app/hooks/useScrollDirection'
 
 interface ResponsiveHeaderProps {
   showBreadcrumbs?: boolean
@@ -20,9 +21,12 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
   className = ''
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [hasAnimated, setHasAnimated] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
+  
+  // Use custom hook for smart scroll behavior
+  const { scrollDirection, isScrolled, isAtTop } = useScrollDirection(50)
 
   // Detect mobile viewport
   useEffect(() => {
@@ -35,21 +39,12 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // Handle scroll for sticky behavior
+  // Auto-collapse on mobile when scrolling down
   useEffect(() => {
-    const handleScroll = () => {
-      const isScrolled = window.scrollY > 100
-      setScrolled(isScrolled)
-      
-      // Auto-collapse on mobile when scrolling
-      if (isMobile && collapsible && isScrolled && !isCollapsed) {
-        setIsCollapsed(true)
-      }
+    if (isMobile && collapsible && scrollDirection === 'down' && isScrolled && !isCollapsed) {
+      setIsCollapsed(true)
     }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [isMobile, collapsible, isCollapsed])
+  }, [isMobile, collapsible, scrollDirection, isScrolled, isCollapsed])
 
   // Trigger header animation on mount
   useEffect(() => {
@@ -63,26 +58,29 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
     setIsCollapsed(!isCollapsed)
   }
 
+  // Determine if header should be visible
+  const shouldHideHeader = !isAtTop && scrollDirection === 'down' && !isHovered && !isCollapsed
+
   // Enhanced header animation variants
   const headerVariants = {
-    hidden: { 
-      y: -100, 
-      opacity: 0,
-      scale: 0.95,
-      filter: 'blur(10px)'
-    },
     visible: { 
       y: 0, 
       opacity: 1,
-      scale: 1,
-      filter: 'blur(0px)',
       transition: {
-        type: "spring" as const,
-        stiffness: 100,
-        damping: 20,
-        mass: 1,
-        delayChildren: 0.1,
-        staggerChildren: 0.1
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+        mass: 0.8
+      }
+    },
+    hidden: { 
+      y: -120, 
+      opacity: 0.7,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+        mass: 0.8
       }
     }
   }
@@ -98,17 +96,28 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
       opacity: 1,
       scale: 1,
       transition: {
-        type: "spring" as const,
+        type: "spring",
         stiffness: 150,
         damping: 12
       }
     }
   }
 
+  // Enhanced backdrop blur and background styles
+  const getHeaderStyles = () => {
+    const baseClasses = "fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+    
+    if (isAtTop) {
+      return `${baseClasses} bg-transparent backdrop-blur-none border-transparent`
+    } else {
+      return `${baseClasses} bg-black/30 backdrop-blur-xl border-b border-green-400/20 shadow-lg shadow-black/20`
+    }
+  }
+
   // Pixel scanning line effect
   const PixelScanline = () => (
     <motion.div
-      className="absolute top-0 left-0 right-0 h-1 bg-green-400 opacity-80"
+      className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent opacity-60"
       initial={{ scaleX: 0, x: '-100%' }}
       animate={{ 
         scaleX: hasAnimated ? [0, 1, 1, 0] : 0,
@@ -120,7 +129,7 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
         ease: "easeInOut"
       }}
       style={{
-        boxShadow: '0 0 10px rgba(74, 222, 128, 0.8)',
+        boxShadow: '0 0 20px rgba(74, 222, 128, 0.8)',
         transformOrigin: 'left'
       }}
     />
@@ -128,35 +137,57 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
 
   return (
     <motion.header
-      className={`relative z-20 transition-all duration-300 overflow-hidden ${
-        scrolled ? 'bg-gray-900/95 backdrop-blur-md border-b border-green-400/30' : 'bg-gray-900/50'
-      } ${className}`}
+      className={getHeaderStyles()}
       variants={headerVariants}
       initial="visible"
-      animate="visible"
-      // Force visibility
+      animate={shouldHideHeader ? "hidden" : "visible"}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       style={{ 
-        opacity: 1,
-        transform: 'none',
-        display: 'block'
+        willChange: 'transform, opacity',
+        backfaceVisibility: 'hidden'
       }}
     >
+      {/* Enhanced glow effect for scrolled state */}
+      {isScrolled && (
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-b from-green-400/5 via-transparent to-transparent pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        />
+      )}
+
       {/* Pixel scanning line */}
       <PixelScanline />
       
-      {/* Pixel border animation */}
-      <motion.div
-        className="absolute inset-0 border border-green-400/20"
-        initial={{ 
-          borderColor: 'rgba(74, 222, 128, 0)',
-          boxShadow: '0 0 0 rgba(74, 222, 128, 0)'
-        }}
-        animate={{ 
-          borderColor: hasAnimated ? 'rgba(74, 222, 128, 0.2)' : 'rgba(74, 222, 128, 0)',
-          boxShadow: hasAnimated ? '0 0 20px rgba(74, 222, 128, 0.1)' : '0 0 0 rgba(74, 222, 128, 0)'
-        }}
-        transition={{ duration: 1, delay: 1 }}
-      />
+      {/* Subtle grid overlay when scrolled */}
+      {isScrolled && (
+        <motion.div
+          className="absolute inset-0 opacity-[0.02] pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.02 }}
+          transition={{ duration: 0.5 }}
+          style={{
+            backgroundImage: `
+              repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 20px,
+                rgba(74, 222, 128, 0.3) 20px,
+                rgba(74, 222, 128, 0.3) 21px
+              ),
+              repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 20px,
+                rgba(74, 222, 128, 0.3) 20px,
+                rgba(74, 222, 128, 0.3) 21px
+              )
+            `
+          }}
+        />
+      )}
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Enhanced Main Header Content with smooth animations */}
@@ -183,201 +214,168 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
                 scale: 0.95
               }}
               transition={{ 
-                duration: 0.5, 
+                duration: 0.4, 
                 ease: 'easeInOut',
                 opacity: { duration: 0.3 },
-                scale: { duration: 0.4 }
+                scale: { duration: 0.3 }
               }}
               className="overflow-hidden"
             >
-              {/* Pixel grid background effect */}
-              <motion.div
-                className="absolute inset-0 opacity-5 pointer-events-none"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: hasAnimated ? 0.05 : 0 }}
-                transition={{ duration: 2, delay: 1.5 }}
-                style={{
-                  backgroundImage: `
-                    repeating-linear-gradient(
-                      0deg,
-                      transparent,
-                      transparent 10px,
-                      rgba(74, 222, 128, 0.3) 10px,
-                      rgba(74, 222, 128, 0.3) 11px
-                    ),
-                    repeating-linear-gradient(
-                      90deg,
-                      transparent,
-                      transparent 10px,
-                      rgba(74, 222, 128, 0.3) 10px,
-                      rgba(74, 222, 128, 0.3) 11px
-                    )
-                  `
-                }}
-              />
+              {/* Top row - Logo and main actions */}
+              <motion.div 
+                className="flex items-center justify-between py-4 sm:py-6"
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                {/* Logo/Brand Area with enhanced pixel effect */}
+                <motion.div 
+                  className="flex items-center space-x-3"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <motion.div
+                    className="relative"
+                    initial={{ rotate: 0 }}
+                    animate={{ rotate: hasAnimated ? [0, 360, 0] : 0 }}
+                    transition={{ duration: 3, delay: 2, ease: "easeInOut" }}
+                  >
+                    <div className="w-8 h-8 bg-green-400 pixel-border relative overflow-hidden">
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-br from-green-300 to-green-500"
+                        animate={{
+                          scale: [1, 1.1, 1],
+                          rotate: [0, 180, 360]
+                        }}
+                        transition={{
+                          duration: 4,
+                          repeat: Infinity,
+                          ease: "linear"
+                        }}
+                      />
+                      <div className="absolute inset-1 bg-black pixel-border" />
+                      <div className="absolute inset-2 bg-green-400" />
+                    </div>
+                  </motion.div>
+                  
+                  <motion.h1 
+                    className="text-lg sm:text-xl font-pixel text-green-400"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                  >
+                    PIXEL WISDOM
+                  </motion.h1>
+                </motion.div>
+
+                {/* Right side actions */}
+                <motion.div 
+                  className="flex items-center space-x-3 sm:space-x-4"
+                  variants={itemVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <CommandPalette triggerOnly />
+                  <ColorSystemToggle />
+                  
+                  {/* Collapse toggle for collapsible mode */}
+                  {collapsible && (
+                    <motion.button
+                      onClick={toggleCollapse}
+                      className="p-2 border border-green-400/30 rounded hover:border-green-400 hover:bg-green-400/10 transition-all duration-200 font-pixel text-xs"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      aria-label={isCollapsed ? "Expand header" : "Collapse header"}
+                    >
+                      {isCollapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+                    </motion.button>
+                  )}
+                </motion.div>
+              </motion.div>
+
+              {/* Navigation Menu */}
+              <motion.div 
+                className="pb-4"
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: 0.1 }}
+              >
+                <EnhancedNavMenu />
+              </motion.div>
+
+              {/* Breadcrumbs */}
+              {showBreadcrumbs && (
+                <motion.div 
+                  className="pb-4 border-t border-green-400/20 pt-4"
+                  variants={itemVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ delay: 0.2 }}
+                >
+                  <BreadcrumbNav />
+                </motion.div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Navigation Section */}
-        <motion.div
-          layout
-          className={`${isCollapsed ? 'py-2' : 'py-4'} transition-all duration-300 relative z-10`}
-          variants={itemVariants}
-        >
-          {/* Breadcrumbs */}
-          {showBreadcrumbs && (
+        {/* Collapsed State */}
+        <AnimatePresence>
+          {isCollapsed && (
             <motion.div
-              variants={itemVariants}
-              className="mb-4"
+              key="collapsed"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="py-3 flex items-center justify-between overflow-hidden"
             >
-              <BreadcrumbNav className="justify-center" />
+              <motion.div 
+                className="flex items-center space-x-2"
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+              >
+                <div className="w-6 h-6 bg-green-400 pixel-border">
+                  <div className="w-full h-full bg-gradient-to-br from-green-300 to-green-500" />
+                </div>
+                <span className="text-sm font-pixel text-green-400">PW</span>
+              </motion.div>
+
+                             <motion.div 
+                 className="flex items-center space-x-2"
+                 initial={{ x: 20, opacity: 0 }}
+                 animate={{ x: 0, opacity: 1 }}
+                 transition={{ delay: 0.1 }}
+               >
+                 <CommandPalette triggerOnly className="w-32" />
+                 <ColorSystemToggle compact />
+                 
+                 <motion.button
+                   onClick={toggleCollapse}
+                   className="p-1.5 border border-green-400/30 rounded hover:border-green-400 hover:bg-green-400/10 transition-all duration-200"
+                   whileHover={{ scale: 1.05 }}
+                   whileTap={{ scale: 0.95 }}
+                   aria-label="Expand header"
+                 >
+                   <ChevronDown className="w-3 h-3" />
+                 </motion.button>
+               </motion.div>
             </motion.div>
           )}
-
-          {/* Main Navigation */}
-          <motion.div
-            variants={itemVariants}
-          >
-            <NavMenu />
-          </motion.div>
-
-          {/* Quick Search */}
-          <motion.div
-            variants={itemVariants}
-            className="mt-4 flex justify-center"
-          >
-            <QuickSearch className="max-w-md w-full" />
-          </motion.div>
-
-          {/* Theme Toggle */}
-          <motion.div
-            variants={itemVariants}
-            className="mt-4 flex justify-center"
-          >
-            <ThemeToggle />
-          </motion.div>
-        </motion.div>
-
-        {/* Enhanced Collapse Toggle Button */}
-        {collapsible && (
-          <motion.div
-            variants={itemVariants}
-            className="flex justify-center pb-2"
-          >
-            <motion.button
-              onClick={toggleCollapse}
-              className="group relative flex items-center px-4 py-2 text-xs font-mono text-gray-400 hover:text-green-400 transition-all duration-300 rounded-lg hover:bg-gray-800/50 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-gray-900 overflow-hidden"
-              aria-label={isCollapsed ? 'Expand header' : 'Collapse header'}
-              aria-expanded={!isCollapsed}
-              whileHover={{ 
-                scale: 1.05,
-                boxShadow: "0 0 15px rgba(74, 222, 128, 0.3)"
-              }}
-              whileTap={{ scale: 0.95 }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  toggleCollapse()
-                }
-              }}
-            >
-              {/* Hover glow effect */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-green-400/0 via-green-400/10 to-green-400/0"
-                initial={{ x: "-100%" }}
-                whileHover={{ x: "100%" }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
-              />
-              
-              {/* Enhanced icon animation */}
-              <motion.div
-                animate={{ 
-                  rotate: isCollapsed ? 180 : 0,
-                  scale: isCollapsed ? 1.1 : 1
-                }}
-                transition={{ 
-                  duration: 0.4, 
-                  type: "spring", 
-                  stiffness: 300,
-                  damping: 20
-                }}
-                className="relative z-10"
-              >
-                <motion.div
-                  animate={{
-                    y: [0, -1, 0],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  {isCollapsed ? (
-                    <ChevronDown className="w-4 h-4 mr-2 drop-shadow-[0_0_4px_rgba(74,222,128,0.6)]" />
-                  ) : (
-                    <ChevronUp className="w-4 h-4 mr-2 drop-shadow-[0_0_4px_rgba(74,222,128,0.6)]" />
-                  )}
-                </motion.div>
-              </motion.div>
-              
-              <motion.span 
-                className="font-pixel text-xs relative z-10"
-                animate={{
-                  color: isCollapsed ? "#22c55e" : "#9ca3af"
-                }}
-                transition={{ duration: 0.3 }}
-              >
-                {isCollapsed ? 'EXPAND' : 'COLLAPSE'}
-              </motion.span>
-              
-              {/* Pixel decoration */}
-              <motion.div
-                className="absolute top-1 right-1 w-1 h-1 bg-green-400 rounded-full"
-                animate={{
-                  scale: [1, 1.5, 1],
-                  opacity: [0.5, 1, 0.5]
-                }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-            </motion.button>
-          </motion.div>
-        )}
+        </AnimatePresence>
       </div>
 
-      {/* Enhanced border animation */}
-      {scrolled && (
+      {/* Bottom border glow effect */}
+      {isScrolled && (
         <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-400 to-transparent origin-center"
+          className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-400/40 to-transparent"
+          initial={{ opacity: 0, scaleX: 0 }}
+          animate={{ opacity: 1, scaleX: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
         />
       )}
-
-      {/* Subtle pixel flicker effect */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none mix-blend-soft-light"
-        animate={{
-          opacity: hasAnimated ? [0, 0.02, 0, 0.01, 0] : 0
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          repeatType: "loop",
-          delay: 2
-        }}
-        style={{
-          backgroundImage: `radial-gradient(circle at 20% 50%, rgba(74, 222, 128, 0.1) 0%, transparent 50%),
-                           radial-gradient(circle at 80% 20%, rgba(74, 222, 128, 0.05) 0%, transparent 50%),
-                           radial-gradient(circle at 40% 80%, rgba(74, 222, 128, 0.08) 0%, transparent 50%)`
-        }}
-      />
     </motion.header>
   )
 }

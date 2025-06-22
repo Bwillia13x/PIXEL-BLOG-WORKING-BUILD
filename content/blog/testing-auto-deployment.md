@@ -7,6 +7,7 @@ tags: ["automation", "deployment", "ci-cd", "github-actions", "vercel"]
 author: "Benjamin Williams"
 featured: false
 draft: false
+published: true
 ---
 
 # Testing Auto-Deployment Workflow

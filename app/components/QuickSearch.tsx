@@ -159,9 +159,10 @@ function QuickSearchContent({ className = "" }: QuickSearchProps) {
           }, 100)
         }}
         className="
-          relative flex items-center space-x-2 px-3 py-2 pixel-border bg-gray-900/60 
+          relative flex items-center space-x-2 px-4 py-3 pixel-border bg-gray-900/70 
           backdrop-blur-sm text-gray-400 hover:text-white hover:border-green-400/60
-          transition-all duration-300 group w-full md:w-64 overflow-hidden
+          transition-all duration-300 group w-full max-w-lg mx-auto overflow-hidden
+          border-2 border-gray-600/40 hover:border-green-400/50 rounded-lg
         "
         whileHover={{ 
           scale: 1.02,
@@ -187,8 +188,8 @@ function QuickSearchContent({ className = "" }: QuickSearchProps) {
           <MagnifyingGlassIcon className="h-4 w-4 relative z-10" />
         </motion.div>
         
-        <span className="font-mono text-sm flex-1 text-left relative z-10">
-          {isOpen ? "Searching..." : "Search..."}
+        <span className="font-mono text-sm flex-1 text-center relative z-10">
+          {isOpen ? "Searching..." : "Search posts and projects..."}
         </span>
         
         <div className="hidden md:flex items-center space-x-1 text-xs relative z-10">

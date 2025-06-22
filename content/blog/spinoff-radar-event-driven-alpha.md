@@ -4,6 +4,7 @@ date: "2025-01-28"
 excerpt: "How Spinoff Radar captures overlooked value-unlocking opportunities in corporate spin-offs through automated SEC filings monitoring and AI-powered sentiment analysis."
 tags: ["Investment Strategy", "Event-Driven Investing", "Corporate Actions", "Alpha Generation", "Market Inefficiencies"]
 featured: true
+published: true
 ---
 
 ## Elevator Pitch: Don't Miss the Hidden Gems

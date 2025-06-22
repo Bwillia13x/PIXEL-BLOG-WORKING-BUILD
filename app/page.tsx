@@ -98,7 +98,7 @@ export default async function Home() {
       {/* Enhanced Hero Section with scroll reveals */}
       <section className="text-center mb-12">
         <PixelReveal>
-          <h1 className="text-4xl font-pixel mb-4 text-green-400">
+                      <h1 className="text-4xl pixel-head mb-4 text-green-400">
             <TypewriterText 
               text="Welcome to Pixel Wisdom" 
               speed={80}
@@ -151,7 +151,7 @@ export default async function Home() {
       {/* Enhanced Content Section */}
       <section className="mb-12">
         <TextReveal>
-          <h2 className="text-2xl font-pixel mb-8 text-green-400 text-center">
+          <h2 className="text-2xl pixel-head mb-8 text-green-400 text-center">
             <TypewriterText 
               text="Latest Content" 
               speed={60}

@@ -27,6 +27,7 @@ interface FormField {
 interface FormState {
   name: FormField
   email: FormField
+  subject: FormField
   message: FormField
 }
 
@@ -34,6 +35,7 @@ export default function ContactForm({ className }: ContactFormProps) {
   const [formState, setFormState] = useState<FormState>({
     name: { value: '', touched: false, valid: false },
     email: { value: '', touched: false, valid: false },
+    subject: { value: '', touched: false, valid: false },
     message: { value: '', touched: false, valid: false }
   })
   
@@ -59,6 +61,12 @@ export default function ContactForm({ className }: ContactFormProps) {
     return { valid: true }
   }
 
+  const validateSubject = (subject: string): { valid: boolean; error?: string } => {
+    if (subject.length < 3) return { valid: false, error: 'Subject must be at least 3 characters' }
+    if (subject.length > 100) return { valid: false, error: 'Subject must be less than 100 characters' }
+    return { valid: true }
+  }
+
   const validateMessage = (message: string): { valid: boolean; error?: string } => {
     if (message.length < 10) return { valid: false, error: 'Message must be at least 10 characters' }
     if (message.length > 1000) return { valid: false, error: 'Message must be less than 1000 characters' }
@@ -74,6 +82,9 @@ export default function ContactForm({ className }: ContactFormProps) {
         break
       case 'email':
         validation = validateEmail(value)
+        break
+      case 'subject':
+        validation = validateSubject(value)
         break
       case 'message':
         validation = validateMessage(value)
@@ -109,34 +120,63 @@ export default function ContactForm({ className }: ContactFormProps) {
 
     setIsSubmitting(true)
 
-    // Simulate form submission delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    // Create mailto link with form data
-    const subject = encodeURIComponent(`Message from ${formState.name.value}`)
-    const body = encodeURIComponent(
-      `Name: ${formState.name.value}\nEmail: ${formState.email.value}\n\nMessage:\n${formState.message.value}`
-    )
-    const mailtoLink = `mailto:hello@pixelwisdom.dev?subject=${subject}&body=${body}`
-    
-    // Open default email client
-    window.location.href = mailtoLink
-
-    setIsSubmitting(false)
-    setShowSuccess(true)
-    
-    // Announce success to screen readers
-    announce('Message prepared successfully! Your email client should open with the message ready to send.', 'assertive')
-    
-    // Reset form after success
-    setTimeout(() => {
-      setFormState({
-        name: { value: '', touched: false, valid: false },
-        email: { value: '', touched: false, valid: false },
-        message: { value: '', touched: false, valid: false }
+    try {
+      // Send form data to API
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formState.name.value,
+          email: formState.email.value,
+          subject: formState.subject.value || `Message from ${formState.name.value}`,
+          message: formState.message.value
+        })
       })
-      setShowSuccess(false)
-    }, 3000)
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send message')
+      }
+
+      setShowSuccess(true)
+      
+      // Announce success to screen readers
+      announce('Message sent successfully! Thank you for reaching out.', 'assertive')
+      
+             // Reset form after success
+       setTimeout(() => {
+         setFormState({
+           name: { value: '', touched: false, valid: false },
+           email: { value: '', touched: false, valid: false },
+           subject: { value: '', touched: false, valid: false },
+           message: { value: '', touched: false, valid: false }
+         })
+         setShowSuccess(false)
+       }, 5000)
+
+    } catch (error) {
+      console.error('Failed to send message:', error)
+      
+      // Show error message to user
+      announce('Failed to send message. Please try again or use the email link below.', 'assertive')
+      
+      // Fall back to mailto link as backup
+      const subject = encodeURIComponent(formState.subject.value || `Message from ${formState.name.value}`)
+      const body = encodeURIComponent(
+        `Name: ${formState.name.value}\nEmail: ${formState.email.value}\nSubject: ${formState.subject.value}\n\nMessage:\n${formState.message.value}`
+      )
+      const mailtoLink = `mailto:hello@pixelwisdom.dev?subject=${subject}&body=${body}`
+      
+      // Show fallback option to user
+      if (confirm('There was an issue sending your message. Would you like to open your email client instead?')) {
+        window.location.href = mailtoLink
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleInputChange = (fieldName: keyof FormState, value: string) => {
@@ -359,7 +399,7 @@ export default function ContactForm({ className }: ContactFormProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              Message Prepared!
+              Message Sent!
             </motion.h3>
             <motion.p
               className="text-gray-300 font-mono text-sm mb-4"
@@ -367,7 +407,7 @@ export default function ContactForm({ className }: ContactFormProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              Your email client should have opened with the message ready to send.
+              Thank you for reaching out! I'll get back to you as soon as possible.
             </motion.p>
             
             {/* Pixel celebration effect */}
@@ -428,6 +468,13 @@ export default function ContactForm({ className }: ContactFormProps) {
             />
             
             <EnhancedInput
+              fieldName="subject"
+              type="text"
+              placeholder="What's this about?"
+              label="Subject"
+            />
+            
+            <EnhancedInput
               fieldName="message"
               placeholder="Tell me about your project, idea, or just say hello!"
               label="Message"
@@ -450,9 +497,9 @@ export default function ContactForm({ className }: ContactFormProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              {isSubmitting ? 'Preparing...' : (
+              {isSubmitting ? 'Sending...' : (
                 <>
-                  Send via Email
+                  Send Message
                   <Send className="w-4 h-4 ml-2" />
                 </>
               )}
@@ -468,7 +515,7 @@ export default function ContactForm({ className }: ContactFormProps) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          * This will open your default email client with the message pre-filled.
+          * Your message will be sent directly. If there's an issue, we'll fall back to email.
         </motion.p>
       )}
     </motion.div>

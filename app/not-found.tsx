@@ -82,7 +82,7 @@ export default function NotFound() {
 
         {/* Error Messages */}
         <ScrollReveal animation="fadeInUp" delay={0.3}>
-          <h1 className="text-3xl md:text-4xl font-pixel mb-4 text-red-400">
+          <h1 className="text-3xl md:text-4xl pixel-head mb-4 text-red-400">
             <TypewriterText 
               text="PAGE NOT FOUND" 
               speed={100}

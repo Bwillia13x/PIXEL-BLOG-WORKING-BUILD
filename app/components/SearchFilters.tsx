@@ -2,7 +2,12 @@
 
 import { useState } from 'react'
 import { ChevronDownIcon, FunnelIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { SearchFilters as SearchFiltersType } from '@/app/hooks/useSearch'
+interface SearchFiltersType {
+  type: string[]
+  category: string[]
+  tags: string[]
+  status: string[]
+}
 
 interface SearchFiltersProps {
   filters: SearchFiltersType
@@ -10,7 +15,7 @@ interface SearchFiltersProps {
   availableFilters: {
     categories: string[]
     tags: string[]
-    statuses: ('completed' | 'in-progress' | 'planned')[]
+    statuses: string[]
   }
   totalResults: number
 }
@@ -112,7 +117,6 @@ export default function SearchFilters({
     categories: false,
     tags: false,
     status: false,
-    dateRange: false,
   })
 
   const toggleSection = (section: keyof typeof openSections) => {
@@ -124,22 +128,18 @@ export default function SearchFilters({
 
   const clearAllFilters = () => {
     onFiltersChange({
-      query: filters.query, // Keep the search query
-      categories: [],
+      type: [],
+      category: [],
       tags: [],
-      types: ['post', 'project'],
-      dateRange: {},
-      status: undefined,
+      status: []
     })
   }
 
   const hasActiveFilters = 
-    filters.categories.length > 0 || 
+    filters.category.length > 0 || 
     filters.tags.length > 0 || 
-    filters.types.length < 2 || 
-    filters.dateRange.start || 
-    filters.dateRange.end || 
-    (filters.status && filters.status.length > 0)
+    filters.type.length > 0 || 
+    filters.status.length > 0
 
   return (
     <div className="space-y-4">
@@ -175,8 +175,8 @@ export default function SearchFilters({
       >
         <MultiSelect
           options={['post', 'project']}
-          selected={filters.types}
-          onChange={(types) => onFiltersChange({ ...filters, types: types as ('post' | 'project')[] })}
+          selected={filters.type}
+          onChange={(type) => onFiltersChange({ ...filters, type })}
           placeholder="No content types available"
         />
       </FilterSection>
@@ -189,8 +189,8 @@ export default function SearchFilters({
       >
         <MultiSelect
           options={availableFilters.categories}
-          selected={filters.categories}
-          onChange={(categories) => onFiltersChange({ ...filters, categories })}
+          selected={filters.category}
+          onChange={(category) => onFiltersChange({ ...filters, category })}
           placeholder="No categories found"
         />
       </FilterSection>
@@ -218,53 +218,14 @@ export default function SearchFilters({
         >
           <MultiSelect
             options={availableFilters.statuses}
-            selected={filters.status || []}
-            onChange={(status) => onFiltersChange({ ...filters, status: status as ('completed' | 'in-progress' | 'planned')[] })}
+            selected={filters.status}
+            onChange={(status) => onFiltersChange({ ...filters, status })}
             placeholder="No project statuses available"
           />
         </FilterSection>
       )}
 
-      {/* Date Range */}
-      <FilterSection
-        title="Date Range"
-        isOpen={openSections.dateRange}
-        onToggle={() => toggleSection('dateRange')}
-      >
-        <div className="space-y-3">
-          <div>
-            <label className="block text-xs font-mono text-gray-400 mb-1">From</label>
-            <input
-              type="date"
-              value={filters.dateRange.start || ''}
-              onChange={(e) => onFiltersChange({
-                ...filters,
-                dateRange: { ...filters.dateRange, start: e.target.value || undefined }
-              })}
-              className="
-                w-full px-2 py-1 text-xs font-mono bg-gray-800 border border-gray-600
-                text-white focus:border-green-400 focus:outline-none transition-colors duration-200
-              "
-            />
-          </div>
-          
-          <div>
-            <label className="block text-xs font-mono text-gray-400 mb-1">To</label>
-            <input
-              type="date"
-              value={filters.dateRange.end || ''}
-              onChange={(e) => onFiltersChange({
-                ...filters,
-                dateRange: { ...filters.dateRange, end: e.target.value || undefined }
-              })}
-              className="
-                w-full px-2 py-1 text-xs font-mono bg-gray-800 border border-gray-600
-                text-white focus:border-green-400 focus:outline-none transition-colors duration-200
-              "
-            />
-          </div>
-        </div>
-      </FilterSection>
+
     </div>
   )
 }

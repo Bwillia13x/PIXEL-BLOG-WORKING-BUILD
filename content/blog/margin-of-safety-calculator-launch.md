@@ -6,6 +6,7 @@ author: "Benjamin Williams"
 tags: ["Value Investing", "Valuation", "Risk Analysis", "Monte Carlo", "Financial Tools"]
 category: "Financial Analysis"
 featured: true
+published: true
 ---
 
 # Introducing the Margin of Safety Calculator: Multi-Method Valuation with Monte Carlo Simulation
