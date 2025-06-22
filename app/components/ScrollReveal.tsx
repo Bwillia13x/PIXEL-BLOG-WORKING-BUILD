@@ -26,8 +26,7 @@ const animationVariants: Record<string, Variants> = {
       y: 0,
       filter: "blur(0px)",
       transition: {
-        duration: 0.6,
-        ease: "easeOut"
+        duration: 0.6
       }
     }
   },
@@ -42,8 +41,7 @@ const animationVariants: Record<string, Variants> = {
       x: 0,
       filter: "blur(0px)",
       transition: {
-        duration: 0.6,
-        ease: "easeOut"
+        duration: 0.6
       }
     }
   },
@@ -137,12 +135,15 @@ export default function ScrollReveal({
     delay: delay * 1000 // Convert to milliseconds
   })
 
+  const baseVariant = animationVariants[animation].visible
+  const hasTransition = typeof baseVariant === 'object' && baseVariant !== null && 'transition' in baseVariant
+  
   const variants = {
     ...animationVariants[animation],
     visible: {
-      ...animationVariants[animation].visible,
+      ...baseVariant,
       transition: {
-        ...animationVariants[animation].visible.transition,
+        ...(hasTransition ? (baseVariant as any).transition : {}),
         duration
       }
     }
@@ -150,7 +151,7 @@ export default function ScrollReveal({
 
   return (
     <motion.div
-      ref={ref}
+      ref={ref as any}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
       variants={variants}

@@ -236,7 +236,7 @@ export default function ContentGrid({
         initial="hidden"
         animate="visible"
       >
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {loading ? (
             // Loading skeletons
             Array.from({ length: 6 }).map((_, index) => (

@@ -76,7 +76,7 @@ export function PixelBootScreen({ onComplete, soundEnabled = false }: PixelBootS
   // Initialize audio context
   useEffect(() => {
     if (soundEnabled) {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext
+      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
       if (AudioContextClass) {
         audioContextRef.current = new AudioContextClass()
       }
@@ -167,7 +167,7 @@ export function PixelBootScreen({ onComplete, soundEnabled = false }: PixelBootS
 
   return (
     <div className="h-full w-full bg-black text-green-400 font-mono overflow-hidden">
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {/* BIOS Phase */}
         {phase === 'bios' && (
           <motion.div

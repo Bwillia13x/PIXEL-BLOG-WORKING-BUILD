@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 interface TypewriterTextProps {
   text: string
@@ -10,6 +10,7 @@ interface TypewriterTextProps {
   onComplete?: () => void
   cursor?: boolean
   cursorChar?: string
+  once?: boolean
 }
 
 export const TypewriterText: React.FC<TypewriterTextProps> = ({
@@ -19,13 +20,35 @@ export const TypewriterText: React.FC<TypewriterTextProps> = ({
   className = '',
   onComplete,
   cursor = true,
-  cursorChar = '|'
+  cursorChar = '|',
+  once = true
 }) => {
   const [displayedText, setDisplayedText] = useState('')
   const [isComplete, setIsComplete] = useState(false)
   const [showCursor, setShowCursor] = useState(true)
+  const hasCompletedRef = useRef(false)
+  const textRef = useRef(text)
 
   useEffect(() => {
+    if (once && hasCompletedRef.current && textRef.current === text) {
+      setDisplayedText(text)
+      setIsComplete(true)
+      return
+    }
+    
+    if (textRef.current !== text) {
+      textRef.current = text
+      hasCompletedRef.current = false
+      setDisplayedText('')
+      setIsComplete(false)
+    }
+  }, [text, once])
+
+  useEffect(() => {
+    if (once && hasCompletedRef.current && textRef.current === text) {
+      return
+    }
+
     if (delay > 0) {
       const delayTimer = setTimeout(() => {
         startTyping()
@@ -34,9 +57,13 @@ export const TypewriterText: React.FC<TypewriterTextProps> = ({
     } else {
       startTyping()
     }
-  }, [text, speed, delay])
+  }, [text, speed, delay, once])
 
   const startTyping = () => {
+    if (once && hasCompletedRef.current && textRef.current === text) {
+      return
+    }
+
     let index = 0
     const timer = setInterval(() => {
       if (index < text.length) {
@@ -45,6 +72,7 @@ export const TypewriterText: React.FC<TypewriterTextProps> = ({
       } else {
         clearInterval(timer)
         setIsComplete(true)
+        hasCompletedRef.current = true
         onComplete?.()
       }
     }, speed)

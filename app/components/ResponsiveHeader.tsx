@@ -160,7 +160,7 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Enhanced Main Header Content with smooth animations */}
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {!isCollapsed && (
             <motion.div
               key="expanded"

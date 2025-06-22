@@ -330,7 +330,7 @@ export default function ContactForm({ className }: ContactFormProps) {
         Send a Message
       </motion.h2>
       
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {showSuccess ? (
           // Success state
           <motion.div

@@ -5,17 +5,7 @@ import type { Metadata, Viewport } from "next"
 import { siteConfig } from "@/lib/site-config"
 import { generateSEO } from "@/lib/seo"
 import ResponsiveHeader from "./components/ResponsiveHeader"
-import dynamic from "next/dynamic"
-
-// Lazy-load heavy canvas animations on client only
-const RainingCharacters = dynamic(
-  () => import("./components/RainingCharacters"),
-  { ssr: false }
-)
-const PixelMatrixRain = dynamic(
-  () => import("./components/design-system/PixelAnimations"),
-  { ssr: false }
-)
+import ClientAnimations from "./components/ClientAnimations"
 import { AppWrapper } from "./components/AppWrapper"
 import { PerformanceMetrics } from "./components/PerformanceOptimizer"
 import AccessibilityTester from "./components/AccessibilityTester"
@@ -26,6 +16,7 @@ import WebVitalsMonitor from "./components/WebVitalsMonitor"
 
 import ClientComponents from "./components/ClientComponents"
 import ServiceWorkerRegistration from "./components/ServiceWorkerRegistration"
+import { LoadingProvider } from "./components/LoadingProvider"
 
 const pressStart2P = Press_Start_2P({
   weight: "400",
@@ -136,6 +127,7 @@ export default function RootLayout({
         </a>
         
         {/* Providers for Theme and other contexts */}
+        <LoadingProvider enableLoading={true} duration={2500}>
         <AccessibilityProvider>
         <Providers>
           {/* SEO and Performance Wrapper */}
@@ -143,7 +135,7 @@ export default function RootLayout({
             <AppWrapper>
               {/* Subtle Matrix Background Effect */}
               <div className="fixed inset-0 z-[-1] overflow-hidden">
-                <RainingCharacters
+                <ClientAnimations
                   intensity="low"
                   showTrails={false}
                   interactive={false}
@@ -283,6 +275,7 @@ export default function RootLayout({
           </SEOLayout>
         </Providers>
         </AccessibilityProvider>
+        </LoadingProvider>
       </body>
     </html>
   )

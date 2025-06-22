@@ -126,14 +126,8 @@ export default function MobileNavigation({ className = '' }: MobileNavigationPro
   // Animation variants
   const overlayVariants = {
     hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { duration: 0.3, ease: 'easeOut' }
-    },
-    exit: { 
-      opacity: 0,
-      transition: { duration: 0.2, ease: 'easeIn' }
-    }
+    visible: { opacity: 1 },
+    exit: { opacity: 0 }
   }
 
   const menuVariants = {
@@ -147,7 +141,7 @@ export default function MobileNavigation({ className = '' }: MobileNavigationPro
       scale: 1,
       rotateY: 0,
       transition: { 
-        type: 'spring',
+        type: "spring" as const,
         stiffness: 300,
         damping: 25,
         mass: 0.8,
@@ -161,7 +155,6 @@ export default function MobileNavigation({ className = '' }: MobileNavigationPro
       rotateY: -15,
       transition: { 
         duration: 0.3,
-        ease: 'easeIn',
         staggerChildren: 0.02,
         staggerDirection: -1
       }
@@ -179,7 +172,7 @@ export default function MobileNavigation({ className = '' }: MobileNavigationPro
       opacity: 1,
       rotateX: 0,
       transition: { 
-        type: 'spring',
+        type: "spring" as const,
         stiffness: 400,
         damping: 25
       }
@@ -208,7 +201,7 @@ export default function MobileNavigation({ className = '' }: MobileNavigationPro
         aria-expanded={isOpen}
         aria-controls="mobile-navigation"
       >
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {isOpen ? (
             <motion.div
               key="close"
@@ -242,7 +235,7 @@ export default function MobileNavigation({ className = '' }: MobileNavigationPro
           transition={{
             duration: 2,
             repeat: Infinity,
-            ease: 'easeInOut'
+            ease: [0.42, 0, 0.58, 1]
           }}
         />
       </motion.button>
@@ -258,6 +251,7 @@ export default function MobileNavigation({ className = '' }: MobileNavigationPro
               initial="hidden"
               animate="visible"
               exit="exit"
+              transition={{ duration: 0.3 }}
               onClick={() => setIsOpen(false)}
             />
 
@@ -318,7 +312,7 @@ export default function MobileNavigation({ className = '' }: MobileNavigationPro
                         duration: 1.5,
                         delay: i * 0.2,
                         repeat: Infinity,
-                        ease: 'easeInOut'
+                        ease: [0.42, 0, 0.58, 1]
                       }}
                     />
                   ))}
@@ -403,7 +397,7 @@ export default function MobileNavigation({ className = '' }: MobileNavigationPro
                             className="absolute inset-0 rounded-lg bg-gradient-to-r from-green-400/0 via-green-400/5 to-green-400/0"
                             initial={{ x: '-100%' }}
                             whileHover={{ x: '100%' }}
-                            transition={{ duration: 0.8, ease: 'easeInOut' }}
+                            transition={{ duration: 0.8, ease: [0.42, 0, 0.58, 1] }}
                           />
 
                           <Icon className={`w-5 h-5 transition-all duration-300 ${
@@ -436,7 +430,7 @@ export default function MobileNavigation({ className = '' }: MobileNavigationPro
                               transition={{
                                 duration: 1.5,
                                 repeat: Infinity,
-                                ease: 'easeInOut'
+                                ease: [0.42, 0, 0.58, 1]
                               }}
                             />
                           )}
@@ -478,7 +472,7 @@ export default function MobileNavigation({ className = '' }: MobileNavigationPro
                           duration: 2,
                           delay: i * 0.3,
                           repeat: Infinity,
-                          ease: 'easeInOut'
+                          ease: [0.42, 0, 0.58, 1]
                         }}
                       />
                     ))}
@@ -496,7 +490,7 @@ export default function MobileNavigation({ className = '' }: MobileNavigationPro
                 transition={{
                   duration: 3,
                   repeat: Infinity,
-                  ease: 'easeInOut'
+                  ease: [0.42, 0, 0.58, 1]
                 }}
               />
             </motion.div>

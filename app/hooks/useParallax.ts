@@ -22,7 +22,7 @@ export function useParallax(options: ParallaxOptions = {}) {
   const [scrollY, setScrollY] = useState(0)
   const [scrollX, setScrollX] = useState(0)
   const lastScrollTime = useRef(0)
-  const rafId = useRef<number>()
+  const rafId = useRef<number | null>(null)
 
   const handleScroll = useCallback(() => {
     const now = Date.now()

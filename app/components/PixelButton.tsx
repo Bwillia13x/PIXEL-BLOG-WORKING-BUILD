@@ -176,7 +176,7 @@ const PixelButton = forwardRef<HTMLButtonElement | HTMLAnchorElement, PixelButto
             transition={{
               duration: 2,
               repeat: Infinity,
-              ease: "linear"
+              ease: "linear" as const
             }}
           />
         )}
@@ -199,7 +199,7 @@ const PixelButton = forwardRef<HTMLButtonElement | HTMLAnchorElement, PixelButto
           className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
           initial={{ x: '-100%' }}
           whileHover={{ x: '100%' }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
+          transition={{ duration: 0.6 }}
         />
 
         {/* Content */}
@@ -216,7 +216,7 @@ const PixelButton = forwardRef<HTMLButtonElement | HTMLAnchorElement, PixelButto
                 size === 'lg' ? 'w-5 h-5' : 'w-6 h-6'
               }`}
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" as const }}
             />
           ) : (
             children
@@ -258,15 +258,15 @@ const PixelButton = forwardRef<HTMLButtonElement | HTMLAnchorElement, PixelButto
       whileHover: disabled ? {} : { 
         scale: 1.02,
         y: -1,
-        ...motionProps.whileHover
+        ...(typeof motionProps.whileHover === 'object' && motionProps.whileHover !== null ? motionProps.whileHover : {})
       },
       whileTap: disabled ? {} : pressEffect ? { 
         scale: 0.98,
         y: 1,
         boxShadow: `1px 1px 0 ${colors.shadow}`,
-        ...motionProps.whileTap
+        ...(typeof motionProps.whileTap === 'object' && motionProps.whileTap !== null ? motionProps.whileTap : {})
       } : motionProps.whileTap,
-      transition: { duration: 0.1, ease: "easeInOut" },
+      transition: { duration: 0.1 },
       ...motionProps
     }
 

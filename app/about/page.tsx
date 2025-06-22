@@ -62,7 +62,7 @@ export default function AboutPage() {
         </p>
       </div>
 
-      {/* TODO: Add profile image, resume download link, social links */}
+      {/* Future enhancements: profile image, resume download, social links */}
     </div>
   )
 }

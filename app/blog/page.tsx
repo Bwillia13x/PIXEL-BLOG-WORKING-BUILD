@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { Suspense } from 'react'
 
 interface Post {
   id: string
@@ -15,23 +14,63 @@ interface Post {
 }
 
 async function getPosts(): Promise<Post[]> {
+  // Use direct file system access to avoid fetch issues
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/posts`, {
-      next: { revalidate: 300 },
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
+    const fs = await import('fs')
+    const path = await import('path')
+    const matter = await import('gray-matter')
     
-    if (!res.ok) {
-      console.warn(`API returned ${res.status}: ${res.statusText}`)
+    const postsDirectory = path.join(process.cwd(), 'content', 'blog')
+    
+    if (!fs.existsSync(postsDirectory)) {
       return []
     }
     
-    const data = await res.json()
-    return Array.isArray(data) ? data : []
-  } catch (error) {
-    console.error('Error fetching posts:', error)
+    const files = fs.readdirSync(postsDirectory)
+    const posts: Post[] = []
+    
+    for (const file of files) {
+      if (!(file.endsWith('.md') || file.endsWith('.mdx'))) {
+        continue
+      }
+      
+      try {
+        const fullPath = path.join(postsDirectory, file)
+        const slug = file.replace(/\.mdx?$/, '')
+        const fileContents = fs.readFileSync(fullPath, 'utf8')
+        const { data, content } = matter.default(fileContents)
+        
+        const post: Post = {
+          id: slug,
+          slug,
+          title: data.title || slug,
+          category: data.category || 'Blog',
+          date: data.date,
+          content: content.substring(0, 500),
+          tags: Array.isArray(data.tags) ? data.tags : [],
+          excerpt: data.excerpt,
+          readTime: `${Math.ceil(content.trim().split(/\s+/).length / 200)} min read`,
+          published: data.published !== false,
+        }
+        
+        if (post.published) {
+          posts.push(post)
+        }
+      } catch (_error) {
+        // Skip invalid files
+        continue
+      }
+    }
+    
+    // Sort posts by date (newest first)
+    posts.sort((a, b) => {
+      const dateA = a.date ? new Date(a.date).getTime() : 0
+      const dateB = b.date ? new Date(b.date).getTime() : 0
+      return dateB - dateA
+    })
+    
+    return posts
+  } catch (_error) {
     return []
   }
 }
@@ -144,12 +183,13 @@ function BlogLoading() {
   )
 }
 
-export default async function BlogPage({ searchParams }: { searchParams?: { q?: string } }) {
+export default async function BlogPage({ searchParams }: { searchParams?: Promise<{ q?: string }> }) {
   let posts = await getPosts()
   // Server-side search filtering via query param ?q=
-  if (searchParams?.q) {
+  const resolvedSearchParams = await searchParams
+  if (resolvedSearchParams?.q) {
     const { searchPosts } = await import('@/app/data/posts')
-    posts = searchPosts(posts, searchParams.q)
+    posts = searchPosts(posts, resolvedSearchParams.q)
   }
   
   return (
@@ -171,7 +211,7 @@ export default async function BlogPage({ searchParams }: { searchParams?: { q?: 
         <input
           type="text"
           name="q"
-          defaultValue={searchParams?.q || ''}
+          defaultValue={resolvedSearchParams?.q || ''}
           placeholder="Search posts..."
           className="w-full px-4 py-2 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-green-400"
         />

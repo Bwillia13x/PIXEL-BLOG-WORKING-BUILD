@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, Suspense } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { MagnifyingGlassIcon, CommandLineIcon } from '@heroicons/react/24/outline'
@@ -11,7 +11,24 @@ interface QuickSearchProps {
   className?: string
 }
 
-export default function QuickSearch({ className = "" }: QuickSearchProps) {
+// Fallback component while search is loading
+function QuickSearchFallback() {
+  return (
+    <div className="relative">
+      <div className="flex items-center space-x-2 px-3 py-2 pixel-border bg-gray-900/60 backdrop-blur-sm text-gray-400 w-full md:w-64">
+        <MagnifyingGlassIcon className="h-4 w-4" />
+        <span className="font-mono text-sm flex-1 text-left">Loading search...</span>
+        <div className="hidden md:flex items-center space-x-1 text-xs">
+          <CommandLineIcon className="h-3 w-3" />
+          <span>K</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Search content component that uses hooks
+function QuickSearchContent({ className = "" }: QuickSearchProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [isFocused, setIsFocused] = useState(false)
@@ -19,7 +36,7 @@ export default function QuickSearch({ className = "" }: QuickSearchProps) {
   const [lastTyped, setLastTyped] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const typingTimeoutRef = useRef<NodeJS.Timeout>()
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   
   // Typing indicator logic
   useEffect(() => {
@@ -200,307 +217,229 @@ export default function QuickSearch({ className = "" }: QuickSearchProps) {
               />,
               document.body
             )}
-            {/* Enhanced Search Panel (portal) */}
-            {createPortal(
-              <motion.div 
-                className="fixed top-16 left-4 right-4 z-50 md:static md:inset-auto md:mt-2 md:left-auto md:right-0 md:z-50 pixel-border bg-gray-900/95 backdrop-blur-md shadow-2xl overflow-hidden"
-                initial={{ 
-                  opacity: 0, 
-                  y: -20, 
-                  scale: 0.95,
-                  filter: "blur(4px)"
-                }}
-                animate={{ 
-                  opacity: 1, 
-                  y: 0, 
-                  scale: 1,
-                  filter: "blur(0px)"
-                }}
-                exit={{ 
-                  opacity: 0, 
-                  y: -20, 
-                  scale: 0.95,
-                  filter: "blur(4px)"
-                }}
-                transition={{ 
-                  duration: 0.3, 
-                  type: "spring", 
-                  stiffness: 300, 
-                  damping: 30 
-                }}
-              >
-                {/* Animated border effect */}
-                <motion.div
-                  className="absolute inset-0 border border-green-400/30"
-                  initial={{ borderColor: "rgba(74, 222, 128, 0)" }}
-                  animate={{ borderColor: "rgba(74, 222, 128, 0.3)" }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                />
-                
-                {/* Search Input with enhanced animations */}
-                <div className="p-4 border-b border-gray-700 relative">
-                  {/* Focus glow effect */}
-                  <motion.div
-                    className="absolute inset-0 bg-green-400/5"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: isFocused ? 1 : 0 }}
-                    transition={{ duration: 0.3 }}
+            
+            {/* Search Panel */}
+            <motion.div
+              className="
+                absolute top-full left-0 right-0 mt-2 z-50 max-h-[80vh] overflow-hidden
+                pixel-border bg-gray-900/95 backdrop-blur-xl shadow-2xl
+                md:w-96 md:max-w-none
+              "
+              initial={{ 
+                opacity: 0, 
+                y: -20, 
+                scale: 0.95,
+                filter: "blur(10px)"
+              }}
+              animate={{ 
+                opacity: 1, 
+                y: 0, 
+                scale: 1,
+                filter: "blur(0px)"
+              }}
+              exit={{ 
+                opacity: 0, 
+                y: -20, 
+                scale: 0.95,
+                filter: "blur(10px)"
+              }}
+              transition={{ 
+                duration: 0.3, 
+                ease: [0.23, 1, 0.320, 1]
+              }}
+              style={{
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(74, 222, 128, 0.2)"
+              }}
+            >
+              {/* Search Input */}
+              <div className="p-4 border-b border-gray-700/50">
+                <div className="relative group">
+                  <motion.input
+                    ref={inputRef}
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    placeholder="Type to search posts, projects..."
+                    className="
+                      w-full px-4 py-3 bg-gray-800/60 text-white placeholder-gray-400
+                      border border-gray-600/40 rounded font-mono text-sm
+                      focus:outline-none focus:border-green-400/60 focus:ring-2 focus:ring-green-400/20
+                      transition-all duration-300
+                    "
+                    autoComplete="off"
+                    spellCheck={false}
                   />
                   
-                  <div className="flex items-center space-x-2 relative z-10">
-                    <motion.div
-                      animate={{ 
-                        scale: isFocused ? 1.1 : 1,
-                        color: isFocused ? "#22c55e" : "#4ade80"
-                      }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <MagnifyingGlassIcon className="h-4 w-4" />
-                    </motion.div>
-                    
-                    <div className="flex-1 relative">
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => setIsFocused(false)}
-                        placeholder="Search posts and projects..."
-                        className="
-                          w-full bg-transparent text-white placeholder-gray-300 
-                          focus:outline-none font-mono text-sm relative z-10
-                        "
-                        autoComplete="off"
-                      />
-                      
-                      {/* Typing indicator */}
-                      <AnimatePresence>
-                        {isTyping && (
-                          <motion.div
-                            className="absolute right-0 top-1/2 transform -translate-y-1/2"
-                            initial={{ opacity: 0, x: 10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 10 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <div className="flex items-center space-x-1">
-                              <div className="text-xs text-green-400 font-mono">typing</div>
-                              <PixelLoader />
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                    
-                    {/* Enhanced loading state */}
-                    <AnimatePresence>
-                      {searchInstance.isLoading && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <PixelLoader />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                  
-                  {/* Focus line animation */}
-                  <motion.div
-                    className="absolute bottom-0 left-0 h-0.5 bg-green-400"
-                    initial={{ width: 0 }}
-                    animate={{ width: isFocused ? "100%" : 0 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
-                  />
-                </div>
-
-                {/* Enhanced Results with animations */}
-                <div className="max-h-96 overflow-y-auto">
-                  <AnimatePresence mode="wait">
-                    {query.trim() && filteredResults.length > 0 ? (
-                      <motion.div 
-                        className="p-2"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        {filteredResults.map((item, index) => {
-                          const href = item.type === 'post' ? `/blog/${'slug' in item ? item.slug : ''}` : `/projects/${item.id}`
-                          return (
-                            <motion.div
-                              key={`${item.type}-${item.id || ('slug' in item ? item.slug : '')}-${index}`}
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ 
-                                duration: 0.3, 
-                                delay: index * 0.05,
-                                type: "spring",
-                                stiffness: 300,
-                                damping: 30
-                              }}
-                              whileHover={{ 
-                                x: 4,
-                                transition: { duration: 0.2 }
-                              }}
-                            >
-                              <Link
-                                href={href}
-                                onClick={handleResultClick}
-                                className="
-                                  block p-3 hover:bg-gray-800/50 transition-all duration-300
-                                  border-l-2 border-transparent hover:border-green-400
-                                  hover:shadow-lg hover:shadow-green-400/10 rounded-r-md
-                                  group relative overflow-hidden
-                                "
-                              >
-                                {/* Hover glow effect */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-green-400/0 via-green-400/5 to-green-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                
-                                <div className="flex items-start space-x-3 relative z-10">
-                                  <motion.div 
-                                    className={`
-                                      flex-shrink-0 w-2 h-2 rounded-full mt-2
-                                      ${item.type === 'post' ? 'bg-blue-400' : 'bg-purple-400'}
-                                    `}
-                                    whileHover={{ scale: 1.5 }}
-                                    transition={{ duration: 0.2 }}
-                                  />
-                                  <div className="flex-1 min-w-0">
-                                    <h4 className="font-mono text-sm text-white truncate group-hover:text-green-300 transition-colors duration-200">
-                                      {item.title}
-                                    </h4>
-                                    <p className="text-xs text-gray-300 mt-1 line-clamp-2">
-                                      {('content' in item ? item.content : 'description' in item ? item.description : '')?.slice(0, 100)}...
-                                    </p>
-                                    <div className="flex items-center space-x-2 mt-2">
-                                      <span className={`
-                                        text-xs font-mono px-1 py-0.5 rounded
-                                        ${item.type === 'post' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'}
-                                      `}>
-                                        {item.type.toUpperCase()}
-                                      </span>
-                                      {'category' in item && item.category && (
-                                        <span className="text-xs text-gray-500 font-mono">
-                                          {item.category}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              </Link>
-                            </motion.div>
-                          )
-                  })}
-                  
-                  {/* View All Results Link */}
-                  <div className="p-3 border-t border-gray-700">
-                    <Link
-                      href={`/search?q=${encodeURIComponent(query)}`}
-                      onClick={handleResultClick}
-                      className="
-                        flex items-center justify-center space-x-2 text-sm text-green-400 
-                        hover:text-green-300 transition-colors duration-200 font-mono
-                      "
-                    >
-                      <span>View all results</span>
-                      <span className="text-xs">({filteredResults.length > 5 ? '5+' : filteredResults.length})</span>
-                    </Link>
-                  </div>
-                      </motion.div>
-                    ) : query.trim() ? (
-                      <motion.div 
-                        className="p-4 text-center"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <motion.div
-                          initial={{ scale: 0.9 }}
-                          animate={{ scale: 1 }}
-                          transition={{ duration: 0.2, delay: 0.1 }}
-                        >
-                          <div className="text-4xl mb-2">🔍</div>
-                          <p className="text-gray-300 font-mono text-sm">
-                            No results found for "{query}"
-                          </p>
-                          <Link
-                            href={`/search?q=${encodeURIComponent(query)}`}
-                            onClick={handleResultClick}
-                            className="
-                              text-green-400 hover:text-green-300 transition-colors 
-                              duration-200 font-mono text-xs mt-2 inline-block hover:underline
-                            "
-                          >
-                            Try advanced search →
-                          </Link>
-                        </motion.div>
-                      </motion.div>
+                  {/* Search Icon & Status */}
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
+                    {isTyping ? (
+                      <PixelLoader />
                     ) : (
-                      <motion.div 
-                        className="p-4"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <div className="text-center mb-4">
-                          <motion.div
-                            initial={{ scale: 0.8 }}
-                            animate={{ scale: 1 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <div className="text-2xl mb-2">⚡</div>
-                            <p className="text-gray-300 font-mono text-xs mb-2">
-                              Quick Actions
-                            </p>
-                          </motion.div>
-                        </div>
-                        
-                        <div className="space-y-1">
-                          {[
-                            { href: "/search", label: "Advanced Search", icon: "🔍" },
-                            { href: "/blog", label: "Browse Posts", icon: "📚" },
-                            { href: "/projects", label: "View Projects", icon: "🛠️" }
-                          ].map((item, index) => (
-                            <motion.div
-                              key={item.href}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.2, delay: index * 0.05 }}
-                            >
-                              <Link
-                                href={item.href}
-                                onClick={handleResultClick}
-                                className="
-                                  flex items-center space-x-2 p-2 text-sm text-gray-300 hover:text-white 
-                                  hover:bg-gray-800/50 transition-all duration-200 font-mono rounded
-                                  hover:translate-x-1 group
-                                "
-                              >
-                                <span className="group-hover:scale-110 transition-transform duration-200">
-                                  {item.icon}
-                                </span>
-                                <span>{item.label}</span>
-                                <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                  →
-                                </span>
-                              </Link>
-                            </motion.div>
-                          ))}
-                        </div>
-                      </motion.div>
+                      <MagnifyingGlassIcon className="h-4 w-4 text-gray-400" />
                     )}
-                  </AnimatePresence>
+                  </div>
+                  
+                  {/* Focus ring effect */}
+                  <motion.div
+                    className="absolute inset-0 rounded border-2 border-green-400/40 pointer-events-none"
+                    initial={{ opacity: 0, scale: 1.02 }}
+                    animate={{ 
+                      opacity: isFocused ? 1 : 0,
+                      scale: isFocused ? 1 : 1.02
+                    }}
+                    transition={{ duration: 0.2 }}
+                  />
                 </div>
-              </motion.div>,
-              document.body
-            )}
+              </div>
+
+              {/* Results */}
+              <div className="max-h-80 overflow-y-auto">
+                {query.trim().length === 0 ? (
+                  <div className="p-6 text-center">
+                    <div className="text-gray-400 font-mono text-sm space-y-3">
+                      <div className="flex justify-center mb-4">
+                        <motion.div
+                          className="flex space-x-1"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ staggerChildren: 0.1 }}
+                        >
+                          {[0, 1, 2].map((i) => (
+                            <motion.div
+                              key={i}
+                              className="w-2 h-2 bg-green-400/60 rounded-sm"
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ delay: i * 0.1 }}
+                            />
+                          ))}
+                        </motion.div>
+                      </div>
+                      
+                      <p>Start typing to search across all content</p>
+                      
+                      <div className="text-xs text-gray-500 space-y-1">
+                        <p>• Press <kbd className="px-1 py-0.5 bg-gray-700 rounded text-xs">↵</kbd> to search</p>
+                        <p>• Press <kbd className="px-1 py-0.5 bg-gray-700 rounded text-xs">Esc</kbd> to close</p>
+                        <p>• Use <kbd className="px-1 py-0.5 bg-gray-700 rounded text-xs">⌘K</kbd> anywhere</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : filteredResults.length === 0 ? (
+                  <div className="p-6 text-center">
+                    <div className="text-gray-400 font-mono text-sm">
+                      <p className="mb-2">No results for "{query}"</p>
+                      <p className="text-xs text-gray-500">Try different keywords or check spelling</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="py-2">
+                                         {filteredResults.map((item, index) => (
+                       <motion.div
+                         key={`${item.type}-${item.type === 'post' ? item.slug : item.id}`}
+                         initial={{ opacity: 0, y: 20 }}
+                         animate={{ opacity: 1, y: 0 }}
+                         transition={{ delay: index * 0.05 }}
+                       >
+                         <Link
+                           href={item.type === 'post' ? `/blog/${item.slug}` : `/projects/${item.id}`}
+                          onClick={handleResultClick}
+                          className="
+                            block px-4 py-3 hover:bg-gray-800/60 transition-colors duration-200
+                            border-l-2 border-transparent hover:border-green-400/60
+                            group
+                          "
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center space-x-2 mb-1">
+                                <span className={`
+                                  inline-flex items-center px-2 py-0.5 rounded text-xs font-mono
+                                  ${item.type === 'post' ? 'bg-blue-600/20 text-blue-400' : 'bg-purple-600/20 text-purple-400'}
+                                `}>
+                                  {item.type === 'post' ? '📝' : '🚀'} {item.type}
+                                </span>
+                                {'category' in item && item.category && (
+                                  <span className="text-xs text-gray-500 font-mono">
+                                    {item.category}
+                                  </span>
+                                )}
+                              </div>
+                              
+                              <h4 className="font-mono text-sm text-white group-hover:text-green-400 transition-colors truncate">
+                                {item.title}
+                              </h4>
+                              
+                                                             {(('content' in item && item.content) || ('description' in item && item.description)) && (
+                                 <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                                   {(('content' in item && item.content) || ('description' in item && item.description) || '').substring(0, 100)}...
+                                 </p>
+                               )}
+                              
+                              {item.tags && item.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                  {item.tags.slice(0, 3).map((tag) => (
+                                    <span
+                                      key={tag}
+                                      className="inline-block px-1.5 py-0.5 bg-gray-700/50 text-gray-300 text-xs rounded font-mono"
+                                    >
+                                      {tag}
+                                    </span>
+                                  ))}
+                                  {item.tags.length > 3 && (
+                                    <span className="text-xs text-gray-500 font-mono">
+                                      +{item.tags.length - 3} more
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className="ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </div>
+                          </div>
+                        </Link>
+                      </motion.div>
+                    ))}
+                    
+                    {/* View All Results Link */}
+                    <div className="border-t border-gray-700/50 p-3">
+                      <Link
+                        href={`/search?q=${encodeURIComponent(query)}`}
+                        onClick={handleResultClick}
+                        className="
+                          w-full flex items-center justify-center space-x-2 px-4 py-2
+                          bg-gray-800/40 hover:bg-gray-700/60 text-green-400 hover:text-green-300
+                          font-mono text-sm rounded transition-all duration-200
+                          border border-gray-600/40 hover:border-green-400/40
+                        "
+                      >
+                        <span>View all results ({filteredResults.length})</span>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
           </>
         )}
       </AnimatePresence>
     </div>
+  )
+}
+
+export default function QuickSearch({ className = "" }: QuickSearchProps) {
+  return (
+    <Suspense fallback={<QuickSearchFallback />}>
+      <QuickSearchContent className={className} />
+    </Suspense>
   )
 }

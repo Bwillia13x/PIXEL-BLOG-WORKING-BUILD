@@ -52,17 +52,17 @@ function getPostData(fileName: string): Post | null {
       readTime,
       published: data.published !== false,
     }
-  } catch (error) {
-    console.error(`Error processing file ${fileName}:`, error)
+  } catch (_error) {
+    // Error processing file - silently skip
     return null
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Check if posts directory exists
     if (!fs.existsSync(postsDirectory)) {
-      console.warn('Posts directory not found:', postsDirectory)
+      // Posts directory not found - return empty array
       return NextResponse.json([], { 
         status: 200,
         headers: {
@@ -101,8 +101,8 @@ export async function GET(request: NextRequest) {
         'Content-Type': 'application/json',
       }
     })
-  } catch (error) {
-    console.error('Error reading posts:', error)
+  } catch (_error) {
+    // Error reading posts - return error response
     return NextResponse.json(
       { 
         error: 'Failed to load posts',

@@ -297,7 +297,7 @@ export function LazySection({
       className={className}
       style={minHeight ? { minHeight } : undefined}
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {isVisible ? (
           <motion.div
             key="content"

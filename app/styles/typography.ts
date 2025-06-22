@@ -262,7 +262,8 @@ export function generateTypographyCSS(): string {
   
   // Generate classes for each typography scale
   Object.entries(typographyConfig).forEach(([family, scales]) => {
-    Object.entries(scales).forEach(([size, scale]) => {
+    Object.entries(scales).forEach(([size, scaleValue]) => {
+      const scale = scaleValue as TypographyScale
       css.push(`
         .${family}-${size} {
           font-size: ${scale.fontSize};

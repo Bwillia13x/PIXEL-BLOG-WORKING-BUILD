@@ -91,7 +91,7 @@ export function EnhancedLoadingExperience({
         </button>
       </div>
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {/* Intro Phase */}
         {currentPhase === 'intro' && (
           <motion.div

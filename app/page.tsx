@@ -25,34 +25,64 @@ interface PostsResponse {
 }
 
 async function getPosts(): Promise<PostsResponse> {
+  // Always use direct file system access to avoid fetch issues during static generation
+  // This works in both development and build time
   try {
-    // Try to fetch posts, but don't fail if it doesn't work
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    const res = await fetch(`${baseUrl}/api/posts`, {
-      next: { revalidate: 300 },
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const fs = await import('fs')
+    const path = await import('path')
+    const matter = await import('gray-matter')
+    
+    const postsDirectory = path.join(process.cwd(), 'content', 'blog')
+    
+    if (!fs.existsSync(postsDirectory)) {
+      return { posts: [] }
+    }
+    
+    const files = fs.readdirSync(postsDirectory)
+    const posts: Post[] = []
+    
+    for (const file of files) {
+      if (!(file.endsWith('.md') || file.endsWith('.mdx'))) {
+        continue
+      }
+      
+      try {
+        const fullPath = path.join(postsDirectory, file)
+        const slug = file.replace(/\.mdx?$/, '')
+        const fileContents = fs.readFileSync(fullPath, 'utf8')
+        const { data, content } = matter.default(fileContents)
+        
+        const post: Post = {
+          id: slug,
+          slug,
+          title: data.title || slug,
+          category: data.category || 'Blog',
+          date: data.date,
+          content: content.substring(0, 500),
+          tags: Array.isArray(data.tags) ? data.tags : [],
+          excerpt: data.excerpt,
+          readTime: `${Math.ceil(content.trim().split(/\s+/).length / 200)} min read`,
+          published: data.published !== false,
+        }
+        
+        if (post.published) {
+          posts.push(post)
+        }
+      } catch (_error) {
+        // Skip invalid files
+        continue
+      }
+    }
+    
+    // Sort posts by date (newest first)
+    posts.sort((a, b) => {
+      const dateA = a.date ? new Date(a.date).getTime() : 0
+      const dateB = b.date ? new Date(b.date).getTime() : 0
+      return dateB - dateA
     })
     
-    if (!res.ok) {
-      console.warn(`Failed to fetch posts: ${res.status}`)
-      return { posts: [] }
-    }
-    
-    const data = await res.json()
-    
-    if (data.error) {
-      return { posts: [], error: data.error }
-    }
-    
-    if (!Array.isArray(data)) {
-      return { posts: [] }
-    }
-    
-    return { posts: data }
-  } catch (error) {
-    console.warn('Error fetching posts:', error)
+    return { posts }
+  } catch (_error) {
     return { posts: [] }
   }
 }

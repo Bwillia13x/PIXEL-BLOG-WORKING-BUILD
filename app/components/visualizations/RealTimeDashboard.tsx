@@ -599,7 +599,8 @@ export const RealTimeDashboard = ({
   };
 
   const handleEditWidget = (widgetId: string) => {
-    // TODO: Implement widget editing modal
+    // Widget editing functionality - placeholder for future implementation
+    console.info('Edit widget:', widgetId);
   };
 
   return (

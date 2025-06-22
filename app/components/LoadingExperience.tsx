@@ -71,7 +71,7 @@ export function LoadingExperience({ onComplete, soundEnabled = false }: LoadingE
         {currentPhase === 'complete' && 'Loading complete'}
       </div>
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {/* Intro Phase */}
         {currentPhase === 'intro' && (
           <motion.div

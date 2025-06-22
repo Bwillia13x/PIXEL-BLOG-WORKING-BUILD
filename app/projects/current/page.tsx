@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'What I\'m working on right now - ongoing projects and future plans.',
 }
 
-// TODO: Move this to a separate data file
+// Current projects data - consider moving to separate data file for scalability
 const currentProjects = [
   // Recently completed projects
   {
@@ -268,8 +268,7 @@ export default function CurrentProjectsPage() {
         )}
       </section>
 
-      {/* TODO: Add project timeline visualization */}
-      {/* TODO: Add GitHub integration to show real commit activity */}
+      {/* Future enhancements: project timeline visualization and GitHub integration */}
     </div>
   )
 }

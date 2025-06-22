@@ -171,7 +171,7 @@ export default function EnhancedThemeToggle() {
       >
         {/* Theme Icon with Transition */}
         <div className="relative w-5 h-5">
-          <AnimatePresence mode="wait">
+          <AnimatePresence>
             <motion.div
               key={currentTheme}
               initial={{ opacity: 0, rotate: -90, scale: 0.8 }}
@@ -182,7 +182,6 @@ export default function EnhancedThemeToggle() {
             >
               <currentThemeOption.icon 
                 className="w-5 h-5 transition-colors duration-300"
-                style={{ color: currentThemeOption.color }}
               />
             </motion.div>
           </AnimatePresence>
@@ -208,7 +207,7 @@ export default function EnhancedThemeToggle() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               className="w-2 h-2 bg-yellow-400 rounded-full"
-              title="Seasonal mode active"
+              aria-label="Seasonal mode active"
             />
           )}
           {isHighContrast && (
@@ -216,7 +215,7 @@ export default function EnhancedThemeToggle() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               className="w-2 h-2 bg-white rounded-full"
-              title="High contrast mode active"
+              aria-label="High contrast mode active"
             />
           )}
         </div>
@@ -287,7 +286,6 @@ export default function EnhancedThemeToggle() {
                     >
                       <option.icon 
                         className="w-3 h-3" 
-                        style={{ color: option.color }}
                       />
                     </div>
                     
@@ -295,7 +293,7 @@ export default function EnhancedThemeToggle() {
                       <div className="flex items-center space-x-2">
                         <span className="font-pixel text-xs">{option.name}</span>
                         {option.seasonal && (
-                          <Calendar className="w-3 h-3 text-yellow-400" title="Seasonal theme" />
+                          <Calendar className="w-3 h-3 text-yellow-400" aria-label="Seasonal theme" />
                         )}
                       </div>
                       <p className="font-mono text-xs text-gray-500 mt-0.5">

@@ -38,7 +38,7 @@ const RetroTerminal: React.FC = () => {
   // Terminal sound effects
   const playSound = useCallback((frequency: number, duration: number = 0.1) => {
     if (!audioContextRef.current) {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext
+      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
       audioContextRef.current = new AudioContextClass()
     }
 

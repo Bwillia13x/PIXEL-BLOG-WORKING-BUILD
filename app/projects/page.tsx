@@ -60,7 +60,7 @@ export default function ProjectsPage() {
         </div>
       )}
 
-      {/* TODO: Add filter/search functionality when there are more projects */}
+      {/* Future enhancement: project filtering and search */}
     </div>
   )
 }

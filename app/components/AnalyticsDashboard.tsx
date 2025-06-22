@@ -152,7 +152,7 @@ const AnalyticsDashboard: React.FC = () => {
       </motion.div>
 
       {/* Tab Content */}
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         <motion.div
           key={activeTab}
           initial={{ opacity: 0, x: 20 }}
