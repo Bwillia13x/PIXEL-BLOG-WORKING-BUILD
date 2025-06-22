@@ -144,8 +144,13 @@ function BlogLoading() {
   )
 }
 
-export default async function BlogPage() {
-  const posts = await getPosts()
+export default async function BlogPage({ searchParams }: { searchParams?: { q?: string } }) {
+  let posts = await getPosts()
+  // Server-side search filtering via query param ?q=
+  if (searchParams?.q) {
+    const { searchPosts } = await import('@/app/data/posts')
+    posts = searchPosts(posts, searchParams.q)
+  }
   
   return (
     <div className="min-h-screen bg-black">
@@ -160,6 +165,17 @@ export default async function BlogPage() {
           </div>
         </div>
       </div>
+
+      {/* Search Form */}
+      <form method="get" className="max-w-md mx-auto px-4 mb-8">
+        <input
+          type="text"
+          name="q"
+          defaultValue={searchParams?.q || ''}
+          placeholder="Search posts..."
+          className="w-full px-4 py-2 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-green-400"
+        />
+      </form>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 pb-16">

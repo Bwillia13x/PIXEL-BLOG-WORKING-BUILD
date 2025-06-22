@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react"
 import { useTheme } from "next-themes"
+import { useTheme as usePixelTheme } from "@/app/contexts/ThemeContext"
 
 
 interface RainingCharactersProps {
@@ -20,6 +21,7 @@ export default function RainingCharacters({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [themeState, setThemeState] = useState<string | undefined>(undefined)
   const { theme } = useTheme()
+  const { reduceMotion } = usePixelTheme()
   
   // Much more minimal element count - very subtle
   const elementCount = intensity === 'low' ? 1 : intensity === 'medium' ? 2 : 3
@@ -50,6 +52,7 @@ export default function RainingCharacters({
   }, [theme])
 
   useEffect(() => {
+    if (reduceMotion) return
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -263,7 +266,7 @@ export default function RainingCharacters({
       window.removeEventListener("resize", resizeCanvas)
       cancelAnimationFrame(animationId)
     }
-  }, [intensity, themeState, createPixelNoise, elementCount])
+  }, [intensity, themeState, createPixelNoise, elementCount, reduceMotion])
 
   return (
     <>

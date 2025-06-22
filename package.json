@@ -92,6 +92,7 @@
     "vaul": "^0.9.6",
     "web-vitals": "^5.0.3",
     "zod": "^3.24.1"
+  ,  "three": "^0.162.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
@@ -117,5 +118,6 @@
     "vite": "^5.2.0",
     "vitest": "^1.5.6",
     "webpack-bundle-analyzer": "^4.10.1"
+  ,  "@types/three": "^0.162.0"
   }
 }

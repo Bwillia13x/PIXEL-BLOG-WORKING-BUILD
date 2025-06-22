@@ -5,8 +5,17 @@ import type { Metadata, Viewport } from "next"
 import { siteConfig } from "@/lib/site-config"
 import { generateSEO } from "@/lib/seo"
 import ResponsiveHeader from "./components/ResponsiveHeader"
-import RainingCharacters from "./components/RainingCharacters"
-import { PixelMatrixRain } from "./components/design-system/PixelAnimations"
+import dynamic from "next/dynamic"
+
+// Lazy-load heavy canvas animations on client only
+const RainingCharacters = dynamic(
+  () => import("./components/RainingCharacters"),
+  { ssr: false }
+)
+const PixelMatrixRain = dynamic(
+  () => import("./components/design-system/PixelAnimations"),
+  { ssr: false }
+)
 import { AppWrapper } from "./components/AppWrapper"
 import { PerformanceMetrics } from "./components/PerformanceOptimizer"
 import AccessibilityTester from "./components/AccessibilityTester"

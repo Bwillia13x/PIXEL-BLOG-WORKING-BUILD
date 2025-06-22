@@ -31,6 +31,3 @@ next-env.d.ts
 # Local Netlify folder
 .netlify
 public/projects/*/node_modules/
-three.tgz
-types-three.tgz
-three/
