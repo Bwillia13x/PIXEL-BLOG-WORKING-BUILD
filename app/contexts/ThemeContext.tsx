@@ -78,31 +78,30 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  // Load saved data on mount
+  // Load saved data from localStorage on client-side only
   useEffect(() => {
     if (typeof window === 'undefined') return
 
     try {
       // Load current theme
-      const savedThemeId = localStorage.getItem(STORAGE_KEYS.CURRENT_THEME)
-      if (savedThemeId) {
-        const savedTheme = getThemeById(savedThemeId)
-        if (savedTheme) {
-          setCurrentTheme(savedTheme)
-        }
+      const savedTheme = localStorage.getItem(STORAGE_KEYS.CURRENT_THEME)
+      if (savedTheme) {
+        const parsedTheme = JSON.parse(savedTheme)
+        setCurrentTheme(parsedTheme)
       }
 
       // Load custom themes
       const savedCustomThemes = localStorage.getItem(STORAGE_KEYS.CUSTOM_THEMES)
       if (savedCustomThemes) {
-        const customThemesList = JSON.parse(savedCustomThemes)
-        setCustomThemes(customThemesList.filter(validateTheme))
+        const parsedCustomThemes = JSON.parse(savedCustomThemes)
+        setCustomThemes(parsedCustomThemes)
       }
 
       // Load preferences
       const savedPreferences = localStorage.getItem(STORAGE_KEYS.PREFERENCES)
       if (savedPreferences) {
-        setPreferences({ ...DEFAULT_PREFERENCES, ...JSON.parse(savedPreferences) })
+        const parsedPreferences = JSON.parse(savedPreferences)
+        setPreferences({ ...DEFAULT_PREFERENCES, ...parsedPreferences })
       }
 
       // Load accessibility settings
@@ -111,24 +110,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         setAccessibilityModeState(JSON.parse(savedAccessibility))
       }
 
-      // Load motion preferences
       const savedReduceMotion = localStorage.getItem(STORAGE_KEYS.REDUCE_MOTION)
       if (savedReduceMotion) {
         setReduceMotionState(JSON.parse(savedReduceMotion))
       }
-
-      // Check system preferences for reduced motion
-      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-      setReduceMotionState(mediaQuery.matches)
-      
-      const handleMotionChange = (e: MediaQueryListEvent) => {
-        setReduceMotionState(e.matches)
-      }
-      
-      mediaQuery.addEventListener('change', handleMotionChange)
-      return () => mediaQuery.removeEventListener('change', handleMotionChange)
     } catch (error) {
-      console.error('Error loading theme data:', error)
+      console.warn('Failed to load theme data from localStorage:', error)
     }
   }, [])
 
@@ -226,7 +213,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     
     // Save to localStorage if auto-save is enabled
     if (preferences.autoSave) {
-      localStorage.setItem(STORAGE_KEYS.CURRENT_THEME, currentTheme.id)
+      localStorage.setItem(STORAGE_KEYS.CURRENT_THEME, JSON.stringify(currentTheme))
     }
   }, [currentTheme, applyThemeWithTransition, preferences.autoSave])
 

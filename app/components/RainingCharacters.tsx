@@ -1,416 +1,308 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect, useRef, useMemo } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import { useTheme } from "next-themes"
 
-interface Character {
-  char: string
-  x: number
-  y: number
-  speed: number
-  opacity: number
-  trail: Array<{ x: number; y: number; opacity: number }>
-  glitch: boolean
-  lifespan: number
-  age: number
-}
 
-interface MatrixColumn {
-  chars: string[]
-  speeds: number[]
-  x: number
-  length: number
-  headY: number
-  active: boolean
-}
-
-class TextScramble {
-  el: HTMLElement
-  chars: string
-  queue: Array<{
-    from: string
-    to: string
-    start: number
-    end: number
-    char?: string
-  }>
-  frame: number
-  frameRequest: number
-  resolve: (value: void | PromiseLike<void>) => void
-
-  constructor(el: HTMLElement) {
-    this.el = el
-    this.chars = '!<>-_\\/[]{}—=+*^?#01'
-    this.queue = []
-    this.frame = 0
-    this.frameRequest = 0
-    this.resolve = () => {}
-    this.update = this.update.bind(this)
-  }
-
-  setText(newText: string) {
-    const oldText = this.el.innerText
-    const length = Math.max(oldText.length, newText.length)
-    const promise = new Promise<void>((resolve) => this.resolve = resolve)
-    this.queue = []
-    
-    for (let i = 0; i < length; i++) {
-      const from = oldText[i] || ''
-      const to = newText[i] || ''
-      const start = Math.floor(Math.random() * 40)
-      const end = start + Math.floor(Math.random() * 40)
-      this.queue.push({ from, to, start, end })
-    }
-    
-    cancelAnimationFrame(this.frameRequest)
-    this.frame = 0
-    this.update()
-    return promise
-  }
-
-  update() {
-    let output = ''
-    let complete = 0
-    
-    for (let i = 0, n = this.queue.length; i < n; i++) {
-      const { from, to, start, end } = this.queue[i]
-      let { char } = this.queue[i]
-      if (this.frame >= end) {
-        complete++
-        output += to
-      } else if (this.frame >= start) {
-        if (!char || Math.random() < 0.28) {
-          char = this.chars[Math.floor(Math.random() * this.chars.length)]
-          this.queue[i].char = char
-        }
-        output += `<span class="dud">${char}</span>`
-      } else {
-        output += from
-      }
-    }
-    
-    this.el.innerHTML = output
-    if (complete === this.queue.length) {
-      this.resolve()
-    } else {
-      this.frameRequest = requestAnimationFrame(this.update)
-      this.frame++
-    }
-  }
-}
-
-// Separate component for just the scrambled title
-export const ScrambledTitle: React.FC = () => {
-  const elementRef = useRef<HTMLHeadingElement>(null)
-  const scramblerRef = useRef<TextScramble | null>(null)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    if (elementRef.current && !scramblerRef.current) {
-      scramblerRef.current = new TextScramble(elementRef.current)
-      setMounted(true)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (mounted && scramblerRef.current) {
-      const phrases = [
-        'Drew Williams',
-        'Tech • Art • Finance',
-        'Drew Williams',
-        'Pixel Wisdom',
-        'Drew Williams'
-      ]
-      
-      let counter = 0
-      const next = () => {
-        if (scramblerRef.current) {
-          scramblerRef.current.setText(phrases[counter]).then(() => {
-            setTimeout(next, 3000) // Longer pause to read the text
-          })
-          counter = (counter + 1) % phrases.length
-        }
-      }
-
-      next()
-    }
-  }, [mounted])
-
-  return (
-    <h1 
-      ref={elementRef}
-      className="text-green-400 text-4xl md:text-6xl font-pixel tracking-wider text-center"
-      style={{ 
-        fontFamily: 'var(--font-press-start-2p)', 
-        textShadow: '2px 2px 0 #000, 0 0 10px rgba(74, 222, 128, 0.5)' 
-      }}
-    >
-      Drew Williams
-    </h1>
-  )
-}
-
-interface RainingBackgroundProps {
-  intensity?: 'low' | 'medium' | 'high'
+interface RainingCharactersProps {
   showTrails?: boolean
-  enableGlitch?: boolean
-  mouseInteraction?: boolean
+  intensity?: 'low' | 'medium' | 'high'
+  interactive?: boolean
+  performance?: 'auto' | 'optimized' | 'quality'
 }
 
-// Enhanced full-page raining background component
-export const RainingBackground: React.FC<RainingBackgroundProps> = ({
-  intensity = 'medium',
-  showTrails = true,
-  enableGlitch = true,
-  mouseInteraction = true
-}) => {
-  const { theme } = useTheme()
-  const [columns, setColumns] = useState<MatrixColumn[]>([])
-  const [mousePos, setMousePos] = useState({ x: 50, y: 50 })
+export default function RainingCharacters({ 
+  showTrails = false, 
+  intensity = 'low',
+  interactive = false,
+  performance = 'auto'
+}: RainingCharactersProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationRef = useRef<number>(0)
-  const lastFrameTime = useRef<number>(0)
-  const [mounted, setMounted] = useState(false)
+  const [themeState, setThemeState] = useState<string | undefined>(undefined)
+  const { theme } = useTheme()
+  
+  // Much more minimal element count - very subtle
+  const elementCount = intensity === 'low' ? 1 : intensity === 'medium' ? 2 : 3
 
-  // Theme-aware colors
-  const colors = useMemo(() => {
-    if (!mounted) return { primary: '#4ade80', secondary: '#22c55e', dim: '#374151' }
+  // Minimal pixel noise function - very rare and subtle
+  const createPixelNoise = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, density: number = 0.0003) => {
+    if (Math.random() > 0.05) return // Very rare noise
     
-    return theme === 'dark' ? {
-      primary: '#4ade80',
-      secondary: '#22c55e', 
-      dim: '#374151',
-      background: '#000000'
-    } : {
-      primary: '#059669',
-      secondary: '#10b981',
-      dim: '#9ca3af',
-      background: '#ffffff'
-    }
-  }, [theme, mounted])
+    const idata = ctx.createImageData(canvas.width, canvas.height)
+    const buffer32 = new Uint32Array(idata.data.buffer)
+    const len = buffer32.length
 
-  const matrixChars = useMemo(() => {
-    return [
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-      '0123456789',
-      'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン',
-      '!@#$%^&*()_+-=[]{}|;:,.<>?',
-      '▓▒░█▄▀■□▪▫'
-    ].join('')
-  }, [])
-
-  const intensitySettings = useMemo(() => {
-    const settings = {
-      low: { charCount: 150, speed: 0.3, glitchChance: 0.001 },
-      medium: { charCount: 300, speed: 0.5, glitchChance: 0.003 },
-      high: { charCount: 500, speed: 0.8, glitchChance: 0.005 }
-    }
-    return settings[intensity]
-  }, [intensity])
-
-  // Mouse tracking
-  useEffect(() => {
-    if (!mouseInteraction) return
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = canvasRef.current?.getBoundingClientRect()
-      if (rect) {
-        setMousePos({
-          x: ((e.clientX - rect.left) / rect.width) * 100,
-          y: ((e.clientY - rect.top) / rect.height) * 100
-        })
+    for (let i = 0; i < len; i++) {
+      if (Math.random() < density) {
+        buffer32[i] = 0x1a4ade80 // Very faint green pixels
       }
     }
 
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [mouseInteraction])
-
-  // Initialize matrix columns
-  useEffect(() => {
-    setMounted(true)
-    const columnWidth = 20
-    const numColumns = Math.floor(window.innerWidth / columnWidth)
-    
-    const newColumns: MatrixColumn[] = []
-    for (let i = 0; i < numColumns; i++) {
-      const length = Math.floor(Math.random() * 20) + 5
-      newColumns.push({
-        chars: Array(length).fill(0).map(() => 
-          matrixChars[Math.floor(Math.random() * matrixChars.length)]
-        ),
-        speeds: Array(length).fill(0).map(() => Math.random() * 2 + 0.5),
-        x: i * columnWidth,
-        length,
-        headY: Math.random() * -500,
-        active: Math.random() > 0.7
-      })
-    }
-    
-    setColumns(newColumns)
+    ctx.globalAlpha = 0.02 // Much more subtle
+    ctx.putImageData(idata, 0, 0)
+    ctx.globalAlpha = 1
   }, [])
 
-  // Canvas-based animation for better performance
+  // Stabilize theme state with delay
+  useEffect(() => {
+    const timer = setTimeout(() => setThemeState(theme), 100)
+    return () => clearTimeout(timer)
+  }, [theme])
+
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas || !mounted) return
+    if (!canvas) return
 
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext("2d")
     if (!ctx) return
 
+    // Set up canvas
     const resizeCanvas = () => {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
     }
-    
     resizeCanvas()
-    window.addEventListener('resize', resizeCanvas)
+    window.addEventListener("resize", resizeCanvas)
 
-    const animate = (currentTime: number) => {
-      const deltaTime = currentTime - lastFrameTime.current
-      
-      if (deltaTime >= 50) { // 20 FPS cap for performance
-        // Clear canvas with fade effect
-        ctx.fillStyle = theme === 'dark' ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)'
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-        // Update and draw columns
-        setColumns(prevColumns => 
-          prevColumns.map(column => {
-            const newColumn = { ...column }
-            
-            // Update position
-            newColumn.headY += intensitySettings.speed
-            
-            // Reset if off screen
-            if (newColumn.headY > canvas.height + newColumn.length * 20) {
-              newColumn.headY = Math.random() * -500
-              newColumn.active = Math.random() > 0.6
-              // Regenerate characters
-              newColumn.chars = newColumn.chars.map(() => 
-                matrixChars[Math.floor(Math.random() * matrixChars.length)]
-              )
-            }
-            
-            // Draw column if active
-            if (newColumn.active) {
-              ctx.font = '14px monospace'
-              
-              for (let i = 0; i < newColumn.length; i++) {
-                const charY = newColumn.headY - (i * 20)
-                
-                if (charY > -20 && charY < canvas.height + 20) {
-                  const opacity = i === 0 ? 1 : Math.max(0, 1 - (i / newColumn.length))
-                  const isHead = i < 3
-                  
-                  // Mouse interaction effect
-                  let distanceFromMouse = 1
-                  if (mouseInteraction) {
-                    const mouseX = (mousePos.x / 100) * canvas.width
-                    const mouseY = (mousePos.y / 100) * canvas.height
-                    const distance = Math.sqrt(
-                      Math.pow(newColumn.x - mouseX, 2) + Math.pow(charY - mouseY, 2)
-                    )
-                    distanceFromMouse = Math.max(0.3, Math.min(1, distance / 150))
-                  }
-                  
-                  // Color based on position and theme
-                  if (isHead) {
-                    ctx.fillStyle = `rgba(${theme === 'dark' ? '255, 255, 255' : '0, 0, 0'}, ${opacity * distanceFromMouse})`
-                  } else {
-                    const green = theme === 'dark' ? '74, 222, 128' : '5, 150, 105'
-                    ctx.fillStyle = `rgba(${green}, ${opacity * 0.8 * distanceFromMouse})`
-                  }
-                  
-                  // Glitch effect
-                  if (enableGlitch && Math.random() < intensitySettings.glitchChance) {
-                    newColumn.chars[i] = matrixChars[Math.floor(Math.random() * matrixChars.length)]
-                  }
-                  
-                  ctx.fillText(newColumn.chars[i], newColumn.x, charY)
-                }
-              }
-            }
-            
-            return newColumn
-          })
-        )
-        
-        lastFrameTime.current = currentTime
-      }
-      
-      animationRef.current = requestAnimationFrame(animate)
-    }
-
-    animationRef.current = requestAnimationFrame(animate)
+    // Enhanced matrix characters with more variety
+    const matrixChars = [
+      "0", "1", ".", "·", ":", ";", "'", "`", "-", "_", "~", "+", "=",
+      "ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "セ", "ソ", 
+      "タ", "チ", "ツ", "テ", "ト", "ナ", "ニ", "ヌ", "ネ", "ノ", "ハ", "ヒ", "フ", "ヘ", "ホ",
+      "マ", "ミ", "ム", "メ", "モ", "ヤ", "ユ", "ヨ", "ラ", "リ", "ル", "レ", "ロ", "ワ", "ヲ", "ン",
+      "α", "β", "γ", "δ", "λ", "μ", "π", "σ", "Σ", "Φ", "Ψ", "Ω"
+    ]
     
-    return () => {
-      window.removeEventListener('resize', resizeCanvas)
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
+    // Character categories for variation
+    const numericChars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    const symbolChars = [".", "·", ":", ";", "'", "`", "-", "_", "~", "+", "=", "!", "@", "#", "$", "%"]
+    const katakanaChars = matrixChars.filter(char => char.match(/[\u30A0-\u30FF]/))
+    const greekChars = ["α", "β", "γ", "δ", "λ", "μ", "π", "σ", "Σ", "Φ", "Ψ", "Ω"]
+
+    // Enhanced falling characters with more properties
+    interface FallingCharacter {
+      x: number
+      y: number
+      character: string
+      speed: number
+      opacity: number
+      age: number
+      maxAge: number
+      category: 'numeric' | 'symbol' | 'katakana' | 'greek'
+      baseSpeed: number
+      glowIntensity: number
+      size: number
+    }
+    
+    // Function to get random character from category
+    const getRandomCharFromCategory = (category: string): string => {
+      switch (category) {
+        case 'numeric': return numericChars[Math.floor(Math.random() * numericChars.length)]
+        case 'symbol': return symbolChars[Math.floor(Math.random() * symbolChars.length)]
+        case 'katakana': return katakanaChars[Math.floor(Math.random() * katakanaChars.length)]
+        case 'greek': return greekChars[Math.floor(Math.random() * greekChars.length)]
+        default: return matrixChars[Math.floor(Math.random() * matrixChars.length)]
       }
     }
-  }, [mounted, theme, matrixChars, intensitySettings, mousePos, mouseInteraction, enableGlitch])
 
-  if (!mounted) {
-    return <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0" />
-  }
+    const characters: FallingCharacter[] = []
+    
+    // Create individual characters based on intensity
+    const charSpacing = intensity === 'low' ? 100 : intensity === 'medium' ? 70 : 50
+    const charCount = Math.floor(canvas.width / charSpacing) * 3 // Multiple rows
+    
+    const categories: ('numeric' | 'symbol' | 'katakana' | 'greek')[] = ['numeric', 'symbol', 'katakana', 'greek']
+    
+    for (let i = 0; i < charCount; i++) {
+      const category = categories[Math.floor(Math.random() * categories.length)]
+      const baseSpeed = 0.2 + Math.random() * 1.2 // Wider speed range
+      
+      characters.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * -canvas.height - 100, // Start above screen
+        character: getRandomCharFromCategory(category),
+        speed: baseSpeed,
+        opacity: 0.03 + Math.random() * 0.07, // Very low opacity
+        age: 0,
+        maxAge: 20000 + Math.random() * 15000, // Long lifespan
+        category,
+        baseSpeed,
+        glowIntensity: Math.random() * 0.05,
+        size: 10 + Math.random() * 4 // Slight size variation
+      })
+    }
+
+    // Performance monitoring
+    let frameCount = 0
+    let lastFPSCheck = 0
+    let currentFPS = 60
+    let adaptivePerformance = performance
+    
+    // Animation loop with performance optimization
+    let lastTime = 0
+    let noiseTimer = 0
+    let animationId: number
+    
+    const animate = (time: number) => {
+      if (!lastTime) lastTime = time
+      const deltaTime = time - lastTime
+      lastTime = time
+      
+      // FPS monitoring for auto performance adjustment
+      frameCount++
+      if (time - lastFPSCheck > 1000) {
+        currentFPS = frameCount
+        frameCount = 0
+        lastFPSCheck = time
+        
+        // Auto-adjust performance based on FPS
+        if (performance === 'auto') {
+          if (currentFPS < 30 && adaptivePerformance !== 'optimized') {
+            adaptivePerformance = 'optimized'
+          } else if (currentFPS > 50 && adaptivePerformance !== 'quality') {
+            adaptivePerformance = 'quality'
+          }
+        }
+      }
+
+      // Very gentle clearing for subtle trails
+      if (showTrails) {
+        const fadeAmount = 0.02 // Very slow fade for subtle effect
+        ctx.fillStyle = `rgba(0, 0, 0, ${fadeAmount})`
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+      }
+
+      // Very minimal pixel noise
+      if (adaptivePerformance !== 'optimized') {
+        noiseTimer += deltaTime
+        if (noiseTimer > 8000) { // Much less frequent
+          if (Math.random() < 0.01) createPixelNoise(ctx, canvas, 0.0003)
+          noiseTimer = 0
+        }
+      }
+
+      // Update and draw individual characters with enhanced variations
+      characters.forEach((char, index) => {
+        // Variable speed with subtle fluctuations
+        const speedMultiplier = 0.3 + Math.sin(char.age * 0.001) * 0.1 // Subtle speed variation
+        char.y += char.speed * speedMultiplier
+        char.age += deltaTime
+
+        // Reset character when it goes off screen
+        if (char.y > canvas.height + 20) {
+          char.y = Math.random() * -200 - 50 // Start above screen
+          char.x = Math.random() * canvas.width // Random x position
+          char.age = 0
+          // Regenerate character with same category preference
+          char.character = getRandomCharFromCategory(char.category)
+          char.speed = char.baseSpeed + (Math.random() - 0.5) * 0.3 // Slight speed variation
+          char.opacity = 0.03 + Math.random() * 0.07
+          char.glowIntensity = Math.random() * 0.05
+        }
+
+        // Skip if character is above or below visible area
+        if (char.y < -20 || char.y > canvas.height + 20) return
+        
+        // Character variation based on category
+        let displayChar = char.character
+        if (Math.random() < 0.008) { // More frequent character changes
+          displayChar = getRandomCharFromCategory(char.category)
+        }
+        
+        // Set font size based on character size
+        ctx.font = `${char.size}px 'Courier New', monospace`
+        
+        // Category-based coloring
+        let color = "#22c55e" // Default green
+        switch (char.category) {
+          case 'numeric':
+            color = "#10b981" // Emerald
+            break
+          case 'symbol':
+            color = "#059669" // Darker green
+            break
+          case 'katakana':
+            color = "#34d399" // Light green
+            break
+          case 'greek':
+            color = "#6ee7b7" // Very light green
+            break
+        }
+        
+        ctx.fillStyle = color
+        ctx.globalAlpha = Math.max(0, Math.min(0.15, char.opacity + char.glowIntensity))
+        
+        // Very subtle glow for some characters
+        if (char.glowIntensity > 0.03) {
+          ctx.shadowBlur = 2
+          ctx.shadowColor = color
+        } else {
+          ctx.shadowBlur = 0
+        }
+        
+        ctx.fillText(displayChar, char.x, char.y)
+      })
+      
+      ctx.globalAlpha = 1
+
+      // Smooth animation with performance throttling
+      if (adaptivePerformance === 'optimized' && currentFPS < 30) {
+        setTimeout(() => {
+          animationId = requestAnimationFrame(animate)
+        }, 33) // Cap at 30fps for low performance
+      } else {
+        animationId = requestAnimationFrame(animate)
+      }
+    }
+
+    animationId = requestAnimationFrame(animate)
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas)
+      cancelAnimationFrame(animationId)
+    }
+  }, [intensity, themeState, createPixelNoise, elementCount])
 
   return (
-    <div 
-      className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0"
-      role="img"
-      aria-label="Animated matrix-style background with falling characters"
-    >
+    <>
+      {/* Main terminal canvas */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
-        style={{
-          imageRendering: 'pixelated',
-          filter: enableGlitch ? 'contrast(1.1) brightness(1.05)' : 'none'
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        style={{ 
+          imageRendering: 'auto',
+          background: 'transparent',
+          willChange: 'auto',
+          opacity: 0.6 // Overall canvas opacity reduced
         }}
-        aria-hidden="true"
       />
       
-      {/* Screen reader description */}
-      <div className="sr-only">
-        Decorative animated background featuring falling matrix-style characters 
-        with {intensity} intensity. Background includes {showTrails ? 'character trails' : 'no trails'} 
-        and {enableGlitch ? 'glitch effects' : 'no glitch effects'}.
-      </div>
-      
-      {/* Optional overlay effects */}
-      {showTrails && (
+      {/* Very subtle scanlines overlay */}
+      <div className="fixed inset-0 pointer-events-none z-0">
         <div 
-          className="absolute inset-0 opacity-20"
+          className="w-full h-full opacity-5" // Much more subtle
           style={{
-            background: `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, transparent 20%, ${colors.background} 80%)`
+            background: `repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 3px,
+              rgba(74, 222, 128, 0.05) 3px,
+              rgba(74, 222, 128, 0.05) 6px
+            )`
           }}
-          aria-hidden="true"
         />
-      )}
-
-      <style jsx global>{`
-        .dud {
-          color: ${colors.primary};
-          opacity: 0.7;
-        }
-      `}</style>
-    </div>
-  )
-}
-
-// Header component that includes both title and header-specific raining effect
-const RainingCharacters: React.FC = () => {
-  return (
-    <div className="relative w-full h-64 overflow-hidden">
-      {/* Title */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
-        <ScrambledTitle />
       </div>
-    </div>
-  )
-}
 
-export default RainingCharacters 
+      {/* Barely visible screen effect */}
+      <div 
+        className="fixed inset-0 pointer-events-none z-0 opacity-2" // Almost invisible
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(74, 222, 128, 0.02) 0%, transparent 70%)',
+          animation: 'pulse 8s ease-in-out infinite alternate' // Much slower pulse
+        }}
+      />
+    </>
+  )
+} 

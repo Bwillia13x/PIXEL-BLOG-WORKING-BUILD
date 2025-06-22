@@ -23,7 +23,7 @@ import { initializeAnalytics, trackPageView, trackShare, endSession } from '@/ap
 import TableOfContents from './TableOfContents'
 import RelatedPosts from './RelatedPosts'
 import SocialShare from './SocialShare'
-import CommentSystem from './CommentSystem'
+import CommentSystemV2 from './CommentSystemV2'
 
 interface BlogPostLayoutProps {
   post: Post
@@ -389,7 +389,7 @@ export default function BlogPostLayout({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            <CommentSystem
+            <CommentSystemV2
               postId={post.id}
               postTitle={post.title}
               enabled={enableComments}

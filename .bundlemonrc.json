@@ -1,0 +1,46 @@
+{
+  "baseDir": ".next",
+  "files": [
+    {
+      "path": "static/chunks/**/*.js",
+      "maxSize": "50kb",
+      "maxPercentIncrease": 10
+    },
+    {
+      "path": "static/css/**/*.css",
+      "maxSize": "20kb",
+      "maxPercentIncrease": 15
+    },
+    {
+      "path": "static/**/*",
+      "maxSize": "1mb",
+      "maxPercentIncrease": 5
+    }
+  ],
+  "groups": [
+    {
+      "path": "static/chunks/**/*.js",
+      "name": "JavaScript Chunks",
+      "maxSize": "250kb"
+    },
+    {
+      "path": "static/css/**/*.css", 
+      "name": "CSS Files",
+      "maxSize": "50kb"
+    }
+  ],
+  "reportOutput": [
+    {
+      "type": "json",
+      "path": "bundle-report.json"
+    },
+    {
+      "type": "text"
+    }
+  ],
+  "ci": {
+    "trackBranches": ["main", "develop"],
+    "commitStatusCheck": true,
+    "prCommentEnabled": true
+  }
+}

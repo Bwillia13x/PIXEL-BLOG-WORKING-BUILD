@@ -1,85 +1,151 @@
 import Link from "next/link"
-import { posts } from "./data/posts"
+import { ClientErrorDisplay } from "./components/ErrorBoundary"
+import TypewriterText from "./components/TypewriterText"
+import ScrollReveal, { PixelReveal, CardReveal, TextReveal } from "./components/ScrollReveal"
+import ContentGrid from "./components/ContentGrid"
+import PixelButton, { GhostButton } from "./components/PixelButton"
+import { GridParallax } from "./components/ParallaxBackground"
 
-export default function Home() {
+interface Post {
+  id: string
+  slug: string
+  title: string
+  category: string
+  date?: string
+  content: string
+  tags?: string[]
+  excerpt?: string
+  readTime?: string
+  published?: boolean
+}
+
+interface PostsResponse {
+  posts: Post[]
+  error?: string
+}
+
+async function getPosts(): Promise<PostsResponse> {
+  try {
+    // Try to fetch posts, but don't fail if it doesn't work
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+    const res = await fetch(`${baseUrl}/api/posts`, {
+      next: { revalidate: 300 },
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    
+    if (!res.ok) {
+      console.warn(`Failed to fetch posts: ${res.status}`)
+      return { posts: [] }
+    }
+    
+    const data = await res.json()
+    
+    if (data.error) {
+      return { posts: [], error: data.error }
+    }
+    
+    if (!Array.isArray(data)) {
+      return { posts: [] }
+    }
+    
+    return { posts: data }
+  } catch (error) {
+    console.warn('Error fetching posts:', error)
+    return { posts: [] }
+  }
+}
+
+export default async function Home() {
+  const { posts, error } = await getPosts()
   const categories = ["Tech", "Art", "Finance"]
 
   return (
-    <div>
-      {/* Hero Section */}
+    <div className="min-h-screen p-8 relative">
+      {/* Parallax Background */}
+      <GridParallax intensity="subtle" />
+      {/* Enhanced Hero Section with scroll reveals */}
       <section className="text-center mb-12">
-        <h2 className="text-3xl font-pixel mb-4">Welcome to Pixel Wisdom</h2>
-        <p className="font-readable text-lg mb-6 max-w-2xl mx-auto">
-          Your gateway to modern development, AI-driven tools, and creative coding. 
-          Explore projects, read insights, and join the journey through the digital frontier.
-        </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <Link 
-            href="/projects"
-            className="w-full sm:w-auto px-6 py-2 bg-green-600 text-black font-pixel rounded hover:bg-green-500 transition-colors text-center"
-          >
-            View Projects
-          </Link>
-          <Link 
-            href="/blog"
-            className="w-full sm:w-auto px-6 py-2 bg-gray-700 text-white font-pixel rounded hover:bg-gray-600 transition-colors text-center"
-          >
-            Read Blog
-          </Link>
-        </div>
-      </section>
+        <PixelReveal>
+          <h1 className="text-4xl font-pixel mb-4 text-green-400">
+            <TypewriterText 
+              text="Welcome to Pixel Wisdom" 
+              speed={80}
+              delay={300}
+              cursor={true}
+              cursorChar="█"
+            />
+          </h1>
+        </PixelReveal>
+        
+        <TextReveal delay={0.3}>
+          <p className="text-gray-300 max-w-2xl mx-auto mb-8">
+            A developer's journey through AI, finance, and digital innovation.
+          </p>
+        </TextReveal>
 
-      {/* Latest Content Highlights */}
-      <section className="mb-12">
-        <h2 className="text-3xl font-pixel mb-6">Latest Pixelated Wisdom</h2>
-        {categories.map((category) => (
-          <div key={category} className="mb-8">
-            <h3 className="text-2xl font-pixel mb-4">{category}</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {posts
-                .filter((post) => post.category === category)
-                .slice(0, 3)
-                .map((post) => (
-                  <Link
-                    key={post.slug}
-                    href={`/blog/${post.slug}`}
-                    className="block p-6 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
-                  >
-                    <h4 className="text-lg font-pixel mb-2">{post.title}</h4>
-                    <span className="inline-block px-2 py-1 bg-green-600 text-black text-sm font-retro rounded">
-                      {post.category}
-                    </span>
-                  </Link>
-                ))}
-            </div>
-            <Link href={`/category/${category.toLowerCase()}`} className="inline-block mt-4 font-pixel text-sm text-white underline hover:text-green-400 transition-colors">
-              See all {category} posts
-            </Link>
+        {/* Quick Navigation with staggered reveals */}
+        <ScrollReveal animation="fadeInUp" delay={0.6}>
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
+            {categories.map((category, index) => (
+              <ScrollReveal 
+                key={category} 
+                animation="scaleIn" 
+                delay={0.8 + index * 0.1}
+              >
+                <GhostButton
+                  href={`/category/${category.toLowerCase()}`}
+                  size="md"
+                  pixelEffect={true}
+                  glowEffect={true}
+                  pressEffect={true}
+                >
+                  {category}
+                </GhostButton>
+              </ScrollReveal>
+            ))}
           </div>
-        ))}
+        </ScrollReveal>
       </section>
 
-      {/* Quick Navigation to New Sections */}
-      <section className="grid md:grid-cols-3 gap-6">
-        <Link href="/about" className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors text-center">
-          <h3 className="font-pixel text-lg mb-2">About Me</h3>
-          <p className="font-readable text-sm text-gray-300">
-            Learn about my background and passion for AI-driven development
-          </p>
-        </Link>
-        <Link href="/projects/current" className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors text-center">
-          <h3 className="font-pixel text-lg mb-2">Current Work</h3>
-          <p className="font-readable text-sm text-gray-300">
-            See what I&apos;m building right now and what&apos;s coming next
-          </p>
-        </Link>
-        <Link href="/contact" className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-colors text-center">
-          <h3 className="font-pixel text-lg mb-2">Get In Touch</h3>
-          <p className="font-readable text-sm text-gray-300">
-            Have a project idea or want to collaborate? Let&apos;s talk!
-          </p>
-        </Link>
+      {/* Error Message */}
+      {error && (
+        <PixelReveal>
+          <section className="mb-12">
+            <ClientErrorDisplay message={error} />
+          </section>
+        </PixelReveal>
+      )}
+
+      {/* Enhanced Content Section */}
+      <section className="mb-12">
+        <TextReveal>
+          <h2 className="text-2xl font-pixel mb-8 text-green-400 text-center">
+            <TypewriterText 
+              text="Latest Content" 
+              speed={60}
+              delay={1500}
+              cursor={false}
+            />
+          </h2>
+        </TextReveal>
+        
+        <PixelReveal delay={0.3}>
+          <ContentGrid 
+            posts={posts} 
+            loading={false} 
+            error={error}
+          />
+        </PixelReveal>
       </section>
+
+      {/* Enhanced footer with reveal */}
+      <TextReveal delay={0.2}>
+        <footer className="text-center text-gray-500 text-sm">
+          <p>© 2024 Pixel Wisdom. Built with Next.js and Tailwind CSS.</p>
+        </footer>
+      </TextReveal>
     </div>
   )
 }

@@ -44,9 +44,9 @@ const FloatingPixels: React.FC<FloatingPixelsProps> = ({
   const mouseTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const [mounted, setMounted] = useState(false)
 
-  // Theme-aware colors
+  // Theme-aware colors - only use after mounted to prevent hydration issues
   const colors = useMemo(() => {
-    if (!mounted) return ['#4ade80', '#22c55e', '#10b981']
+    if (!mounted) return ['#4ade80']
     
     return theme === 'dark' ? [
       '#4ade80', '#22c55e', '#10b981', '#059669', '#047857',
@@ -61,7 +61,7 @@ const FloatingPixels: React.FC<FloatingPixelsProps> = ({
 
   // Mouse tracking with debouncing
   useEffect(() => {
-    if (!interactive) return
+    if (!interactive || !mounted) return
 
     const handleMouseMove = (e: MouseEvent) => {
       setMousePos({ x: e.clientX, y: e.clientY })
@@ -83,10 +83,28 @@ const FloatingPixels: React.FC<FloatingPixelsProps> = ({
         clearTimeout(mouseTimeoutRef.current)
       }
     }
-  }, [interactive])
+  }, [interactive, mounted])
 
-  // Initialize pixels
+  // Initialize pixels only after mounting to prevent hydration issues
   const createPixel = useCallback((id: number): Pixel => {
+    if (!mounted || typeof window === 'undefined') {
+      // Return a default pixel that won't cause hydration issues
+      return {
+        id,
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        size: 2,
+        opacity: 0.5,
+        color: '#4ade80',
+        life: 0,
+        maxLife: 500,
+        trail: [],
+        magnetic: false
+      }
+    }
+
     const size = Math.random() * 6 + 2
     return {
       id,
@@ -102,16 +120,23 @@ const FloatingPixels: React.FC<FloatingPixelsProps> = ({
       trail: [],
       magnetic: Math.random() > 0.7
     }
-  }, [colors])
+  }, [colors, mounted])
 
+  // Mount effect - ensures client-side only initialization
   useEffect(() => {
     setMounted(true)
+  }, [])
+
+  // Initialize pixels after mounting
+  useEffect(() => {
+    if (!mounted) return
+    
     const newPixels: Pixel[] = []
     for (let i = 0; i < count; i++) {
       newPixels.push(createPixel(i))
     }
     setPixels(newPixels)
-  }, [count, createPixel])
+  }, [count, createPixel, mounted])
 
   // Canvas animation for better performance
   useEffect(() => {

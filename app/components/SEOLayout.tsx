@@ -1,10 +1,12 @@
 'use client'
 
-import { useEffect } from 'react'
+import React from 'react'
+import Head from 'next/head'
 import { usePathname } from 'next/navigation'
 import { siteConfig } from '@/lib/site-config'
 import { WebSiteStructuredData, PersonStructuredData } from './StructuredData'
 import WebVitalsMonitor from './WebVitalsMonitor'
+import type { SEOData } from '../utils/seo'
 
 interface SEOLayoutProps {
   children: React.ReactNode
@@ -28,7 +30,6 @@ function registerServiceWorker() {
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
               // New content is available, notify user
-              console.log('New content available! Please refresh.')
               
               // You could show a toast notification here
               if ('Notification' in window && Notification.permission === 'granted') {
@@ -43,7 +44,6 @@ function registerServiceWorker() {
         }
       })
 
-      console.log('SW registered:', registration)
     } catch (error) {
       console.log('SW registration failed:', error)
     }
@@ -69,7 +69,6 @@ function initializePerformanceMonitoring() {
         totalLoad: navigation.loadEventEnd - navigation.startTime
       }
 
-      console.log('Performance Metrics:', metrics)
       
       // Send to analytics
       if ('gtag' in window) {
@@ -267,8 +266,7 @@ function injectResourceHints() {
 
   // Preload critical assets
   const preloadAssets = [
-    { href: '/fonts/JetBrainsMono-Regular.woff2', as: 'font', type: 'font/woff2' },
-    { href: '/icons/icon-192x192.png', as: 'image' }
+    { href: '/icons/icon-192x192.png', as: 'image', type: undefined }
   ]
 
   preloadAssets.forEach(({ href, as, type }) => {
@@ -286,7 +284,7 @@ function injectResourceHints() {
 function usePageTracking() {
   const pathname = usePathname()
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Track page views
     if (typeof window !== 'undefined' && 'gtag' in window) {
       ;(window as any).gtag('config', process.env.NEXT_PUBLIC_GA_ID, {
@@ -311,7 +309,7 @@ function usePageTracking() {
 export default function SEOLayout({ children }: SEOLayoutProps) {
   usePageTracking()
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Initialize all SEO and performance features
     registerServiceWorker()
     initializePerformanceMonitoring()
@@ -354,34 +352,55 @@ export default function SEOLayout({ children }: SEOLayoutProps) {
 
   return (
     <>
-      {/* Global structured data */}
-      <WebSiteStructuredData
-        name={siteConfig.name}
-        description={siteConfig.description}
-        url={siteConfig.url}
-        searchUrl={`${siteConfig.url}/search?q={search_term_string}`}
-      />
-      
-      <PersonStructuredData
-        name={siteConfig.creator}
-        jobTitle="Full-Stack Developer & Creative Technologist"
-        description={siteConfig.description}
-        url={siteConfig.url}
-        image={`${siteConfig.url}/avatar.jpg`}
-        sameAs={Object.values(siteConfig.social).filter(Boolean)}
-        email={siteConfig.social.email}
-        skills={siteConfig.keywords}
-      />
+      <Head>
+        <title>{siteConfig.title}</title>
+        <meta name="description" content={siteConfig.description} />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+        
+        {/* OpenGraph */}
+        <meta property="og:title" content={siteConfig.title} />
+        <meta property="og:description" content={siteConfig.description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={siteConfig.url} />
+        {siteConfig.ogImage && <meta property="og:image" content={siteConfig.ogImage} />}
+        <meta property="og:site_name" content="Pixel Wisdom" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={siteConfig.title} />
+        <meta name="twitter:description" content={siteConfig.description} />
+        {siteConfig.ogImage && <meta name="twitter:image" content={siteConfig.ogImage} />}
+        
+        {/* Additional tags */}
+        {siteConfig.keywords && <meta name="keywords" content={siteConfig.keywords.join(', ')} />}
+        {siteConfig.creator && <meta name="author" content={siteConfig.creator} />}
+        
+        {/* Structured Data */}
+        <WebSiteStructuredData
+          name={siteConfig.name}
+          description={siteConfig.description}
+          url={siteConfig.url}
+          searchUrl={`${siteConfig.url}/search?q={search_term_string}`}
+        />
+        
+        <PersonStructuredData
+          name={siteConfig.creator}
+          jobTitle="Full-Stack Developer & Creative Technologist"
+          description={siteConfig.description}
+          url={siteConfig.url}
+          image={`${siteConfig.url}/avatar.jpg`}
+          sameAs={Object.values(siteConfig.social).filter(Boolean)}
+          email={siteConfig.social.email}
+          skills={siteConfig.keywords}
+        />
+      </Head>
 
       {/* Main content */}
       {children}
 
       {/* Web Vitals Monitor */}
-      <WebVitalsMonitor 
-        debug={process.env.NODE_ENV === 'development'}
-        reportToAnalytics={true}
-        showWidget={process.env.NODE_ENV === 'development'}
-      />
+      <WebVitalsMonitor />
 
       {/* Critical CSS for above-the-fold content */}
       <style jsx>{`
@@ -424,14 +443,6 @@ export default function SEOLayout({ children }: SEOLayoutProps) {
           100% { background-position: -200% 0; }
         }
         
-        /* Critical font loading */
-        @font-face {
-          font-family: 'JetBrains Mono';
-          src: url('/fonts/JetBrainsMono-Regular.woff2') format('woff2');
-          font-weight: 400;
-          font-style: normal;
-          font-display: swap;
-        }
       `}</style>
     </>
   )

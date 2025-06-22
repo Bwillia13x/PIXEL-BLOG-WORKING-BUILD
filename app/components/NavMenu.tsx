@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Monitor, Home, User, Briefcase, BookOpen, Mail, X, ChevronRight, Search } from "lucide-react"
+import MobileNavigation from './MobileNavigation'
 
 interface NavItem {
   href: string
@@ -189,7 +190,12 @@ const NavMenu = () => {
   return (
     <>
       {/* Desktop Navigation */}
-      <nav className="hidden md:flex justify-center flex-wrap gap-2 my-4">
+      <nav 
+        className="hidden md:flex justify-center flex-wrap gap-2 my-4"
+        role="navigation"
+        aria-label="Main navigation"
+        id="main-navigation"
+      >
         {navItems.map((item, index) => {
           const Icon = item.icon
           const active = isActive(item.href)
@@ -200,35 +206,78 @@ const NavMenu = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ 
+                scale: 1.08, 
+                y: -4,
+                transition: { type: "spring", stiffness: 400, damping: 10 }
+              }}
+              whileTap={{ scale: 0.92 }}
+              style={{ 
+                opacity: 1,
+                transform: 'none'
+              }}
+              tabIndex={0}
             >
               <Link
                 href={item.href}
-                className={`group relative flex flex-col items-center p-3 rounded transition-all duration-200 ${
+                className={`group relative flex flex-col items-center p-4 rounded-lg transition-all duration-500 overflow-hidden focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-gray-900 ${
                   active 
-                    ? 'bg-green-600/20 text-green-400 pixelated-border' 
-                    : 'bg-gray-800 hover:bg-gray-700 pixelated-border'
+                    ? 'bg-green-600/15 text-green-400 border-2 border-green-400/50 shadow-lg shadow-green-400/20' 
+                    : 'bg-gray-900/80 hover:bg-gray-800/90 border-2 border-gray-600/40 hover:border-green-400/60 hover:shadow-lg hover:shadow-green-400/20 backdrop-blur-sm'
                 }`}
                 title={`${item.description} (Alt+${item.shortcut})`}
+                aria-label={`${item.label}: ${item.description}. Press Alt+${item.shortcut} for quick access.`}
+                aria-current={active ? 'page' : undefined}
               >
-                <Icon className={`w-6 h-6 mb-1 transition-colors ${
-                  active ? 'text-green-400' : 'text-gray-300 group-hover:text-green-400'
+                {/* Subtle background pattern */}
+                {!active && (
+                  <div className="absolute inset-0 opacity-10 pointer-events-none">
+                    <div 
+                      className="w-full h-full"
+                      style={{
+                        background: `repeating-linear-gradient(
+                          45deg,
+                          transparent,
+                          transparent 4px,
+                          rgba(74, 222, 128, 0.1) 4px,
+                          rgba(74, 222, 128, 0.1) 8px
+                        )`
+                      }}
+                    />
+                  </div>
+                )}
+                
+                <Icon className={`w-6 h-6 mb-2 transition-all duration-500 relative z-10 ${
+                  active ? 'text-green-400 drop-shadow-lg' : 'text-gray-300 group-hover:text-green-400 group-hover:scale-125 group-hover:drop-shadow-[0_0_8px_rgba(74,222,128,0.6)]'
                 }`} />
-                <span className="font-pixel text-xs">{item.label}</span>
+                <span className={`font-pixel text-xs relative z-10 transition-all duration-500 ${
+                  active ? 'text-green-400' : 'text-gray-300 group-hover:text-green-400 group-hover:drop-shadow-[0_0_4px_rgba(74,222,128,0.8)]'
+                }`}>{item.label}</span>
                 
                 {/* Keyboard shortcut indicator */}
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-600 text-black text-[10px] font-pixel rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="absolute -top-2 -right-2 w-5 h-5 bg-green-600/90 text-black text-[10px] font-pixel rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100 shadow-lg">
                   {item.shortcut}
                 </span>
                 
-                {/* Active indicator */}
+                {/* Enhanced hover glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-400/0 via-green-400/5 to-green-400/10 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-lg" />
+                <div className="absolute inset-0 bg-green-400/5 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-lg blur-sm" />
+                
+                {/* Active indicator with animation */}
                 {active && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute inset-0 bg-green-400/10 border-2 border-green-400 rounded"
-                    style={{ zIndex: 0 }}
-                  />
+                  <>
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute inset-0 bg-green-400/5 rounded-lg"
+                      style={{ zIndex: 0 }}
+                    />
+                    <motion.div
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="absolute inset-0 border border-green-400/30 rounded-lg"
+                      style={{ zIndex: 1 }}
+                    />
+                  </>
                 )}
               </Link>
             </motion.div>
@@ -237,160 +286,8 @@ const NavMenu = () => {
       </nav>
 
       {/* Mobile Navigation */}
-      <div className="md:hidden my-4" ref={menuRef}>
-        {/* Hamburger Button */}
-        <motion.button
-          ref={buttonRef}
-          onClick={toggleMobileMenu}
-          className="flex items-center justify-center w-12 h-12 bg-gray-800 rounded pixelated-border hover:bg-gray-700 transition-colors mx-auto relative overflow-hidden"
-          whileTap={{ scale: 0.9 }}
-          aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={isMobileMenuOpen}
-        >
-          <div className="relative w-6 h-6">
-            <motion.span
-              className="absolute left-0 top-1 w-6 h-0.5 bg-green-400 origin-center"
-              animate={{
-                rotate: isMobileMenuOpen ? 45 : 0,
-                y: isMobileMenuOpen ? 8 : 0,
-              }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-            />
-            <motion.span
-              className="absolute left-0 top-3 w-6 h-0.5 bg-green-400"
-              animate={{
-                opacity: isMobileMenuOpen ? 0 : 1,
-                x: isMobileMenuOpen ? 10 : 0,
-              }}
-              transition={{ duration: 0.2 }}
-            />
-            <motion.span
-              className="absolute left-0 top-5 w-6 h-0.5 bg-green-400 origin-center"
-              animate={{
-                rotate: isMobileMenuOpen ? -45 : 0,
-                y: isMobileMenuOpen ? -8 : 0,
-              }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-            />
-          </div>
-          
-          {/* Pixel burst effect */}
-          <AnimatePresence>
-            {isMobileMenuOpen && (
-              <motion.div
-                initial={{ scale: 0, opacity: 1 }}
-                animate={{ scale: 1.5, opacity: 0 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                className="absolute inset-0 border-2 border-green-400 rounded"
-              />
-            )}
-          </AnimatePresence>
-        </motion.button>
-
-        {/* Mobile Menu Overlay */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <>
-              {/* Backdrop */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
-                onClick={closeMobileMenu}
-              />
-              
-              {/* Menu Panel */}
-              <motion.div
-                initial={{ x: '100%', opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: '100%', opacity: 0 }}
-                transition={{ 
-                  type: 'spring', 
-                  stiffness: 300, 
-                  damping: 30,
-                  opacity: { duration: 0.2 }
-                }}
-                className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-gray-900/95 backdrop-blur-md border-l-2 border-green-400 z-50 overflow-y-auto"
-              >
-                {/* Menu Header */}
-                <div className="flex items-center justify-between p-4 border-b border-green-400/30">
-                  <h2 className="font-pixel text-green-400 text-sm">Navigation</h2>
-                  <button
-                    onClick={closeMobileMenu}
-                    className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-800 transition-colors"
-                    aria-label="Close menu"
-                  >
-                    <X className="w-5 h-5 text-green-400" />
-                  </button>
-                </div>
-
-                {/* Menu Items */}
-                <div className="p-4">
-                  {navItems.map((item, index) => {
-                    const Icon = item.icon
-                    const active = isActive(item.href)
-                    
-                    return (
-                      <motion.div
-                        key={item.href}
-                        initial={{ x: 50, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="mb-2"
-                      >
-                        <Link
-                          ref={el => {
-                            if (el) itemRefs.current[index] = el
-                          }}
-                          href={item.href}
-                          onClick={closeMobileMenu}
-                          className={`group flex items-center p-4 rounded-lg transition-all duration-200 touch-manipulation ${
-                            active 
-                              ? 'bg-green-600/20 text-green-400 border-l-4 border-green-400' 
-                              : 'hover:bg-gray-800 text-gray-300'
-                          } ${
-                            focusedIndex === index ? 'ring-2 ring-green-400 bg-gray-800' : ''
-                          }`}
-                          onFocus={() => setFocusedIndex(index)}
-                          onBlur={() => setFocusedIndex(-1)}
-                        >
-                          <Icon className={`w-6 h-6 mr-4 transition-colors ${
-                            active ? 'text-green-400' : 'text-gray-400 group-hover:text-green-400'
-                          }`} />
-                          
-                          <div className="flex-1">
-                            <div className={`font-pixel text-sm ${
-                              active ? 'text-green-400' : 'text-gray-300 group-hover:text-green-400'
-                            }`}>
-                              {item.label}
-                            </div>
-                            <div className="text-xs text-gray-500 font-mono mt-1">
-                              {item.description}
-                            </div>
-                          </div>
-                          
-                          <ChevronRight className={`w-4 h-4 transition-transform ${
-                            active ? 'text-green-400' : 'text-gray-500 group-hover:text-green-400'
-                          } group-hover:translate-x-1`} />
-                        </Link>
-                      </motion.div>
-                    )
-                  })}
-                </div>
-                
-                {/* Menu Footer */}
-                <div className="p-4 border-t border-green-400/30 mt-auto">
-                  <p className="text-xs text-gray-500 font-mono text-center">
-                    Use arrow keys to navigate
-                  </p>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+      <div className="md:hidden">
+        <MobileNavigation />
       </div>
     </>
   )

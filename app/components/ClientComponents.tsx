@@ -1,20 +1,40 @@
-'use client'
+"use client"
 
-import { lazy, Suspense } from 'react'
+import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 
-// Lazy load performance-heavy components
-const FloatingPixels = lazy(() => import('./FloatingPixels'))
-const SoundEffect = lazy(() => import('./SoundEffect'))
-const RetroTerminal = lazy(() => import('./RetroTerminal'))
+// Dynamically import components that need client-side rendering with no SSR
+const AccessibilityTester = dynamic(() => import('./AccessibilityTester'), {
+  ssr: false,
+  loading: () => null
+})
 
-export function ClientComponents() {
+const WebVitalsMonitor = dynamic(() => import('./WebVitalsMonitor'), {
+  ssr: false,
+  loading: () => null
+})
+
+export default function ClientComponents() {
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // Only render client components after hydration
+  if (!isMounted) {
+    return null
+  }
+
   return (
-    <Suspense fallback={null}>
-      <FloatingPixels />
-      <SoundEffect />
-      <RetroTerminal />
-    </Suspense>
+    <>
+      {/* Development only components */}
+      {process.env.NODE_ENV === 'development' && (
+        <>
+          <AccessibilityTester />
+          <WebVitalsMonitor />
+        </>
+      )}
+    </>
   )
 }
-
-export default ClientComponents

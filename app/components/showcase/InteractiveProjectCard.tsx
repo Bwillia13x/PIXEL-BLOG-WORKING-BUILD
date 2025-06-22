@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTheme } from '../Providers'
 import Image from 'next/image'
+import StatusBadge from '../StatusBadge'
 
 interface ProjectCardData {
   id: string
@@ -188,6 +189,15 @@ export default function InteractiveProjectCard({
         className={`group flex items-center space-x-4 p-4 pixel-border bg-gray-800/40 hover:bg-gray-700/60 rounded-lg transition-all duration-300 cursor-pointer ${className}`}
         style={tiltStyle}
         onClick={() => onSelect(project)}
+        role="button"
+        tabIndex={0}
+        aria-label={`View ${project.title} project details`}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onSelect(project)
+          }
+        }}
       >
         {/* Image */}
         <div className="relative w-16 h-16 flex-shrink-0">
@@ -211,7 +221,11 @@ export default function InteractiveProjectCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2 mb-1">
             <h3 className="font-pixel text-green-400 truncate">{project.title}</h3>
-            <span className="text-xs">{getStatusIcon(project.status)}</span>
+            <StatusBadge 
+              status={project.status as 'completed' | 'in-progress' | 'planning' | 'archived'} 
+              size="sm"
+              animated={true}
+            />
             {project.featured && <span className="text-xs">⭐</span>}
           </div>
           <p className="text-sm text-gray-300 truncate mb-2">
@@ -290,6 +304,15 @@ export default function InteractiveProjectCard({
         className={`group relative p-3 pixel-border bg-gray-800/40 hover:bg-gray-700/60 rounded-lg transition-all duration-300 cursor-pointer ${className}`}
         style={tiltStyle}
         onClick={() => onSelect(project)}
+        role="button"
+        tabIndex={0}
+        aria-label={`View ${project.title} project details`}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onSelect(project)
+          }
+        }}
       >
         <div className="flex items-start space-x-3">
           <div className="relative w-12 h-12 flex-shrink-0">
@@ -305,15 +328,11 @@ export default function InteractiveProjectCard({
               {project.title}
             </h3>
             <div className="flex items-center space-x-2 text-xs">
-              <span
-                className="px-2 py-1 rounded"
-                style={{
-                  backgroundColor: `${getStatusColor(project.status)}20`,
-                  color: getStatusColor(project.status)
-                }}
-              >
-                {project.status}
-              </span>
+              <StatusBadge 
+                status={project.status as 'completed' | 'in-progress' | 'planning' | 'archived'} 
+                size="sm"
+                animated={true}
+              />
               <span className="text-gray-400">{calculateProgress()}%</span>
             </div>
           </div>
@@ -338,6 +357,15 @@ export default function InteractiveProjectCard({
       onMouseUp={() => setIsPressed(false)}
       onMouseLeave={() => setIsPressed(false)}
       onClick={() => onSelect(project)}
+      role="button"
+      tabIndex={0}
+      aria-label={`View ${project.title} project details. Status: ${project.status}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onSelect(project)
+        }
+      }}
     >
       {/* Image Container */}
       <div
@@ -364,19 +392,13 @@ export default function InteractiveProjectCard({
           }}
         />
 
-        {/* Status Badge */}
-        <div className="absolute top-3 left-3">
-          <div
-            className="flex items-center space-x-1 px-2 py-1 rounded-full backdrop-blur-sm font-mono text-xs"
-            style={{
-              backgroundColor: `${getStatusColor(project.status)}20`,
-              color: getStatusColor(project.status),
-              border: `1px solid ${getStatusColor(project.status)}40`
-            }}
-          >
-            <span>{getStatusIcon(project.status)}</span>
-            <span>{project.status}</span>
-          </div>
+        {/* Enhanced Status Badge */}
+        <div className="absolute top-3 left-3 z-10">
+          <StatusBadge 
+            status={project.status as 'completed' | 'in-progress' | 'planning' | 'archived'} 
+            size="sm"
+            animated={true}
+          />
         </div>
 
         {/* Featured Badge */}

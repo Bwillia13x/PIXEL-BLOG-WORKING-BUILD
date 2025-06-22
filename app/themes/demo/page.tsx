@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   SwatchIcon,
   PaintBrushIcon,
@@ -17,6 +17,7 @@ import { useTheme, useThemeProperties } from '@/app/contexts/ThemeContext'
 import ThemeSelector from '@/app/components/ThemeSelector'
 import ThemeToggle from '@/app/components/ThemeToggle'
 import ThemeCreator from '@/app/components/ThemeCreator'
+import { MatrixTextReveal } from '@/app/components/design-system/PixelAnimations'
 
 export default function ThemeDemoPage() {
   const { currentTheme, availableThemes, customThemes, exportCurrentTheme, isTransitioning } = useTheme()
@@ -178,6 +179,15 @@ export default function ThemeDemoPage() {
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              role="button"
+              tabIndex={0}
+              aria-label="Interactive hover demo element"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  // Add any click behavior here if needed
+                }
+              }}
             >
               <div className="text-xs font-mono">Hover me</div>
             </motion.div>
@@ -186,6 +196,15 @@ export default function ThemeDemoPage() {
               className="p-3 pixel-border text-center theme-glow cursor-pointer"
               whileHover={{ scale: 1.05, rotateY: 10 }}
               whileTap={{ scale: 0.95 }}
+              role="button"
+              tabIndex={0}
+              aria-label="Interactive 3D hover demo element"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  // Add any click behavior here if needed
+                }
+              }}
             >
               <div className="text-xs font-mono">3D Hover</div>
             </motion.div>
@@ -204,6 +223,15 @@ export default function ThemeDemoPage() {
                 ]
               }}
               transition={{ duration: 2, repeat: Infinity }}
+              role="button"
+              tabIndex={0}
+              aria-label="Interactive pulse animation demo element"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  // Add any click behavior here if needed
+                }
+              }}
             >
               <div className="text-xs font-mono">Pulse</div>
             </motion.div>
@@ -235,8 +263,14 @@ export default function ThemeDemoPage() {
             <div className="flex items-center space-x-4">
               <PaintBrushIcon className="h-8 w-8 theme-primary" />
               <div>
-                <h1 className="font-mono text-2xl font-bold theme-primary">
-                  Advanced Theming System
+                <h1 className="font-mono text-xl md:text-2xl font-bold theme-primary">
+                  <MatrixTextReveal 
+                    text="Advanced Theming System" 
+                    speed={70}
+                    delay={300}
+                    scrambleDuration={250}
+                    className="inline-block"
+                  />
                 </h1>
                 <p className="font-mono text-sm theme-text-secondary">
                   Interactive demonstration of the pixel blog theme engine

@@ -52,37 +52,177 @@ const ThemeToggle = ({
         onClick={handleSimpleToggle}
         disabled={isTransitioning}
         className={`
-          flex items-center space-x-2 p-2 pixel-border 
-          bg-gray-800 hover:bg-gray-700 transition-all duration-200 
+          group relative flex items-center space-x-3 p-3 rounded-lg border-2 border-gray-600/40 
+          bg-gray-900/80 hover:bg-gray-800/90 hover:border-green-400/40 transition-all duration-300 
           focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-gray-900
-          disabled:opacity-50 disabled:cursor-not-allowed
+          disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm overflow-hidden
           ${className}
         `}
         aria-label={`Switch to ${isLight ? 'dark' : 'light'} theme`}
         aria-pressed={!isLight}
         title={`Current theme: ${currentTheme.name}. Click to switch to ${isLight ? 'dark' : 'light'} theme.`}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
       >
-        <motion.div
-          key={currentTheme.id}
-          initial={{ rotateY: -90, opacity: 0 }}
-          animate={{ rotateY: 0, opacity: 1 }}
-          exit={{ rotateY: 90, opacity: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          {isLight ? (
-            <SunIcon className="w-6 h-6 text-amber-400" aria-hidden="true" />
-          ) : (
-            <MoonIcon className="w-6 h-6 text-blue-400" aria-hidden="true" />
-          )}
-        </motion.div>
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div 
+            className="w-full h-full"
+            style={{
+              background: `repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 4px,
+                rgba(74, 222, 128, 0.1) 4px,
+                rgba(74, 222, 128, 0.1) 8px
+              )`
+            }}
+          />
+        </div>
+
+        {/* Enhanced icon with improved animation */}
+        <div className="relative">
+          <motion.div
+            key={currentTheme.id}
+            initial={{ rotateY: -180, scale: 0.5, opacity: 0, filter: "blur(4px)" }}
+            animate={{ rotateY: 0, scale: 1, opacity: 1, filter: "blur(0px)" }}
+            exit={{ rotateY: 180, scale: 0.5, opacity: 0, filter: "blur(4px)" }}
+            transition={{ 
+              duration: 0.6, 
+              ease: "easeInOut",
+              opacity: { duration: 0.4 },
+              filter: { duration: 0.3 }
+            }}
+            className="relative z-10"
+            whileHover={{ 
+              scale: 1.1, 
+              rotate: isLight ? 0 : 0,
+              transition: { duration: 0.2 }
+            }}
+          >
+            {isLight ? (
+              <motion.div
+                animate={{ 
+                  rotate: [0, 360],
+                  scale: [1, 1.05, 1]
+                }}
+                transition={{ 
+                  rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+                  scale: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                }}
+              >
+                <SunIcon className="w-6 h-6 text-amber-400 group-hover:text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)] transition-all duration-300" aria-hidden="true" />
+              </motion.div>
+            ) : (
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.02, 1],
+                  opacity: [1, 0.8, 1]
+                }}
+                transition={{ 
+                  duration: 3, 
+                  repeat: Infinity, 
+                  ease: "easeInOut" 
+                }}
+              >
+                <MoonIcon className="w-6 h-6 text-blue-400 group-hover:text-blue-300 drop-shadow-[0_0_8px_rgba(96,165,250,0.6)] transition-all duration-300" aria-hidden="true" />
+              </motion.div>
+            )}
+          </motion.div>
+          
+          {/* Theme particles effect */}
+          <AnimatePresence>
+            {isTransitioning && (
+              <div className="absolute inset-0 pointer-events-none">
+                {[...Array(6)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className={`absolute w-1 h-1 rounded-full ${isLight ? 'bg-amber-400' : 'bg-blue-400'}`}
+                    initial={{ 
+                      scale: 0,
+                      x: 12,
+                      y: 12,
+                      opacity: 1
+                    }}
+                    animate={{ 
+                      scale: [0, 1, 0],
+                      x: 12 + (Math.cos(i * 60 * Math.PI / 180) * 20),
+                      y: 12 + (Math.sin(i * 60 * Math.PI / 180) * 20),
+                      opacity: [1, 1, 0]
+                    }}
+                    transition={{ 
+                      duration: 0.8,
+                      delay: i * 0.1,
+                      ease: "easeOut"
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </AnimatePresence>
+        </div>
         
         {showLabel && (
-          <span className="font-mono text-sm text-gray-300">
+          <span className="relative z-10 font-pixel text-sm text-gray-300 group-hover:text-green-400 transition-colors duration-300">
             {isLight ? 'Light' : 'Dark'}
           </span>
         )}
+
+        {/* Enhanced transition indicator */}
+        <AnimatePresence>
+          {isTransitioning && (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              className="absolute -top-2 -right-2 z-20"
+            >
+              <motion.div
+                className="w-4 h-4 bg-green-400 rounded-full relative"
+                animate={{ 
+                  scale: [1, 1.2, 1],
+                  opacity: [1, 0.7, 1]
+                }}
+                transition={{ 
+                  duration: 1, 
+                  repeat: Infinity, 
+                  ease: "easeInOut" 
+                }}
+              >
+                <motion.div
+                  className="absolute inset-0 bg-green-400 rounded-full"
+                  animate={{ 
+                    scale: [1, 2, 1],
+                    opacity: [0.6, 0, 0.6]
+                  }}
+                  transition={{ 
+                    duration: 1.5, 
+                    repeat: Infinity, 
+                    ease: "easeOut" 
+                  }}
+                />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* Enhanced hover glow effect */}
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-r from-green-400/0 via-green-400/10 to-green-400/0 rounded-lg" 
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        />
+        
+        {/* Pixel border animation on hover */}
+        <motion.div
+          className="absolute inset-0 border-2 border-green-400/0 rounded-lg"
+          whileHover={{ 
+            borderColor: "rgba(74, 222, 128, 0.5)",
+            boxShadow: "0 0 20px rgba(74, 222, 128, 0.3)"
+          }}
+          transition={{ duration: 0.3 }}
+        />
         
         <span className="sr-only">
           {isLight ? 'Switch to dark theme' : 'Switch to light theme'}

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTheme } from '../Providers'
-import { useWebVitals } from '../WebVitalsMonitor'
 
 interface AnalyticsEvent {
   id: string
@@ -115,7 +114,6 @@ export default function AnalyticsIntegration({
   className = ''
 }: AnalyticsIntegrationProps) {
   const { theme } = useTheme()
-  const webVitals = useWebVitals()
   
   const [analyticsConfig] = useState<AnalyticsConfig>({ ...DEFAULT_CONFIG, ...config })
   const [events, setEvents] = useState<AnalyticsEvent[]>([])
@@ -153,24 +151,7 @@ export default function AnalyticsIntegration({
     }
   }, [postId])
 
-  // Process web vitals when they update
-  useEffect(() => {
-    if (Object.keys(webVitals).length > 0) {
-      Object.entries(webVitals).forEach(([metric, data]) => {
-        trackEvent({
-          type: 'performance',
-          category: 'web_vitals',
-          action: metric,
-          value: data.value,
-          metadata: {
-            rating: data.rating,
-            id: data.id,
-            delta: data.delta
-          }
-        })
-      })
-    }
-  }, [webVitals])
+
 
   const initializeAnalytics = () => {
     // Generate or retrieve user ID

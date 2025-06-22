@@ -1,0 +1,68 @@
+
+> pixel-wisdom-blog@1.0.0 build
+> next build
+
+   ▲ Next.js 15.2.4
+
+   Creating an optimized production build ...
+getaddrinfo ENOTFOUND fonts.googleapis.com
+
+Retrying 1/3...
+getaddrinfo ENOTFOUND fonts.googleapis.com
+
+Retrying 1/3...
+getaddrinfo ENOTFOUND fonts.googleapis.com
+
+Retrying 1/3...
+getaddrinfo ENOTFOUND fonts.googleapis.com
+
+Retrying 2/3...
+getaddrinfo ENOTFOUND fonts.googleapis.com
+
+Retrying 2/3...
+getaddrinfo ENOTFOUND fonts.googleapis.com
+
+Retrying 2/3...
+getaddrinfo ENOTFOUND fonts.googleapis.com
+
+Retrying 3/3...
+getaddrinfo ENOTFOUND fonts.googleapis.com
+
+Retrying 3/3...
+getaddrinfo ENOTFOUND fonts.googleapis.com
+
+Retrying 3/3...
+[Error: getaddrinfo ENOTFOUND fonts.googleapis.com] {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'fonts.googleapis.com'
+}
+[Error: getaddrinfo ENOTFOUND fonts.googleapis.com] {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'fonts.googleapis.com'
+}
+[Error: getaddrinfo ENOTFOUND fonts.googleapis.com] {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'fonts.googleapis.com'
+}
+Failed to compile.
+
+app/layout.tsx
+`next/font` error:
+Failed to fetch `JetBrains Mono` from Google Fonts.
+
+app/layout.tsx
+`next/font` error:
+Failed to fetch `Press Start 2P` from Google Fonts.
+
+app/layout.tsx
+`next/font` error:
+Failed to fetch `VT323` from Google Fonts.
+
+
+> Build failed because of webpack errors

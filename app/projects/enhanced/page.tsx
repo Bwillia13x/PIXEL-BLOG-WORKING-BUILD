@@ -1,5 +1,7 @@
 'use client'
 
+import React from 'react'
+import { Metadata } from 'next'
 import { useState, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -11,7 +13,12 @@ import {
   XMarkIcon,
   AdjustmentsHorizontalIcon,
   EyeIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  FunnelIcon,
+  ListBulletIcon,
+  MagnifyingGlassIcon,
+  ScaleIcon,
+  ChartBarIcon
 } from '@heroicons/react/24/outline'
 import { projects, currentProjects, plannedProjects, Project, CurrentProject } from '@/content/projects'
 import ProjectCard3D from '@/app/components/ProjectCard3D'
@@ -19,6 +26,7 @@ import DemoOverlay from '@/app/components/DemoOverlay'
 import ProjectFilters, { ProjectFilters as FilterType } from '@/app/components/ProjectFilters'
 import ProjectTimeline from '@/app/components/ProjectTimeline'
 import ProjectComparison from '@/app/components/ProjectComparison'
+import { MatrixTextReveal } from '@/app/components/design-system/PixelAnimations'
 
 type ViewMode = 'grid' | 'timeline' | 'comparison'
 type ProjectType = Project | CurrentProject
@@ -170,8 +178,14 @@ export default function EnhancedProjectsPage() {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             {/* Title and Stats */}
             <div className="flex items-center space-x-4">
-              <h1 className="font-mono text-2xl font-bold text-green-400">
-                Enhanced Projects
+              <h1 className="font-mono text-xl md:text-2xl font-bold text-green-400">
+                <MatrixTextReveal 
+                  text="Enhanced Projects" 
+                  speed={75}
+                  delay={300}
+                  scrambleDuration={250}
+                  className="inline-block"
+                />
               </h1>
               <div className="flex items-center space-x-2">
                 <span className="px-3 py-1 bg-green-500/20 text-green-400 text-sm font-mono pixel-border border-green-500/50">

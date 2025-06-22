@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react"
 import { useTheme } from "next-themes"
-import { RainingBackground } from "./RainingCharacters"
+import RainingCharacters from "./RainingCharacters"
 import FloatingPixels from "./FloatingPixels"
 import GeometricOverlay from "./GeometricOverlay"
 
@@ -178,11 +178,9 @@ export const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
       {/* Matrix Rain Layer */}
       {mobileOptimizedLayers.matrix && (
         <div className="absolute inset-0" style={{ zIndex: 1 }}>
-          <RainingBackground
+          <RainingCharacters
             intensity={mobileOptimizedSettings.matrixIntensity}
             showTrails={mobileOptimizedSettings.enableTrails}
-            enableGlitch={mobileOptimizedSettings.enableGlitch}
-            mouseInteraction={mobileOptimizedSettings.mouseInteraction && interactive}
           />
         </div>
       )}

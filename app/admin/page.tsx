@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import AdminAuth from '../components/AdminAuth'
 import AnalyticsDashboard from '../components/AnalyticsDashboard'
 import { useAdminAuth } from '../hooks/useAdminAuth'
+import { MatrixTextReveal } from '@/app/components/design-system/PixelAnimations'
 
 export default function AdminPage() {
   const { isAuthenticated, login, logout, user } = useAdminAuth()
@@ -45,8 +46,14 @@ export default function AdminPage() {
                 <span className="text-green-400 font-mono text-xl">📊</span>
               </motion.div>
               <div>
-                <h1 className="text-2xl font-mono font-bold text-green-400">
-                  Pixel Analytics
+                <h1 className="text-xl md:text-2xl font-mono font-bold text-green-400">
+                  <MatrixTextReveal 
+                    text="Pixel Analytics" 
+                    speed={80}
+                    delay={200}
+                    scrambleDuration={200}
+                    className="inline-block"
+                  />
                 </h1>
                 <p className="text-gray-400 text-sm">
                   Admin Dashboard v2.1.0

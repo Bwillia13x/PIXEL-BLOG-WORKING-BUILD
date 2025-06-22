@@ -4,29 +4,37 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { siteConfig } from "@/lib/site-config"
 import { generateSEO } from "@/lib/seo"
-import { RainingBackground } from "./components/RainingCharacters"
 import ResponsiveHeader from "./components/ResponsiveHeader"
+import RainingCharacters from "./components/RainingCharacters"
+import { PixelMatrixRain } from "./components/design-system/PixelAnimations"
 import { AppWrapper } from "./components/AppWrapper"
 import { PerformanceMetrics } from "./components/PerformanceOptimizer"
 import AccessibilityTester from "./components/AccessibilityTester"
 import SEOLayout from "./components/SEOLayout"
 import { Providers } from "./components/Providers"
+import { AccessibilityProvider } from "./components/AccessibilityProvider"
+import WebVitalsMonitor from "./components/WebVitalsMonitor"
 
 import ClientComponents from "./components/ClientComponents"
+import ServiceWorkerRegistration from "./components/ServiceWorkerRegistration"
 
 const pressStart2P = Press_Start_2P({
   weight: "400",
   subsets: ["latin"],
   variable: "--font-press-start-2p",
   display: "swap",
-  preload: true
+  preload: true,
+  fallback: ['monospace', 'Courier New'],
+  adjustFontFallback: false
 })
 
 const vt323 = VT323({
   weight: "400",
   subsets: ["latin"],
   variable: "--font-vt323",
-  display: "swap"
+  display: "swap",
+  fallback: ['monospace', 'Courier New'],
+  adjustFontFallback: false
 })
 
 const jetBrainsMono = JetBrains_Mono({
@@ -34,7 +42,9 @@ const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains-mono",
   display: "swap",
-  preload: true
+  preload: true,
+  fallback: ['monospace', 'Menlo', 'Monaco', 'Courier New'],
+  adjustFontFallback: false
 })
 
 // Enhanced SEO metadata with comprehensive configuration
@@ -99,14 +109,13 @@ export default function RootLayout({
         <meta httpEquiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
         
         {/* Performance Hints */}
-        <link rel="preload" href="/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="prefetch" href="/about" />
         <link rel="prefetch" href="/projects" />
         <link rel="prefetch" href="/blog" />
       </head>
       
       <body
-        className={`${pressStart2P.variable} ${vt323.variable} ${jetBrainsMono.variable} font-mono bg-gray-900 text-green-400 antialiased selection:bg-green-400 selection:text-gray-900`}
+        className={`${pressStart2P.variable} ${vt323.variable} ${jetBrainsMono.variable} font-mono bg-black text-green-400 antialiased selection:bg-green-400 selection:text-gray-900 matrix-background`}
         suppressHydrationWarning
       >
         {/* Skip Link for Accessibility */}
@@ -118,13 +127,20 @@ export default function RootLayout({
         </a>
         
         {/* Providers for Theme and other contexts */}
+        <AccessibilityProvider>
         <Providers>
           {/* SEO and Performance Wrapper */}
           <SEOLayout>
             <AppWrapper>
-              {/* Background Effects */}
-              <RainingBackground aria-hidden="true" />
-              
+              {/* Subtle Matrix Background Effect */}
+              <div className="fixed inset-0 z-[-1] overflow-hidden">
+                <RainingCharacters
+                  intensity="low"
+                  showTrails={false}
+                  interactive={false}
+                  performance="optimized"
+                />
+              </div>
               {/* Main Layout Container */}
               <div className="max-w-6xl mx-auto relative z-10">
                 {/* Header */}
@@ -137,93 +153,127 @@ export default function RootLayout({
                 {/* Main Content */}
                 <main 
                   id="main-content"
-                  className="relative z-10 bg-gray-900/70 backdrop-blur-sm rounded-lg p-4 sm:p-6 mt-6 mx-4 sm:mx-6 lg:mx-8"
+                  className="relative z-10 bg-black/80 backdrop-blur-sm rounded-lg space-p-responsive mt-8 sm:mt-12 lg:mt-16 mx-4 sm:mx-6 lg:mx-8 focus:outline-none focus:ring-2 focus:ring-green-400 border border-green-400/20"
                   role="main"
                   aria-label="Main content"
                   tabIndex={-1}
+                  style={{ opacity: 1, transform: 'none' }}
                 >
                   {children}
                 </main>
                 
                 {/* Footer */}
                 <footer 
-                  className="py-8 text-center font-retro relative z-10 px-4 sm:px-6 lg:px-8"
+                  className="relative mt-16 mb-8 text-center font-pixel mx-4 sm:mx-6 lg:mx-8"
                   role="contentinfo"
                   aria-label="Site footer"
                 >
-                  <div className="border-t border-green-400/30 pt-6 space-y-4">
-                    <div>
-                      © 2025 {siteConfig.name}. All rights pixelated.
+                  <div className="relative bg-gray-900/60 border border-gray-700/40 rounded-lg p-8 backdrop-blur-sm overflow-hidden">
+                    {/* Background pattern */}
+                    <div className="absolute inset-0 opacity-5 pointer-events-none">
+                      <div 
+                        className="w-full h-full"
+                        style={{
+                          background: `repeating-linear-gradient(
+                            0deg,
+                            transparent,
+                            transparent 20px,
+                            rgba(74, 222, 128, 0.1) 20px,
+                            rgba(74, 222, 128, 0.1) 40px
+                          ), repeating-linear-gradient(
+                            90deg,
+                            transparent,
+                            transparent 20px,
+                            rgba(74, 222, 128, 0.1) 20px,
+                            rgba(74, 222, 128, 0.1) 40px
+                          )`
+                        }}
+                      />
                     </div>
-                    
-                    {/* Footer Links */}
-                    <nav aria-label="Footer navigation" className="flex justify-center space-x-6 text-sm">
-                      <a 
-                        href="/privacy" 
-                        className="text-gray-300 hover:text-green-400 transition-colors"
-                        rel="noopener"
-                      >
-                        Privacy
-                      </a>
-                      <a 
-                        href="/terms" 
-                        className="text-gray-300 hover:text-green-400 transition-colors"
-                        rel="noopener"
-                      >
-                        Terms
-                      </a>
-                      <a 
-                        href="/sitemap.xml" 
-                        className="text-gray-300 hover:text-green-400 transition-colors"
-                        rel="noopener"
-                      >
-                        Sitemap
-                      </a>
-                      <a 
-                        href="/feed.xml" 
-                        className="text-gray-300 hover:text-green-400 transition-colors"
-                        rel="noopener"
-                      >
-                        RSS
-                      </a>
-                    </nav>
-                    
-                    {/* Performance Badge */}
-                    <div className="text-xs text-gray-500">
-                      Built with ⚡ performance in mind
+
+                    {/* Glowing border effect */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-green-400/10 via-transparent to-green-400/5 rounded-lg" />
+
+                    <div className="relative z-10 space-y-6">
+                      {/* Copyright */}
+                      <div className="text-green-400 text-sm">
+                        <span className="inline-flex items-center space-x-2">
+                          <span>©</span>
+                          <span className="font-mono">2025</span>
+                          <span className="text-gray-400">•</span>
+                          <span>{siteConfig.name}</span>
+                          <span className="text-gray-400">•</span>
+                          <span className="text-xs text-gray-500">All rights pixelated</span>
+                        </span>
+                      </div>
+                      
+                      {/* Footer Links */}
+                      <nav aria-label="Footer navigation" className="flex flex-wrap justify-center gap-6 text-sm">
+                        <a 
+                          href="/privacy" 
+                          className="group inline-flex items-center px-3 py-1 text-gray-400 hover:text-green-400 transition-all duration-300 hover:bg-gray-800/40 rounded border border-transparent hover:border-green-400/30"
+                          rel="noopener"
+                        >
+                          <span className="mr-1 text-xs">🔒</span>
+                          Privacy
+                        </a>
+                        <a 
+                          href="/terms" 
+                          className="group inline-flex items-center px-3 py-1 text-gray-400 hover:text-green-400 transition-all duration-300 hover:bg-gray-800/40 rounded border border-transparent hover:border-green-400/30"
+                          rel="noopener"
+                        >
+                          <span className="mr-1 text-xs">📋</span>
+                          Terms
+                        </a>
+                        <a 
+                          href="/sitemap.xml" 
+                          className="group inline-flex items-center px-3 py-1 text-gray-400 hover:text-green-400 transition-all duration-300 hover:bg-gray-800/40 rounded border border-transparent hover:border-green-400/30"
+                          rel="noopener"
+                        >
+                          <span className="mr-1 text-xs">🗺</span>
+                          Sitemap
+                        </a>
+                        <a 
+                          href="/feed.xml" 
+                          className="group inline-flex items-center px-3 py-1 text-gray-400 hover:text-green-400 transition-all duration-300 hover:bg-gray-800/40 rounded border border-transparent hover:border-green-400/30"
+                          rel="noopener"
+                        >
+                          <span className="mr-1 text-xs">📡</span>
+                          RSS
+                        </a>
+                      </nav>
+                      
+                      {/* Performance Badge */}
+                      <div className="inline-flex items-center justify-center space-x-2 px-4 py-2 bg-gray-800/40 border border-gray-600/30 rounded-full text-xs text-gray-500">
+                        <span className="text-yellow-400">⚡</span>
+                        <span>Built with performance in mind</span>
+                        <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                      </div>
                     </div>
                   </div>
                 </footer>
               </div>
               
-              {/* Client-side Components */}
+              {/* Client-side Components - Load after hydration */}
               <ClientComponents />
-              <PerformanceMetrics />
-              <AccessibilityTester />
+              
+              {/* Safe Service Worker Registration */}
+              <ServiceWorkerRegistration enabled={true} />
             </AppWrapper>
+            
+            {/* Performance and Accessibility Components */}
+            <PerformanceMetrics />
+            
+            {/* Development Tools - Only in development */}
+            {process.env.NODE_ENV === 'development' && (
+              <>
+                <AccessibilityTester />
+                <WebVitalsMonitor />
+              </>
+            )}
           </SEOLayout>
         </Providers>
-        
-        {/* Service Worker Registration Script */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js')
-                    .then(function(registration) {
-                      console.log('SW registered: ', registration);
-                    })
-                    .catch(function(registrationError) {
-                      console.log('SW registration failed: ', registrationError);
-                    });
-                });
-              }
-            `
-          }}
-        />
-        
-
+        </AccessibilityProvider>
       </body>
     </html>
   )

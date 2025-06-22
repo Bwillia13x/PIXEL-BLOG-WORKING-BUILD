@@ -1,0 +1,110 @@
+[
+  {
+    "timestamp": "2025-06-21T18:41:37.166Z",
+    "summary": {
+      "totalJavaScriptKB": 1663,
+      "totalCSSKB": 110,
+      "violationCount": 16,
+      "recommendationCount": 5,
+      "passesAllBudgets": false
+    },
+    "violations": [
+      {
+        "type": "JavaScript Budget Exceeded",
+        "severity": "high",
+        "current": "1663KB",
+        "budget": "250KB"
+      },
+      {
+        "type": "CSS Budget Exceeded",
+        "severity": "medium",
+        "current": "110KB",
+        "budget": "50KB"
+      },
+      {
+        "type": "Large JavaScript File",
+        "severity": "medium",
+        "current": "393.77KB",
+        "budget": "50KB"
+      },
+      {
+        "type": "Large JavaScript File",
+        "severity": "medium",
+        "current": "177.42KB",
+        "budget": "50KB"
+      },
+      {
+        "type": "Large JavaScript File",
+        "severity": "medium",
+        "current": "169.39KB",
+        "budget": "50KB"
+      },
+      {
+        "type": "Large JavaScript File",
+        "severity": "medium",
+        "current": "165.15KB",
+        "budget": "50KB"
+      },
+      {
+        "type": "Large JavaScript File",
+        "severity": "medium",
+        "current": "158.21KB",
+        "budget": "50KB"
+      },
+      {
+        "type": "Large JavaScript File",
+        "severity": "medium",
+        "current": "117.32KB",
+        "budget": "50KB"
+      },
+      {
+        "type": "Large JavaScript File",
+        "severity": "medium",
+        "current": "116.81KB",
+        "budget": "50KB"
+      },
+      {
+        "type": "Large JavaScript File",
+        "severity": "medium",
+        "current": "109.96KB",
+        "budget": "50KB"
+      },
+      {
+        "type": "Large JavaScript File",
+        "severity": "medium",
+        "current": "80.35KB",
+        "budget": "50KB"
+      },
+      {
+        "type": "Route First Load JS Exceeded",
+        "severity": "high",
+        "current": "204KB",
+        "budget": "130KB"
+      },
+      {
+        "type": "Route First Load JS Exceeded",
+        "severity": "high",
+        "current": "294KB",
+        "budget": "130KB"
+      },
+      {
+        "type": "Route First Load JS Exceeded",
+        "severity": "high",
+        "current": "154KB",
+        "budget": "130KB"
+      },
+      {
+        "type": "Route First Load JS Exceeded",
+        "severity": "high",
+        "current": "163KB",
+        "budget": "130KB"
+      },
+      {
+        "type": "Route First Load JS Exceeded",
+        "severity": "high",
+        "current": "159KB",
+        "budget": "130KB"
+      }
+    ]
+  }
+]

@@ -1,8 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import { calculateReadingTime } from '@/app/utils/readingTime'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 export interface Post {
   id: string
@@ -19,44 +18,102 @@ export interface Post {
 
 const postsDirectory = path.join(process.cwd(), 'content', 'blog')
 
-function getPostData(fileName: string): Post {
-  const slug = fileName.replace(/\.mdx?$/, '')
-  const fullPath = path.join(postsDirectory, fileName)
-  const fileContents = fs.readFileSync(fullPath, 'utf8')
-  const { data, content } = matter(fileContents)
+// Simple reading time calculation
+function calculateReadingTime(content: string): string {
+  const wordsPerMinute = 200
+  const words = content.trim().split(/\s+/).length
+  const minutes = Math.ceil(words / wordsPerMinute)
+  return `${minutes} min read`
+}
 
-  // Calculate reading time if not provided in frontmatter
-  const readTime = data.readTime || calculateReadingTime(content).text
+function getPostData(fileName: string): Post | null {
+  try {
+    const fullPath = path.join(postsDirectory, fileName)
+    
+    if (!fs.existsSync(fullPath)) {
+      return null
+    }
 
-  return {
-    id: slug,
-    slug,
-    title: (data.title as string) ?? slug,
-    category: (data.category as string) ?? 'Blog',
-    date: data.date as string | undefined,
-    content,
-    tags: Array.isArray(data.tags) ? data.tags : [],
-    excerpt: data.excerpt as string | undefined,
-    readTime,
-    published: data.published !== false, // Default to true unless explicitly false
+    const slug = fileName.replace(/\.mdx?$/, '')
+    const fileContents = fs.readFileSync(fullPath, 'utf8')
+    const { data, content } = matter(fileContents)
+
+    const readTime = data.readTime || calculateReadingTime(content)
+
+    return {
+      id: slug,
+      slug,
+      title: data.title || slug,
+      category: data.category || 'Blog',
+      date: data.date,
+      content: content.substring(0, 500), // Limit content for performance
+      tags: Array.isArray(data.tags) ? data.tags : [],
+      excerpt: data.excerpt,
+      readTime,
+      published: data.published !== false,
+    }
+  } catch (error) {
+    console.error(`Error processing file ${fileName}:`, error)
+    return null
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const posts: Post[] = fs
-      .readdirSync(postsDirectory)
-      .filter((file) => file.endsWith('.md') || file.endsWith('.mdx'))
-      .map(getPostData)
-      .sort((a, b) => {
-        const dateA = a.date ? new Date(a.date).getTime() : 0
-        const dateB = b.date ? new Date(b.date).getTime() : 0
-        return dateB - dateA
+    // Check if posts directory exists
+    if (!fs.existsSync(postsDirectory)) {
+      console.warn('Posts directory not found:', postsDirectory)
+      return NextResponse.json([], { 
+        status: 200,
+        headers: {
+          'Cache-Control': 'public, max-age=300',
+          'Content-Type': 'application/json',
+        }
       })
+    }
 
-    return NextResponse.json(posts)
+    const files = fs.readdirSync(postsDirectory)
+    const posts: Post[] = []
+
+    for (const file of files) {
+      // Only process markdown files
+      if (!(file.endsWith('.md') || file.endsWith('.mdx'))) {
+        continue
+      }
+
+      const post = getPostData(file)
+      if (post && post.published) {
+        posts.push(post)
+      }
+    }
+
+    // Sort posts by date (newest first)
+    posts.sort((a, b) => {
+      const dateA = a.date ? new Date(a.date).getTime() : 0
+      const dateB = b.date ? new Date(b.date).getTime() : 0
+      return dateB - dateA
+    })
+
+    return NextResponse.json(posts, {
+      status: 200,
+      headers: {
+        'Cache-Control': 'public, max-age=300',
+        'Content-Type': 'application/json',
+      }
+    })
   } catch (error) {
     console.error('Error reading posts:', error)
-    return NextResponse.json({ error: 'Failed to load posts' }, { status: 500 })
+    return NextResponse.json(
+      { 
+        error: 'Failed to load posts',
+        message: 'Internal server error'
+      }, 
+      { 
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
+    )
   }
 } 

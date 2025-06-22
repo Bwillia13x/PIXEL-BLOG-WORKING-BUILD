@@ -1,11 +1,67 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { posts } from '@/app/data/posts'
+import fs from 'fs'
+import path from 'path'
+import matter from 'gray-matter'
+import { Post } from '@/app/data/posts'
 import { generatePostSEO } from '@/app/utils/seo'
 import BlogPostLayout from '@/app/components/BlogPostLayout'
 
+// Function to get all posts from the file system
+async function getAllPosts(): Promise<Post[]> {
+  const postsDirectory = path.join(process.cwd(), 'content', 'blog')
+  
+  if (!fs.existsSync(postsDirectory)) {
+    return []
+  }
+
+  const files = fs.readdirSync(postsDirectory)
+  const posts: Post[] = []
+
+  for (const file of files) {
+    if (!(file.endsWith('.md') || file.endsWith('.mdx'))) {
+      continue
+    }
+
+    try {
+      const fullPath = path.join(postsDirectory, file)
+      const slug = file.replace(/\.mdx?$/, '')
+      const fileContents = fs.readFileSync(fullPath, 'utf8')
+      const { data, content } = matter(fileContents)
+
+      const post: Post = {
+        id: slug,
+        slug,
+        title: data.title || slug,
+        category: data.category || 'Blog',
+        date: data.date,
+        content,
+        tags: Array.isArray(data.tags) ? data.tags : [],
+        excerpt: data.excerpt,
+        readTime: data.readTime || `${Math.ceil(content.split(' ').length / 200)} min read`,
+        published: data.published !== false,
+      }
+
+      if (post.published) {
+        posts.push(post)
+      }
+    } catch (error) {
+      console.error(`Error processing file ${file}:`, error)
+    }
+  }
+
+  return posts
+}
+
+// Function to get a single post by slug
+async function getPostBySlug(slug: string): Promise<Post | null> {
+  const posts = await getAllPosts()
+  return posts.find(p => p.slug === slug) || null
+}
+
 export async function generateStaticParams() {
+  const posts = await getAllPosts()
   return posts.map((post) => ({
     slug: post.slug,
   }))
@@ -13,7 +69,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const post = posts.find(p => p.slug === slug)
+  const post = await getPostBySlug(slug)
   
   if (!post) {
     return {
@@ -38,7 +94,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const post = posts.find(p => p.slug === slug)
+  const post = await getPostBySlug(slug)
 
   if (!post) {
     notFound()
@@ -48,7 +104,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     <div className="max-w-7xl mx-auto px-4 py-8">
       <BlogPostLayout
         post={post}
-        enableComments={false} // Set to true when ready to enable comments
+        enableComments={true} // Comments system enabled with full API integration
         enableAnalytics={true}
         showRelatedPosts={true}
         showSocialShare={true}

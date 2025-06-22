@@ -25,19 +25,19 @@ const asciiLogo = `
 `
 
 const bootSequence = [
-  { phase: "bios", text: "PIXEL WISDOM BIOS v2.1.0", delay: 500 },
-  { phase: "memory", text: "Memory Test: 64MB OK", delay: 300 },
-  { phase: "cpu", text: "CPU: Intel Wisdom 486DX @ 33MHz", delay: 200 },
-  { phase: "drives", text: "Detecting drives... Found: C:\\WISDOM\\", delay: 400 },
-  { phase: "os", text: "Loading PixelOS...", delay: 600 },
-  { phase: "kernel", text: "Kernel loaded successfully", delay: 300 },
-  { phase: "drivers", text: "Loading device drivers...", delay: 400 },
-  { phase: "network", text: "Network interface: READY", delay: 200 },
-  { phase: "services", text: "Starting system services...", delay: 500 },
-  { phase: "wisdom", text: "Initializing Wisdom Engine...", delay: 600 },
-  { phase: "ai", text: "AI Modules: ONLINE", delay: 300 },
-  { phase: "blog", text: "Blog Framework: LOADED", delay: 400 },
-  { phase: "ready", text: "System Ready - Welcome to Pixel Wisdom!", delay: 800 }
+  { phase: "bios", text: "PIXEL WISDOM BIOS v2.1.0", delay: 200 },
+  { phase: "memory", text: "Memory Test: 64MB OK", delay: 120 },
+  { phase: "cpu", text: "CPU: Intel Wisdom 486DX @ 33MHz", delay: 80 },
+  { phase: "drives", text: "Detecting drives... Found: C:\\WISDOM\\", delay: 160 },
+  { phase: "os", text: "Loading PixelOS...", delay: 240 },
+  { phase: "kernel", text: "Kernel loaded successfully", delay: 120 },
+  { phase: "drivers", text: "Loading device drivers...", delay: 160 },
+  { phase: "network", text: "Network interface: READY", delay: 80 },
+  { phase: "services", text: "Starting system services...", delay: 200 },
+  { phase: "wisdom", text: "Initializing Wisdom Engine...", delay: 240 },
+  { phase: "ai", text: "AI Modules: ONLINE", delay: 120 },
+  { phase: "blog", text: "Blog Framework: LOADED", delay: 160 },
+  { phase: "ready", text: "System Ready - Welcome to Pixel Wisdom!", delay: 320 }
 ]
 
 const glitchChars = ['▓', '▒', '░', '█', '▄', '▀', '■', '□', '▲', '►']
@@ -89,11 +89,11 @@ export function PixelBootScreen({ onComplete, soundEnabled = false }: PixelBootS
   // Boot sequence controller
   useEffect(() => {
     if (phase === 'bios') {
-      // BIOS phase with typing effect
+      // BIOS phase with typing effect (2.5x faster)
       const timer = setTimeout(() => {
         setPhase('boot')
         playBeep(1200, 50)
-      }, 2000)
+      }, 800)
       return () => clearTimeout(timer)
     }
     
@@ -117,7 +117,7 @@ export function PixelBootScreen({ onComplete, soundEnabled = false }: PixelBootS
               setProgress(prev => Math.min(100, prev + (100 / bootSequence.length)))
             }, currentBoot.delay)
           }
-        }, 40 + Math.random() * 20) // Variable typing speed
+        }, 16 + Math.random() * 8) // Variable typing speed (2.5x faster)
         
         return () => clearInterval(typeInterval)
       } else {
@@ -126,15 +126,15 @@ export function PixelBootScreen({ onComplete, soundEnabled = false }: PixelBootS
           setPhase('logo')
           setLogoVisible(true)
           playBeep(800, 200)
-        }, 500)
+        }, 200)
       }
     }
     
     if (phase === 'logo') {
       const timer = setTimeout(() => {
         setPhase('complete')
-        setTimeout(onComplete, 800)
-      }, 3000)
+        setTimeout(onComplete, 320)
+      }, 1200)
       return () => clearTimeout(timer)
     }
   }, [phase, bootIndex, onComplete, soundEnabled])
@@ -187,7 +187,7 @@ export function PixelBootScreen({ onComplete, soundEnabled = false }: PixelBootS
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1.5 }}
+                transition={{ delay: 0.6 }}
                 className="mt-4 text-center"
               >
                 Press any key to continue...
