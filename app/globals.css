@@ -68,7 +68,7 @@ body {
 /* Typography with performance focus */
 .font-pixel {
   font-family: var(--font-press-start-2p), monospace;
-  text-shadow: 2px 2px 0 #000;
+  text-shadow: 0 0 1px #000;
   letter-spacing: -1px;
   will-change: auto;
 }
@@ -78,7 +78,7 @@ body {
 h1.pixel-head,
 h2.pixel-head {
   font-family: var(--font-press-start-2p), monospace;
-  text-shadow: 2px 2px 0 #000;
+  text-shadow: 0 0 1px #000;
   letter-spacing: -1px;
   line-height: 1.2;
   will-change: auto;
