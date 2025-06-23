@@ -27,19 +27,19 @@ export interface SiteConfig {
 }
 
 export const siteConfig: SiteConfig = {
-  name: "Drew Williams",
-  title: "Drew Williams - Developer & Creative Technologist",
-  description: "Full-stack developer passionate about AI-driven development, modern web technologies, and creating pixel-perfect digital experiences. Latest: Financial Data APIs Guide.",
+  name: "Pixel Wisdom",
+  title: "Pixel Wisdom - Developer Portfolio & AI Innovation Hub",
+  description: "Full-stack developer specializing in AI-driven development, financial technology, and modern web applications. Featuring cutting-edge projects in value investing tools, data visualization, and agentic IDE workflows.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://pixelwisdom.dev",
   ogImage: "/og-image.png",
-  creator: "Drew Williams",
-  keywords: ["full-stack", "developer", "AI", "Next.js", "TypeScript", "React", "web development", "creative technology"],
+  creator: "Pixel Wisdom Developer",
+  keywords: ["full-stack developer", "AI development", "financial technology", "value investing", "Next.js", "TypeScript", "React", "data visualization", "web development", "portfolio"],
   social: {
-    // Add your social links when ready
-    // github: "https://github.com/benjaminwilliams",
-    // linkedin: "https://linkedin.com/in/benjaminwilliams",
-    // twitter: "https://twitter.com/benjaminwilliams",
-    email: "hello@drewwilliams.dev"
+    // TODO: Add your actual social links
+    // github: "https://github.com/yourusername",
+    // linkedin: "https://linkedin.com/in/yourusername", 
+    // twitter: "https://twitter.com/yourusername",
+    email: "hello@pixelwisdom.dev"
   },
   navigation: {
     main: [

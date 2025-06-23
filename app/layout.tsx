@@ -25,7 +25,7 @@ const pressStart2P = Press_Start_2P({
   variable: "--font-press-start-2p",
   display: "swap",
   preload: true,
-  fallback: ['monospace', 'Courier New'],
+  fallback: ['monospace', 'Courier New', 'Monaco', 'Menlo'],
   adjustFontFallback: false
 })
 
@@ -34,7 +34,7 @@ const vt323 = VT323({
   subsets: ["latin"],
   variable: "--font-vt323",
   display: "swap",
-  fallback: ['monospace', 'Courier New'],
+  fallback: ['monospace', 'Courier New', 'Monaco', 'Menlo'],
   adjustFontFallback: false
 })
 
@@ -44,7 +44,7 @@ const jetBrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   display: "swap",
   preload: true,
-  fallback: ['monospace', 'Menlo', 'Monaco', 'Courier New'],
+  fallback: ['monospace', 'Menlo', 'Monaco', 'Courier New', 'Consolas'],
   adjustFontFallback: false
 })
 
