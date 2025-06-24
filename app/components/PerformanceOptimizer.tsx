@@ -131,13 +131,15 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
           aria-hidden="true"
         >
           {placeholder === 'blur' && blurDataURL ? (
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={blurDataURL}
-              alt=""
-              className="w-full h-full object-cover filter blur-sm scale-110"
-              aria-hidden="true"
-            />
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={blurDataURL}
+                alt=""
+                className="w-full h-full object-cover filter blur-sm scale-110"
+                aria-hidden="true"
+              />
+            </>
           ) : (
             <div className="w-8 h-8 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
           )}
@@ -157,18 +159,20 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
       {/* Actual image */}
       {isLoaded && !error && (
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={src}
-          alt={alt}
-          width={width}
-          height={height}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-          loading={priority ? 'eager' : 'lazy'}
-          decoding="async"
-        />
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt={alt}
+            width={width}
+            height={height}
+            className={`w-full h-full object-cover transition-opacity duration-300 ${
+              isLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
+            loading={priority ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+        </>
       )}
     </div>
   )

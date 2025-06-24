@@ -655,14 +655,16 @@ export default function AutomatedReadmeParser({
       {showBadges && parsedReadme.metadata.badges.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {parsedReadme.metadata.badges.map((badge, index) => (
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              key={index}
-              src={badge.image}
-              alt={badge.name}
-              className="h-5 pixel-border rounded"
-              title={badge.name}
-            />
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                key={index}
+                src={badge.image}
+                alt={badge.name}
+                className="h-5 pixel-border rounded"
+                title={badge.name}
+              />
+            </>
           ))}
         </div>
       )}
