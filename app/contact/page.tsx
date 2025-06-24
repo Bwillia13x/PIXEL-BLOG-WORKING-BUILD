@@ -5,6 +5,7 @@ import ContactAnalytics from '../components/ContactAnalytics'
 import { MatrixTextReveal } from '@/app/components/design-system/PixelAnimations'
 import { CircuitParallax } from '../components/ParallaxBackground'
 import PageHeader from '@/app/components/PageHeader'
+import HeaderSpacer from '@/app/components/HeaderSpacer'
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -14,6 +15,9 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <div className="max-w-3xl mx-auto relative pb-8">
+      {/* Header Spacer to push content below navigation */}
+      <HeaderSpacer />
+      
       {/* Parallax Background */}
       <CircuitParallax intensity="subtle" />
       

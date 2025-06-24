@@ -94,11 +94,10 @@ function BlogPostCardComponent({
       
       {/* Enhanced main card with improved proportions */}
       <motion.div 
-        className="relative h-full flex flex-col border border-gray-700 rounded-lg p-4 sm:p-5 lg:p-6 bg-gray-900/60 backdrop-blur-sm transition-all duration-500 overflow-hidden"
+        className="pw-card relative h-full flex flex-col p-4 sm:p-5 lg:p-6 transition-all duration-500 focus:outline-none focus-visible:ring-2 ring-green-400"
+        tabIndex={0}
         animate={{
-          backgroundColor: isHovered ? 'rgba(31, 41, 55, 0.8)' : 'rgba(17, 24, 39, 0.6)',
-          borderColor: isHovered ? 'rgba(74, 222, 128, 0.4)' : 'rgba(75, 85, 99, 1)',
-          boxShadow: isHovered ? '0 20px 40px rgba(74, 222, 128, 0.1)' : '0 4px 6px rgba(0, 0, 0, 0.1)'
+          backgroundColor: isHovered ? 'rgba(31, 41, 55, 0.8)' : 'rgba(17, 24, 39, 0.6)'
         }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >

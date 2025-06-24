@@ -27,7 +27,7 @@ interface ContentGridProps {
 
 // Loading skeleton component
 const LoadingSkeleton = () => (
-  <div className="bg-gray-900/60 border border-gray-700/50 rounded-lg p-6 animate-pulse">
+  <div className="pw-card p-6 animate-pulse">
     <div className="flex justify-between items-center mb-4">
       <div className="h-6 w-20 bg-gray-700 rounded"></div>
       <div className="h-4 w-16 bg-gray-700 rounded"></div>
@@ -109,7 +109,7 @@ export default function ContentGrid({
 
   if (error) {
     return (
-      <div className="bg-red-900/20 border border-red-500/40 rounded-lg p-6 text-center">
+      <div className="pw-card p-6 text-center bg-red-900/20 border-red-500/40">
         <div className="text-4xl mb-4">⚠️</div>
         <h3 className="text-lg font-pixel mb-2 text-red-400">System Error</h3>
         <p className="text-red-300 text-sm">{error}</p>

@@ -51,11 +51,11 @@ export default function PageHeader({
   }
 
   const renderTitle = () => {
-    const baseClasses = `text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-pixel text-green-400 ${titleClassName}`
+    const baseClasses = `text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-pixel text-green-400 whitespace-nowrap ${titleClassName}`
     
     if (!showAnimation) {
       return (
-        <h1 className={`${baseClasses} pixel-head`}>
+        <h1 className={`${baseClasses} pixel-head leading-tight`}>
           {prefix && <span className="text-white">{prefix} </span>}
           {title}
         </h1>
@@ -65,14 +65,14 @@ export default function PageHeader({
     switch (animationType) {
       case 'matrix':
         return (
-          <h1 className={`${baseClasses} pixel-head`}>
+          <h1 className={`${baseClasses} pixel-head leading-tight`}>
             {prefix && <span className="text-white">{prefix} </span>}
             <MatrixTextReveal 
               text={title}
               speed={animationSpeed}
               delay={animationDelay}
               scrambleDuration={250}
-              className="inline-block"
+              className="inline-block whitespace-nowrap"
             />
           </h1>
         )
@@ -80,7 +80,7 @@ export default function PageHeader({
       case 'typing':
         return (
           <motion.h1 
-            className={baseClasses}
+            className={`${baseClasses} leading-tight`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: animationDelay / 1000 }}
@@ -94,7 +94,7 @@ export default function PageHeader({
       default:
         return (
           <motion.h1 
-            className={baseClasses}
+            className={`${baseClasses} leading-tight`}
             variants={itemVariants}
           >
             {prefix && <span className="text-white">{prefix} </span>}
@@ -106,7 +106,7 @@ export default function PageHeader({
 
   return (
     <motion.div
-      className={`text-center mt-40 sm:mt-44 lg:mt-48 mb-12 sm:mb-16 lg:mb-20 ${className}`}
+      className={`text-center mt-6 sm:mt-8 mb-12 sm:mb-16 lg:mb-20 overflow-hidden px-4 ${className}`}
       variants={containerVariants}
       initial="hidden"
       animate="visible"

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
+import HeaderSpacer from '@/app/components/HeaderSpacer'
 
 interface Post {
   id: string
@@ -565,6 +566,9 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen bg-black">
+      {/* Header Spacer to push content below navigation */}
+      <HeaderSpacer />
+      
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 pt-8 pb-16">

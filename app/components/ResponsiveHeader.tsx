@@ -5,7 +5,6 @@ import { motion, AnimatePresence, Variants } from 'framer-motion'
 import EnhancedNavMenu from './EnhancedNavMenu'
 import BreadcrumbNav from './BreadcrumbNav'
 import CommandPalette from './CommandPalette'
-import ColorSystemToggle from './ColorSystemToggle'
 import { ChevronUp, ChevronDown } from 'lucide-react'
 import { useScrollDirection } from '@/app/hooks/useScrollDirection'
 
@@ -97,7 +96,7 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
     const baseClasses = "fixed top-0 left-0 right-0 z-50 transition-all duration-300"
     
     if (isAtTop) {
-      return `${baseClasses} bg-transparent backdrop-blur-none border-transparent`
+      return `${baseClasses} bg-black/80 backdrop-blur-md border-b border-green-400/20`
     } else {
       return `${baseClasses} bg-black/80 backdrop-blur-md border-b border-green-400/20`
     }
@@ -129,9 +128,11 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
               <div className="flex items-center justify-between py-4 sm:py-6">
                 {/* Logo/Brand Area */}
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-green-400 border-2 border-green-400">
-                    <div className="w-full h-full bg-black border border-green-400/50" />
-                  </div>
+                  <img
+                    src="/images/main_logo.jpeg"
+                    alt="Pixel Wisdom logo"
+                    className="w-12 h-12 object-contain gyro-spin"
+                  />
                   
                   <h1 className="text-lg sm:text-xl font-pixel text-green-400">
                     PIXEL WISDOM
@@ -141,7 +142,6 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
                 {/* Right side actions */}
                 <div className="flex items-center space-x-3 sm:space-x-4">
                   <CommandPalette triggerOnly />
-                  <ColorSystemToggle />
                   
                   {/* Collapse toggle for collapsible mode */}
                   {collapsible && (
@@ -191,7 +191,6 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
 
               <div className="flex items-center space-x-2">
                 <CommandPalette triggerOnly className="w-32" />
-                <ColorSystemToggle compact />
                 
                 <button
                   onClick={toggleCollapse}

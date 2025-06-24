@@ -3,6 +3,8 @@ import { ClientErrorDisplay } from "./components/ErrorBoundary"
 import TypewriterText from "./components/TypewriterText"
 import ContentGrid from "./components/ContentGrid"
 import PixelButton, { GhostButton } from "./components/PixelButton"
+import HeaderSpacer from "./components/HeaderSpacer"
+import PageHeader from "./components/PageHeader"
 
 interface Post {
   id: string
@@ -91,29 +93,29 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen relative">
-      {/* Clean Hero Section */}
-      <section className="text-center mb-20 max-w-4xl mx-auto">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl pixel-head mb-8 text-green-400">
-          Welcome to Pixel Wisdom
-        </h1>
-        
-        <p className="text-gray-300 max-w-3xl mx-auto mb-16 text-lg sm:text-xl leading-relaxed px-4">
-          A developer's journey through AI, finance, and digital innovation.
-        </p>
-
-        {/* Simple Category Navigation */}
-        <div className="flex flex-wrap justify-center gap-4 mb-16">
-          {categories.map((category) => (
-            <Link
-              key={category}
-              href={`/category/${category.toLowerCase()}`}
-              className="px-6 py-3 bg-gray-900/40 border border-green-400/30 text-green-400 font-mono text-sm rounded-lg hover:bg-green-400/10 hover:border-green-400 transition-all duration-200"
-            >
-              {category}
-            </Link>
-          ))}
-        </div>
-      </section>
+      {/* Header Spacer to push content below navigation */}
+      <HeaderSpacer />
+      
+      {/* Hero Section */}
+      <PageHeader
+        title="Welcome to Pixel Wisdom"
+        subtitle="A developer's journey through AI, finance, and digital innovation."
+        animationType="matrix"
+        titleClassName="text-3xl sm:text-4xl md:text-5xl lg:text-6xl"
+        className="mb-16"
+      />
+      {/* Simple Category Navigation */}
+      <div className="flex flex-wrap justify-center gap-4 mb-16">
+        {categories.map((category) => (
+          <Link
+            key={category}
+            href={`/category/${category.toLowerCase()}`}
+            className="px-6 py-3 bg-gray-900/40 border border-green-400/30 text-green-400 font-mono text-sm rounded-lg hover:bg-green-400/10 hover:border-green-400 transition-all duration-200"
+          >
+            {category}
+          </Link>
+        ))}
+      </div>
 
       {/* Error Message */}
       {error && (

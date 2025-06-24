@@ -132,6 +132,37 @@ export async function POST(request: NextRequest) {
         )
       }
 
+      // Auto-publish all comments (remove moderation)
+      if (result.success && result.comment && !result.comment.published) {
+        db.approveComment(result.comment.id)
+        result.comment.published = true
+      }
+
+      // OPTIONAL: email notification
+      if (result.success && process.env.SMTP_HOST) {
+        try {
+          const nodemailer = (await import('nodemailer')).default
+          const transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST,
+            port: Number(process.env.SMTP_PORT) || 587,
+            secure: false,
+            auth: {
+              user: process.env.SMTP_USER,
+              pass: process.env.SMTP_PASS
+            }
+          })
+
+          await transporter.sendMail({
+            from: `Pixel Wisdom Blog <no-reply@pixelwisdom.dev>`,
+            to: 'benjiwilli13x@gmail.com',
+            subject: `New comment on post ${commentData.postId}`,
+            text: `Author: ${commentData.authorName}\nEmail: ${commentData.authorEmail}\nContent:\n${commentData.content}`
+          })
+        } catch (mailErr) {
+          console.warn('Email notification failed:', mailErr)
+        }
+      }
+
       // Log successful comment creation
       SecurityMonitor.logSecurityEvent('rate_limit', {
         type: 'comment_created',
@@ -143,7 +174,7 @@ export async function POST(request: NextRequest) {
       return createSecureResponse({
         success: true,
         comment: result.comment,
-        message: isAdmin ? 'Comment published' : 'Comment submitted for moderation'
+        message: 'Comment published'
       }, 201)
 
     } catch (error) {

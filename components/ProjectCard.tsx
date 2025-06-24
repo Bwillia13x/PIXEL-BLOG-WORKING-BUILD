@@ -25,13 +25,11 @@ export default function ProjectCard({ project, className = '' }: ProjectCardProp
   
   return (
     <article className={`
-      group bg-gray-800/80 backdrop-blur-sm rounded-lg overflow-hidden
-      border border-gray-700 hover:border-green-400/50 
-      transition-all duration-300 hover:shadow-lg hover:shadow-green-400/10
+      pw-card group overflow-hidden
       card-hover-lift gpu-optimized
       ${project.featured ? 'ring-2 ring-blue-400/30' : ''}
       ${className}
-    `}>
+    `} tabIndex={0}>
       {/* Project Image */}
       <div className="relative overflow-hidden image-container-optimized">
         {project.image ? (

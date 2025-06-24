@@ -142,14 +142,14 @@ export default function RootLayout({
                       collapsible={true}
                     />
                     
-                    {/* Main Content with proper spacing for fixed header */}
+                    {/* Main Content - HeaderSpacer component handles spacing */}
                     <main 
                       id="main-content"
                       className="relative z-10 pb-16 sm:pb-20 lg:pb-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto focus:outline-none focus:ring-2 focus:ring-green-400 min-h-screen"
-                      style={{ marginTop: 'calc(var(--header-height) + 1rem)' }}
                       role="main"
                       aria-label="Main content"
                       tabIndex={-1}
+                      style={{ marginTop: 'calc(var(--header-height) + 1rem)' }}
                     >
                       {children}
                     </main>

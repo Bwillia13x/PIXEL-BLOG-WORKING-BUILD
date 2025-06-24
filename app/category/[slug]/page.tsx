@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { posts } from "../../data/posts"
 import { notFound } from "next/navigation"
+import HeaderSpacer from "@/app/components/HeaderSpacer"
 
 export async function generateStaticParams() {
   // Get unique categories from posts
@@ -22,6 +23,8 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
   return (
     <div className="pb-8">
+      <HeaderSpacer />
+      
       <h2 className="text-2xl font-pixel mb-6">{category} Posts</h2>
       <div className="grid gap-6">
         {categoryPosts.map((post) => (

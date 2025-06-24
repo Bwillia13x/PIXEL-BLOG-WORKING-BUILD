@@ -206,11 +206,12 @@ export default function ProjectCard3D({
         {/* Main Card */}
         <motion.div
           className={`
-            relative pixel-border bg-gray-900/80 backdrop-blur-sm
+            pw-card relative pixel-border
             transition-all duration-300 overflow-hidden
-            ${isHovered ? 'shadow-2xl shadow-green-500/20' : 'shadow-lg shadow-black/20'}
             ${isInComparison ? 'ring-2 ring-cyan-400' : ''}
+            focus:outline-none focus-visible:ring-2 ring-green-400
           `}
+          tabIndex={0}
           style={{
             translateZ: translateZ1,
             transformStyle: "preserve-3d"

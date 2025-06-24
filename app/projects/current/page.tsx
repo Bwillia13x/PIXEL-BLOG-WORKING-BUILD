@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import PixelButton from '@/app/components/PixelButton'
 import PageHeader from '@/app/components/PageHeader'
+import HeaderSpacer from '@/app/components/HeaderSpacer'
 
 // Enhanced project interface with more detailed tracking
 interface CurrentProject {
@@ -153,6 +154,7 @@ export default function CurrentProjectsPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 pb-8">
+      <HeaderSpacer />
       {/* Hero Section with Enhanced Stats */}
       <PageHeader 
         title="Current Projects"

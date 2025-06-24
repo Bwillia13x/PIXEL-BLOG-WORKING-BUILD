@@ -6,6 +6,7 @@ import TypewriterText from '@/app/components/TypewriterText'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import PageHeader from '@/app/components/PageHeader'
+import HeaderSpacer from '@/app/components/HeaderSpacer'
 
 interface TechBadgeProps {
   name: string
@@ -121,6 +122,9 @@ export default function AboutPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-16 pb-8">
+      {/* Header Spacer to push content below navigation */}
+      <HeaderSpacer />
+      
       {/* Hero Section */}
       <PixelReveal>
         <div className="text-center space-y-8">

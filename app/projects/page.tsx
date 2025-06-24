@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { projects } from '@/content/projects'
 import ProjectCard from '@/components/ProjectCard'
 import PageHeader from '@/app/components/PageHeader'
+import HeaderSpacer from '@/app/components/HeaderSpacer'
 
 // Static metadata for SSR
 const metadata: Metadata = {
@@ -30,6 +31,9 @@ export default function ProjectsPage() {
 
   return (
     <div className="max-w-6xl mx-auto pb-8">
+      {/* Header Spacer to push content below navigation */}
+      <HeaderSpacer />
+      
       {/* Header Section */}
       <PageHeader 
         title="Projects Showcase"
@@ -40,19 +44,19 @@ export default function ProjectsPage() {
 
       {/* Project Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-        <div className="bg-gray-800/50 rounded-lg p-4 border border-green-400/20">
+        <div className="pw-card p-4 border-green-400/20">
           <div className="text-2xl font-pixel text-green-400">{stats.total}</div>
           <div className="text-xs font-mono text-gray-400">Total Projects</div>
         </div>
-        <div className="bg-gray-800/50 rounded-lg p-4 border border-blue-400/20">
+        <div className="pw-card p-4 border-blue-400/20">
           <div className="text-2xl font-pixel text-blue-400">{stats.completed}</div>
           <div className="text-xs font-mono text-gray-400">Completed</div>
         </div>
-        <div className="bg-gray-800/50 rounded-lg p-4 border border-yellow-400/20">
+        <div className="pw-card p-4 border-yellow-400/20">
           <div className="text-2xl font-pixel text-yellow-400">{stats.inProgress}</div>
           <div className="text-xs font-mono text-gray-400">In Progress</div>
         </div>
-        <div className="bg-gray-800/50 rounded-lg p-4 border border-purple-400/20">
+        <div className="pw-card p-4 border-purple-400/20">
           <div className="text-2xl font-pixel text-purple-400">{stats.featured}</div>
           <div className="text-xs font-mono text-gray-400">Featured</div>
         </div>

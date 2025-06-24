@@ -238,7 +238,7 @@ export default function BlogPostLayout({
             transition={{ duration: 0.6 }}
             className="text-center space-y-4"
           >
-            <h1 className="text-3xl md:text-4xl lg:text-4xl font-mono font-bold text-white leading-tight">
+            <h1 className="text-2xl md:text-3xl lg:text-3xl font-readable font-bold text-white leading-tight">
               {post.title}
             </h1>
             

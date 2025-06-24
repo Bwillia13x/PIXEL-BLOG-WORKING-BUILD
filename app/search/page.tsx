@@ -8,6 +8,7 @@ import SearchResults from '@/app/components/SearchResults'
 import { motion } from 'framer-motion'
 import { AdjustmentsHorizontalIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import PageHeader from '@/app/components/PageHeader'
+import HeaderSpacer from '@/app/components/HeaderSpacer'
 
 interface SearchResult {
   id: string
@@ -109,6 +110,7 @@ function SearchPageContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+      <HeaderSpacer />
       {/* Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="pixel-grid opacity-10" />
