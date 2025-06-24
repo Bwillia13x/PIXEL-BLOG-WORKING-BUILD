@@ -136,7 +136,7 @@ export default async function Home() {
       </section>
 
       {/* Simple footer */}
-      <footer className="text-center text-gray-500 text-sm max-w-4xl mx-auto pt-12 border-t border-gray-700/30">
+      <footer className="text-center text-gray-300 text-sm max-w-4xl mx-auto pt-12 border-t border-gray-700/30">
         <p>© 2024 Pixel Wisdom. Built with Next.js and Tailwind CSS.</p>
       </footer>
     </div>
