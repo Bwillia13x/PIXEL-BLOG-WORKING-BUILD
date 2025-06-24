@@ -5,6 +5,12 @@
   ],
   "rules": {
     "@next/next/no-html-link-for-pages": "off",
-    "react/no-inline-styles": "off"
+    "react/no-inline-styles": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@next/next/no-img-element": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "react/no-unescaped-entities": "warn"
   }
 }
