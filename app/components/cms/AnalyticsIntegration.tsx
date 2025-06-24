@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useTheme } from '../Providers'
 
 interface AnalyticsEvent {
   id: string
