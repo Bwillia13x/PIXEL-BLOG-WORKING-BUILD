@@ -438,6 +438,7 @@ export default function ImageUploader({
           {images.map((image) => (
             <div key={image.id} className="relative group pixel-border bg-gray-800/60 rounded-lg overflow-hidden">
               <div className="aspect-square relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={image.thumbnail || image.url}
                   alt={image.name}

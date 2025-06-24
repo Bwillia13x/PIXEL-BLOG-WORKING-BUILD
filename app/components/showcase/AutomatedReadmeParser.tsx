@@ -523,6 +523,7 @@ export default function AutomatedReadmeParser({
         if (!showImages) return null
         return (
           <div className="text-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={section.content.match(/!\[.*?\]\((.*?)\)/)?.[1] || ''}
               alt={section.content.match(/!\[(.*?)\]/)?.[1] || ''}
@@ -654,6 +655,7 @@ export default function AutomatedReadmeParser({
       {showBadges && parsedReadme.metadata.badges.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {parsedReadme.metadata.badges.map((badge, index) => (
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               key={index}
               src={badge.image}

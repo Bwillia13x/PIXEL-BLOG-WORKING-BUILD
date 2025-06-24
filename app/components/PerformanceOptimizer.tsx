@@ -131,6 +131,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
           aria-hidden="true"
         >
           {placeholder === 'blur' && blurDataURL ? (
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={blurDataURL}
               alt=""
@@ -156,6 +157,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
       {/* Actual image */}
       {isLoaded && !error && (
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
           alt={alt}
