@@ -1,13 +1,12 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   SwatchIcon,
   EyeIcon,
   CheckIcon,
   XMarkIcon,
-  Cog6ToothIcon,
   PaintBrushIcon,
   DocumentArrowDownIcon,
   DocumentArrowUpIcon,
@@ -273,7 +272,6 @@ export default function ThemeSelector({
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const allThemes = [...availableThemes, ...customThemes]
 
   const handleThemeSelect = (themeId: string) => {
     setTheme(themeId)

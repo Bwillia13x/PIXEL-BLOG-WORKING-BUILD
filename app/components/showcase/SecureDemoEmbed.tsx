@@ -139,7 +139,7 @@ export default function SecureDemoEmbed({
   }
 
   // Validate URL security
-  const validateUrl = (url: string): boolean => {
+  const validateUrl = useCallback((url: string): boolean => {
     try {
       const urlObj = new URL(url)
       
@@ -163,7 +163,7 @@ export default function SecureDemoEmbed({
     } catch {
       return false
     }
-  }
+  }, [demo.security.allowedDomains])
 
   // Handle iframe loading
   const handleIframeLoad = useCallback(() => {
@@ -272,7 +272,7 @@ export default function SecureDemoEmbed({
   }
 
   // Start loading
-  const startLoad = () => {
+  const startLoad = useCallback(() => {
     if (!validateUrl(demo.url)) {
       handleIframeError('Invalid or blocked URL')
       return
@@ -280,7 +280,7 @@ export default function SecureDemoEmbed({
 
     setLoadingState('loading')
     setLoadingProgress(0)
-  }
+  }, [demo.url, handleIframeError, validateUrl])
 
   // Handle interaction tracking
   const handleInteraction = (event: string) => {
@@ -297,7 +297,7 @@ export default function SecureDemoEmbed({
     if (autoPlay && loadingState === 'idle') {
       startLoad()
     }
-  }, [autoPlay])
+  }, [autoPlay, loadingState, startLoad])
 
   const renderLoadingState = () => (
     <div className="flex flex-col items-center justify-center h-full space-y-4">

@@ -13,6 +13,16 @@ import {
 } from './AdvancedCharts';
 
 // Widget types and configurations
+export interface WidgetSettings {
+  metric?: string;
+  unit?: string;
+  showTrend?: boolean;
+  icon?: keyof typeof PixelIconLibrary;
+  color?: string;
+  threshold?: number;
+  format?: string;
+}
+
 export interface WidgetConfig {
   id: string;
   title: string;
@@ -20,7 +30,7 @@ export interface WidgetConfig {
   size: 'small' | 'medium' | 'large' | 'wide';
   position: { x: number; y: number };
   refreshInterval?: number;
-  settings?: Record<string, any>;
+  settings?: WidgetSettings;
 }
 
 export interface DashboardLayout {
@@ -31,8 +41,28 @@ export interface DashboardLayout {
   theme: 'retro' | 'neon' | 'dark';
 }
 
+export interface ActivityItem {
+  id: string | number;
+  description: string;
+  timestamp: string;
+  type?: string;
+  user?: string;
+}
+
+export interface LiveDataMetrics {
+  visitors: number;
+  pageViews: number;
+  bounceRate: number;
+  avgSession: number;
+  conversion: number;
+  serverLoad: number;
+  errorRate: number;
+  responseTime: number;
+  [key: string]: number;
+}
+
 // Live data generator for demo
-const generateLiveData = () => ({
+const generateLiveData = (): LiveDataMetrics => ({
   visitors: Math.floor(Math.random() * 50) + 100,
   pageViews: Math.floor(Math.random() * 200) + 300,
   bounceRate: Math.floor(Math.random() * 30) + 20,
@@ -110,7 +140,7 @@ const MetricWidget = ({
 };
 
 // Real-time activity feed
-const ActivityFeed = ({ activities }: { activities: any[] }) => {
+const ActivityFeed = ({ activities }: { activities: ActivityItem[] }) => {
   return (
     <div className="bg-gray-900 border-2 border-gray-700 p-4 h-full">
       <h3 className="text-sm font-pixel text-white mb-4">LIVE ACTIVITY</h3>
@@ -220,7 +250,7 @@ const WidgetFactory = ({
   onEdit 
 }: {
   config: WidgetConfig;
-  liveData: any;
+  liveData: LiveDataMetrics;
   onRemove: () => void;
   onEdit: () => void;
 }) => {
@@ -232,7 +262,7 @@ const WidgetFactory = ({
         return (
           <MetricWidget
             title={config.title}
-            value={liveData[config.settings?.metric] || 0}
+            value={liveData[config.settings?.metric || ''] || 0}
             unit={config.settings?.unit}
             trend={config.settings?.showTrend ? Math.random() * 10 - 5 : undefined}
             icon={config.settings?.icon}
@@ -507,7 +537,7 @@ const WidgetSelector = ({
                   key={widget.type}
                   onClick={() => {
                     onAddWidget({
-                      type: widget.type as any,
+                      type: widget.type as WidgetConfig['type'],
                       title: widget.name,
                       size: 'medium',
                       position: { x: 0, y: 0 }
@@ -541,9 +571,9 @@ export const RealTimeDashboard = ({
     theme: 'retro',
     widgets: [
       { id: '1', title: 'Visitors', type: 'metric', size: 'small', position: { x: 0, y: 0 }, settings: { metric: 'visitors', icon: 'User', unit: '' } },
-      { id: '2', title: 'Page Views', type: 'metric', size: 'small', position: { x: 1, y: 0 }, settings: { metric: 'pageViews', icon: 'Eye', unit: '' } },
-      { id: '3', title: 'Bounce Rate', type: 'metric', size: 'small', position: { x: 2, y: 0 }, settings: { metric: 'bounceRate', icon: 'TrendingDown', unit: '%' } },
-      { id: '4', title: 'Avg Session', type: 'metric', size: 'small', position: { x: 3, y: 0 }, settings: { metric: 'avgSession', icon: 'Clock', unit: 's' } },
+      { id: '2', title: 'Page Views', type: 'metric', size: 'small', position: { x: 1, y: 0 }, settings: { metric: 'pageViews', icon: 'Search', unit: '' } },
+      { id: '3', title: 'Bounce Rate', type: 'metric', size: 'small', position: { x: 2, y: 0 }, settings: { metric: 'bounceRate', icon: 'ArrowDown', unit: '%' } },
+      { id: '4', title: 'Avg Session', type: 'metric', size: 'small', position: { x: 3, y: 0 }, settings: { metric: 'avgSession', icon: 'Settings', unit: 's' } },
       { id: '5', title: 'Analytics', type: 'chart', size: 'wide', position: { x: 0, y: 1 } },
       { id: '6', title: 'Projects', type: 'progress', size: 'medium', position: { x: 2, y: 1 } },
       { id: '7', title: 'System', type: 'status', size: 'medium', position: { x: 3, y: 1 } },

@@ -170,7 +170,7 @@ export default function ProjectTimelineMilestones({
     })
 
     return filtered
-  }, [project.milestones, filterMode, searchQuery, selectedPhase, sortMode])
+  }, [project.milestones, filterMode, searchQuery, selectedPhase, sortMode, project.phases])
 
   // Calculate project statistics
   const projectStats = useMemo(() => {

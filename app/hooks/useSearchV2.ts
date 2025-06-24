@@ -200,7 +200,7 @@ export function useSearchV2(options: UseSearchV2Options = {}) {
     if (useServerSearch) {
       performServerSearch(0, false)
     }
-  }, [performServerSearch])
+  }, [performServerSearch, useServerSearch])
   
   // Load more results
   const loadMore = useCallback(async () => {

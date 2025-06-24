@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, Variants } from 'framer-motion'
 import { MatrixTextReveal } from '@/app/components/design-system/PixelAnimations'
 
 interface PageHeaderProps {
@@ -29,34 +29,33 @@ export default function PageHeader({
   animationDelay = 300
 }: PageHeaderProps) {
   
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
         duration: 0.6,
-        ease: "easeOut",
         staggerChildren: 0.1
       }
     }
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.4 }
+      transition: { duration: 0.4, ease: "easeOut" }
     }
   }
 
   const renderTitle = () => {
-    const baseClasses = `text-4xl md:text-6xl font-pixel text-green-400 ${titleClassName}`
+    const baseClasses = `text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-pixel text-green-400 ${titleClassName}`
     
     if (!showAnimation) {
       return (
-                  <h1 className={`${baseClasses} pixel-head`}>
+        <h1 className={`${baseClasses} pixel-head`}>
           {prefix && <span className="text-white">{prefix} </span>}
           {title}
         </h1>
@@ -107,7 +106,7 @@ export default function PageHeader({
 
   return (
     <motion.div
-      className={`text-center mb-8 ${className}`}
+      className={`text-center mt-40 sm:mt-44 lg:mt-48 mb-12 sm:mb-16 lg:mb-20 ${className}`}
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -116,7 +115,7 @@ export default function PageHeader({
       
       {subtitle && (
         <motion.p 
-          className={`text-gray-400 font-mono text-sm md:text-base mt-4 ${subtitleClassName}`}
+          className={`text-gray-400 font-mono text-sm sm:text-base md:text-lg mt-6 sm:mt-8 max-w-4xl mx-auto leading-relaxed px-4 ${subtitleClassName}`}
           variants={itemVariants}
         >
           {subtitle}

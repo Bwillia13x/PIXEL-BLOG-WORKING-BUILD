@@ -68,7 +68,7 @@ export interface ThemeConfig {
     author: string
     version: string
     created: string
-    tags: string[]
+    tags: ReadonlyArray<string>
   }
 }
 

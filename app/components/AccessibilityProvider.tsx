@@ -61,7 +61,7 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps) 
     if (typeof window === 'undefined') return
 
     // Ensure main content has proper landmark
-    let main = document.querySelector('main')
+    const main = document.querySelector('main')
     if (!main) {
       // Find likely main content container
       const candidates = [

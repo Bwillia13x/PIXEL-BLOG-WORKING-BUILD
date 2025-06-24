@@ -306,7 +306,7 @@ export function useGitHubStats(githubUrl: string | undefined) {
   const [error, setError] = useState<GitHubError | null>(null)
   const [loading, setLoading] = useState(false)
 
-  const fetchStats = async () => {
+  const fetchStats = React.useCallback(async () => {
     if (!githubUrl) return
 
     setLoading(true)
@@ -325,12 +325,12 @@ export function useGitHubStats(githubUrl: string | undefined) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [githubUrl])
 
   // Fetch on mount and when URL changes
   React.useEffect(() => {
     fetchStats()
-  }, [githubUrl])
+  }, [githubUrl, fetchStats])
 
   return { stats, error, loading, refetch: fetchStats }
 }

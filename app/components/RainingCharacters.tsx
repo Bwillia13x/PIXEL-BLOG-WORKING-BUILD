@@ -15,7 +15,6 @@ interface RainingCharactersProps {
 export default function RainingCharacters({ 
   showTrails = false, 
   intensity = 'low',
-  interactive = false,
   performance = 'auto'
 }: RainingCharactersProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -23,8 +22,6 @@ export default function RainingCharacters({
   const { theme } = useTheme()
   const { reduceMotion } = usePixelTheme()
   
-  // Much more minimal element count - very subtle
-  const elementCount = intensity === 'low' ? 1 : intensity === 'medium' ? 2 : 3
 
   // Minimal pixel noise function - very rare and subtle
   const createPixelNoise = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, density: number = 0.0003) => {
@@ -187,7 +184,7 @@ export default function RainingCharacters({
       }
 
       // Update and draw individual characters with enhanced variations
-      characters.forEach((char, index) => {
+      characters.forEach((char) => {
         // Variable speed with subtle fluctuations
         const speedMultiplier = 0.3 + Math.sin(char.age * 0.001) * 0.1 // Subtle speed variation
         char.y += char.speed * speedMultiplier
@@ -266,7 +263,7 @@ export default function RainingCharacters({
       window.removeEventListener("resize", resizeCanvas)
       cancelAnimationFrame(animationId)
     }
-  }, [intensity, themeState, createPixelNoise, elementCount, reduceMotion])
+  }, [intensity, themeState, createPixelNoise, reduceMotion, showTrails, performance])
 
   return (
     <>

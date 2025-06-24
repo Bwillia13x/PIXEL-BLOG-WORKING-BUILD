@@ -10,7 +10,7 @@ interface WebVitalsMetric {
   timestamp: number
 }
 
-function sendToAnalytics(metric: any) {
+function sendToAnalytics(metric: { name: string; value: number; rating: 'good' | 'needs-improvement' | 'poor' }) {
   const formattedMetric: WebVitalsMetric = {
     name: metric.name,
     value: metric.value,

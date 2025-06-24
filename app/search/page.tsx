@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Suspense } from 'react'
 import SearchBar from '@/app/components/SearchBar'
 import SearchFilters from '@/app/components/SearchFilters'
@@ -51,7 +51,7 @@ function SearchPageContent() {
   })
 
   // Fetch search results
-  const performSearch = async (searchQuery: string, searchFilters = filters) => {
+  const performSearch = useCallback(async (searchQuery: string, searchFilters = filters) => {
     setIsLoading(true)
     try {
       const params = new URLSearchParams()
@@ -81,12 +81,12 @@ function SearchPageContent() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [filters])
 
   // Load initial data and search
   useEffect(() => {
     performSearch(query)
-  }, [])
+  }, [performSearch, query])
 
   // Search when query changes (with debounce)
   useEffect(() => {
@@ -95,12 +95,12 @@ function SearchPageContent() {
     }, 300)
 
     return () => clearTimeout(debounceTimer)
-  }, [query])
+  }, [performSearch, query])
 
   // Search when filters change
   useEffect(() => {
     performSearch(query, filters)
-  }, [filters])
+  }, [performSearch, query, filters])
 
   const quickSearchTerms = [
     'AI', 'Next.js', 'React', 'TypeScript', 'Value Investing',
@@ -116,7 +116,7 @@ function SearchPageContent() {
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-cyan-400/5 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-8">
+      <div className="relative z-10 container mx-auto px-4 pb-8">
         {/* Header */}
         <PageHeader 
           title="Search"
@@ -152,7 +152,7 @@ function SearchPageContent() {
               {isLoading ? (
                 'Searching...'
               ) : (
-                `Found ${totalResults} result${totalResults !== 1 ? 's' : ''}${query ? ` for "${query}"` : ''}`
+                `Found ${totalResults} result${totalResults !== 1 ? 's' : ''}${query ? ` for &quot;${query}&quot;` : ''}`
               )}
             </p>
           </motion.div>
@@ -277,7 +277,7 @@ function SearchPageContent() {
               {/* Recent additions hint */}
               <div className="mt-6 pt-4 border-t border-gray-700">
                 <p className="text-xs text-gray-500 font-mono text-center">
-                  💡 Try searching for recent posts like "Deep Value Screener" or "Quality Score Engine"
+                  💡 Try searching for recent posts like &quot;Deep Value Screener&quot; or &quot;Quality Score Engine&quot;
                 </p>
               </div>
             </div>
@@ -294,7 +294,7 @@ function SearchPageContent() {
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-2xl font-pixel text-green-400 mb-4">No Results Found</h3>
             <p className="text-gray-400 font-mono mb-6">
-              No content matches your search for "{query}".
+              No content matches your search for &quot;{query}&quot;.
             </p>
             <div className="space-y-2 text-sm text-gray-500 font-mono">
               <p>• Check your spelling</p>

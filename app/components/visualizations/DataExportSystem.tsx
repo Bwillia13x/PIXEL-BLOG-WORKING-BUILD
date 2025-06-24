@@ -22,22 +22,60 @@ export interface ExportConfig {
   };
 }
 
+export interface ChartExportData {
+  id: string;
+  title: string;
+  element: HTMLElement;
+  type: 'chart' | 'table' | 'image';
+}
+
+export interface ReportMetadata {
+  generatedAt: Date;
+  generatedBy: string;
+  version: string;
+  description?: string;
+}
+
+export interface AnalyticsData {
+  visitors: number;
+  pageViews: number;
+  bounceRate: number;
+  avgSession: string;
+  [key: string]: string | number;
+}
+
+export interface ProjectData {
+  id: string;
+  name: string;
+  status: string;
+  metrics: Record<string, string | number>;
+}
+
+export interface ComparisonData {
+  items: Array<{
+    name: string;
+    metrics: Record<string, string | number>;
+  }>;
+}
+
+export interface TimelineData {
+  events: Array<{
+    id: string;
+    title: string;
+    date: string;
+    description: string;
+    metrics?: Record<string, string | number>;
+  }>;
+}
+
+export type ExportDataTypes = AnalyticsData | ProjectData[] | ComparisonData | TimelineData | Record<string, string | number | boolean>;
+
 export interface ExportableData {
   title: string;
   type: 'analytics' | 'projects' | 'comparison' | 'timeline';
-  data: any;
-  charts?: {
-    id: string;
-    title: string;
-    element: HTMLElement;
-    type: 'chart' | 'table' | 'image';
-  }[];
-  metadata?: {
-    generatedAt: Date;
-    generatedBy: string;
-    version: string;
-    description?: string;
-  };
+  data: ExportDataTypes;
+  charts?: ChartExportData[];
+  metadata?: ReportMetadata;
 }
 
 // PDF generation utilities (simplified version)
@@ -291,7 +329,7 @@ const generatePDFContent = async (config: ExportConfig, data: ExportableData): P
 };
 
 // CSV export utility
-const generateCSV = (data: any[], filename: string) => {
+const generateCSV = (data: Record<string, string | number | boolean>[], filename: string) => {
   if (!data.length) return;
 
   const headers = Object.keys(data[0]);
@@ -313,7 +351,7 @@ const generateCSV = (data: any[], filename: string) => {
 };
 
 // JSON export utility
-const generateJSON = (data: any, filename: string) => {
+const generateJSON = (data: Record<string, unknown>, filename: string) => {
   const jsonContent = JSON.stringify(data, null, 2);
   downloadFile(jsonContent, filename, 'application/json');
 };
@@ -536,7 +574,7 @@ export const DataExportSystem = ({
           
         case 'csv':
           if (Array.isArray(data.data)) {
-            generateCSV(data.data, `${filename}.csv`);
+            generateCSV(data.data as unknown as Record<string, string | number | boolean>[], `${filename}.csv`);
           }
           break;
           
@@ -623,7 +661,7 @@ export const DataExportSystem = ({
                     ].map((format) => (
                       <button
                         key={format.format}
-                        onClick={() => setConfig({ ...config, format: format.format as any })}
+                        onClick={() => setConfig({ ...config, format: format.format as ExportConfig['format'] })}
                         className={`text-left p-3 border transition-colors ${
                           config.format === format.format
                             ? 'border-retro-green bg-green-500/10'
@@ -647,7 +685,7 @@ export const DataExportSystem = ({
                           key={template.id}
                           template={template}
                           isSelected={config.template === template.id}
-                          onSelect={() => setConfig({ ...config, template: template.id as any })}
+                          onSelect={() => setConfig({ ...config, template: template.id as ExportConfig['template'] })}
                         />
                       ))}
                     </div>

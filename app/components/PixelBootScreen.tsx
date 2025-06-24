@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface PixelBootScreenProps {
@@ -54,7 +54,7 @@ export function PixelBootScreen({ onComplete, soundEnabled = false }: PixelBootS
   const typewriterRef = useRef<HTMLPreElement>(null)
 
   // Sound effects
-  const playBeep = (frequency: number = 800, duration: number = 100) => {
+  const playBeep = useCallback((frequency: number = 800, duration: number = 100) => {
     if (!soundEnabled || !audioContextRef.current) return
     
     const oscillator = audioContextRef.current.createOscillator()
@@ -71,7 +71,7 @@ export function PixelBootScreen({ onComplete, soundEnabled = false }: PixelBootS
     
     oscillator.start()
     oscillator.stop(audioContextRef.current.currentTime + duration / 1000)
-  }
+  }, [soundEnabled])
 
   // Initialize audio context
   useEffect(() => {
@@ -137,7 +137,7 @@ export function PixelBootScreen({ onComplete, soundEnabled = false }: PixelBootS
       }, 1200)
       return () => clearTimeout(timer)
     }
-  }, [phase, bootIndex, onComplete, soundEnabled])
+  }, [phase, bootIndex, onComplete, soundEnabled, playBeep])
 
   // Cursor blinking effect
   useEffect(() => {

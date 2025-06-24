@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ChevronUpIcon, 
@@ -243,7 +243,7 @@ export default function TechBadges({
   className = ""
 }: TechBadgesProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [, ] = useState<string | null>(null)
 
   const visibleTechs = isExpanded ? technologies : technologies.slice(0, maxVisible)
   const hasMore = technologies.length > maxVisible

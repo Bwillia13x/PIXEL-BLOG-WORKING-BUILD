@@ -13,8 +13,7 @@ import {
   StarIcon,
   PlayIcon,
   CodeBracketIcon,
-  ChartBarIcon,
-  EyeIcon
+  ChartBarIcon
 } from '@heroicons/react/24/outline'
 import { Project, CurrentProject } from '@/content/projects'
 import TechBadges from './TechBadges'

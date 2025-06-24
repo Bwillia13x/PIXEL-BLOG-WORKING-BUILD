@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useTheme } from '../Providers'
-import { Post } from '@/app/data/posts'
+import { Post } from '@/app/types/Post'
 import { findRelatedPosts, RelatedPost, RelatedPostsOptions } from '@/app/utils/relatedPosts'
 
 interface ContentVector {
@@ -195,7 +195,7 @@ export default function RelatedPostsEngine({
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [algorithm, setAlgorithm] = useState<'basic' | 'content' | 'ml' | 'hybrid'>('hybrid')
 
-  const analyzer = new ContentAnalyzer()
+  const analyzer = useMemo(() => new ContentAnalyzer(), [])
 
   // Initialize content analysis
   useEffect(() => {
@@ -227,7 +227,7 @@ export default function RelatedPostsEngine({
     }
 
     analyzeContent()
-  }, [allPosts, enableContentAnalysis])
+  }, [allPosts, enableContentAnalysis, analyzer])
 
   // Calculate content similarity using TF-IDF vectors
   const calculateContentSimilarity = useCallback((post1: Post, post2: Post): number => {
@@ -411,7 +411,7 @@ export default function RelatedPostsEngine({
     } else {
       generateRecommendations()
     }
-  }, [currentPost, allPosts, algorithm, generateRecommendations])
+  }, [currentPost, allPosts, algorithm, generateRecommendations, maxResults])
 
   const formatScore = (score: number): string => {
     return (score * 100).toFixed(1) + '%'

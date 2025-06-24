@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Parse and sanitize data
-      let rawData: any = {}
+      let rawData: Record<string, unknown> = {}
       try {
         // Only attempt to parse if content-type indicates JSON and body is present
         const contentType = request.headers.get('content-type') || ''

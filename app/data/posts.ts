@@ -1,15 +1,5 @@
-export interface Post {
-  id: string
-  slug: string
-  title: string
-  category: string
-  date?: string
-  content: string
-  tags?: string[]
-  excerpt?: string
-  readTime?: string
-  published?: boolean
-}
+import { Post } from '@/app/types/Post'
+export type { Post } from '@/app/types/Post'
 
 // Client-side function to fetch posts from API
 export async function fetchPosts(): Promise<Post[]> {

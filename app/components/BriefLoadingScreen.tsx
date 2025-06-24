@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface BriefLoadingScreenProps {
@@ -13,11 +13,11 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
   const [phase, setPhase] = useState<'loading' | 'complete' | 'fadeout'>('loading')
   const [currentText, setCurrentText] = useState('')
 
-  const loadingTexts = [
+  const loadingTexts = useMemo(() => [
     'INITIALIZING...',
     'LOADING PIXEL WISDOM...',
     'SYSTEM READY'
-  ]
+  ], [])
 
   useEffect(() => {
     // Progress animation
@@ -54,7 +54,7 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
       clearInterval(textInterval)
       clearTimeout(completeTimer)
     }
-  }, [duration, onComplete])
+  }, [duration, onComplete, loadingTexts])
 
   return (
     <AnimatePresence>
@@ -62,30 +62,20 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
         initial={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
-        className="fixed top-0 left-0 right-0 bottom-0 z-[99999] bg-black"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          zIndex: 99999,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#000000'
-        }}
+        className="fixed inset-0 z-[9999] bg-black flex items-center justify-center"
+        style={{ opacity: 1 }}
       >
-        <div className="text-center space-y-6 sm:space-y-8 px-4 max-w-md w-full">
+        <div className="text-center space-y-6 sm:space-y-8 px-4">
           {/* Logo/Title */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-green-400 font-pixel text-xl sm:text-2xl md:text-3xl mb-8"
+            className="text-green-400 font-pixel text-xl sm:text-2xl md:text-3xl"
             style={{
               textShadow: '0 0 20px rgba(74, 222, 128, 0.8)',
-              fontFamily: 'var(--font-press-start-2p), monospace'
+              opacity: 0,
+              transform: 'translateY(20px)'
             }}
           >
             PIXEL WISDOM
@@ -98,7 +88,7 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
             transition={{ delay: 0.3, duration: 0.5 }}
             className="w-full max-w-xs mx-auto"
           >
-            <div className="relative h-3 bg-gray-800 border-2 border-green-400/50 overflow-hidden rounded-sm mb-3 loading-progress-bar">
+            <div className="relative h-3 bg-gray-800 border-2 border-green-400/50 overflow-hidden rounded-sm mb-3">
               <motion.div
                 className="h-full bg-gradient-to-r from-green-400 to-green-300"
                 style={{
@@ -134,10 +124,9 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
             {[...Array(3)].map((_, i) => (
               <motion.div
                 key={i}
-                className="w-3 h-3 bg-green-400 rounded-sm pixel-loading-dot"
+                className="w-3 h-3 bg-green-400 rounded-sm"
                 style={{
-                  boxShadow: '0 0 8px rgba(74, 222, 128, 0.6)',
-                  animationDelay: `${i * 0.2}s`
+                  boxShadow: '0 0 8px rgba(74, 222, 128, 0.6)'
                 }}
                 animate={{
                   opacity: [0.3, 1, 0.3],
@@ -165,10 +154,7 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
         </div>
 
         {/* Scanlines Effect */}
-        <div 
-          className="absolute inset-0 pointer-events-none opacity-10 loading-scanlines"
-          style={{ zIndex: 1 }}
-        >
+        <div className="absolute inset-0 pointer-events-none opacity-10">
           <div 
             className="w-full h-full"
             style={{
@@ -184,10 +170,7 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
         </div>
 
         {/* Pixel particles */}
-        <div 
-          className="absolute inset-0 pointer-events-none"
-          style={{ zIndex: 2 }}
-        >
+        <div className="absolute inset-0 pointer-events-none">
           {Array.from({ length: 12 }).map((_, i) => (
             <motion.div
               key={i}
@@ -198,27 +181,17 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
                 boxShadow: '0 0 4px rgba(74, 222, 128, 0.8)'
               }}
               animate={{
-                opacity: [0, 0.8, 0],
-                scale: [0, 1, 0],
+                opacity: [0, 1, 0],
+                scale: [0.5, 1, 0.5]
               }}
               transition={{
                 duration: 2,
-                delay: Math.random() * 2,
                 repeat: Infinity,
-                repeatType: "loop"
+                delay: Math.random() * 2
               }}
             />
           ))}
         </div>
-
-        {/* Matrix-style border effect */}
-        <div 
-          className="absolute inset-4 border border-green-400/30 pointer-events-none"
-          style={{ 
-            zIndex: 3,
-            boxShadow: 'inset 0 0 20px rgba(74, 222, 128, 0.2)'
-          }}
-        />
       </motion.div>
     </AnimatePresence>
   )

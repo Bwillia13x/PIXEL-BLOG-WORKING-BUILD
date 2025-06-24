@@ -1,11 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { MatrixTextReveal } from '@/app/components/design-system/PixelAnimations'
-import ScrollReveal, { PixelReveal, CardReveal } from '@/app/components/ScrollReveal'
-import PageHeader from '@/app/components/PageHeader'
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import dynamic from 'next/dynamic'
 
 interface Post {
   id: string
@@ -22,11 +20,12 @@ interface Post {
   views?: number
 }
 
-interface BlogPageProps {
-  searchParams?: Promise<{ q?: string; category?: string; tag?: string }>
-}
+// interface BlogPageProps {
+//   searchParams?: Promise<{ q?: string; category?: string; tag?: string }>
+// }
 
-
+// Lazy-load PageHeader to reduce initial bundle size and defer heavy Matrix animations
+const PageHeader = dynamic(() => import('@/app/components/PageHeader'), { ssr: false })
 
 // Enhanced search and filter component
 function BlogFilters({ 
@@ -171,7 +170,7 @@ function BlogFilters({
       <div className="flex flex-wrap gap-2">
         {searchTerm && (
           <span className="px-2 py-1 bg-green-600/20 text-green-400 text-xs rounded border border-green-600/30">
-            Search: "{searchTerm}"
+            Search: &quot;{searchTerm}&quot;
           </span>
         )}
         {selectedCategory && selectedCategory !== 'All' && (
@@ -237,16 +236,7 @@ function PostCard({ post, index }: { post: Post; index: number }) {
         
         {/* Post title with strict two-line clipping */}
         <h2 
-          className="text-lg sm:text-xl pixel-head mb-3 text-green-400 group-hover:text-green-300 transition-colors leading-tight"
-          style={{
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            lineHeight: '1.3',
-            minHeight: '2.6em',
-            maxHeight: '2.6em'
-          }}
+          className="text-lg sm:text-xl pixel-head mb-3 text-green-400 group-hover:text-green-300 transition-colors leading-tight line-clamp-2"
         >
           <Link href={`/blog/${post.slug}`} className="hover:underline block">
             {post.title}
@@ -255,14 +245,7 @@ function PostCard({ post, index }: { post: Post; index: number }) {
         
         {/* Post excerpt */}
         <p 
-          className="text-gray-300 font-mono mb-4 leading-relaxed text-sm flex-grow"
-          style={{
-            display: '-webkit-box',
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            lineHeight: '1.6'
-          }}
+          className="text-gray-200 font-mono mb-4 leading-relaxed text-sm flex-grow line-clamp-3"
         >
           {post.excerpt || post.content.substring(0, 120) + '...'}
         </p>
@@ -458,7 +441,7 @@ function FeaturedPost({ post }: { post: Post }) {
       >
         {/* Animated background particles */}
         <div className="absolute inset-0 opacity-30">
-          {[...Array(20)].map((_, i) => (
+          {[...Array(10)].map((_, i) => (
             <motion.div
               key={i}
               className="absolute w-1 h-1 bg-green-400"
@@ -529,7 +512,7 @@ function FeaturedPost({ post }: { post: Post }) {
   )
 }
 
-export default function BlogPage({ searchParams }: BlogPageProps) {
+export default function BlogPage() {
   const [posts, setPosts] = useState<Post[]>([])
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -584,7 +567,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
     <div className="min-h-screen bg-black">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4 py-16">
+        <div className="max-w-6xl mx-auto px-4 pt-8 pb-16">
           <PageHeader 
             title="Blog"
             subtitle="Exploring AI, development, and creative coding through a pixel-perfect lens"

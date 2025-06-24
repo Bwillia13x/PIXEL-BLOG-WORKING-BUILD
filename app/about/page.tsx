@@ -1,12 +1,10 @@
 'use client'
 
-import { MatrixTextReveal } from '@/app/components/design-system/PixelAnimations'
 import ScrollReveal, { PixelReveal, CardReveal, TextReveal } from '@/app/components/ScrollReveal'
 import PixelButton from '@/app/components/PixelButton'
 import TypewriterText from '@/app/components/TypewriterText'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
-import Link from 'next/link'
 import PageHeader from '@/app/components/PageHeader'
 
 interface TechBadgeProps {
@@ -100,7 +98,8 @@ function StatsCounter({ label, value, suffix = '', delay = 0 }: StatsCounterProp
 }
 
 export default function AboutPage() {
-  const [activeSection, setActiveSection] = useState('intro')
+  // Remove unused state variable
+  // const [activeSection, setActiveSection] = useState('intro')
 
   const techStack = [
     { name: 'Next.js', icon: '⚡', level: 5 },
@@ -121,24 +120,23 @@ export default function AboutPage() {
   ]
 
   return (
-    <div className="max-w-5xl mx-auto space-y-12">
+    <div className="max-w-5xl mx-auto space-y-16 pb-8">
       {/* Hero Section */}
       <PixelReveal>
-        <div className="text-center space-y-6">
+        <div className="text-center space-y-8">
           <PageHeader 
             title="About Me"
             subtitle="Full-stack developer passionate about AI-driven development, modern web technologies, and creating pixel-perfect digital experiences."
             animationType="matrix"
             animationSpeed={80}
             titleClassName="text-2xl md:text-3xl lg:text-4xl"
-            subtitleClassName="text-xl font-mono text-gray-300 max-w-3xl mx-auto leading-relaxed"
-            className="mb-0"
+            subtitleClassName="text-lg sm:text-xl font-mono text-gray-300 max-w-3xl mx-auto leading-relaxed"
           />
 
           <ScrollReveal animation="fadeInUp" delay={0.6}>
-            <div className="flex flex-wrap justify-center gap-4 mt-8">
+            <div className="flex flex-wrap justify-center gap-4">
               <PixelButton href="/contact" size="lg" variant="primary" pixelEffect={true}>
-                Let's Connect
+                Let&apos;s Connect
               </PixelButton>
               <PixelButton href="/projects" size="lg" variant="ghost" pixelEffect={true}>
                 View Work
@@ -174,14 +172,14 @@ export default function AboutPage() {
             </h2>
             <div className="space-y-4 font-mono text-gray-300 leading-relaxed">
               <p>
-                Welcome to my digital realm! I'm <span className="text-green-400 font-semibold">Benjamin Williams</span>, 
+                Welcome to my digital realm! I&apos;m <span className="text-green-400 font-semibold">Benjamin Williams</span>, 
                 a developer who loves building things that matter. My journey in tech has been driven by curiosity, 
                 continuous learning, and a desire to build experiences that make a difference.
               </p>
               <p>
                 I specialize in modern web development with a focus on <span className="text-green-400">AI integration</span>, 
-                creating intelligent applications and leveraging AI tools for enhanced productivity. When I'm not coding, 
-                you'll find me exploring new technologies or diving deep into the latest developments in AI and machine learning.
+                creating intelligent applications and leveraging AI tools for enhanced productivity. When I&apos;m not coding, 
+                you&apos;ll find me exploring new technologies or diving deep into the latest developments in AI and machine learning.
               </p>
               <div className="pt-4">
                 <h3 className="text-lg font-pixel text-green-400 mb-3">Current Focus</h3>
@@ -292,7 +290,7 @@ export default function AboutPage() {
               <div className="p-4 bg-gray-900/60 rounded-lg border border-gray-700/50">
                 <h3 className="font-pixel text-green-400 text-sm mb-2">🎨 Pixel Perfect Design</h3>
                 <p className="text-sm font-mono text-gray-300">
-                  Attention to detail matters, whether it's in code architecture or visual design aesthetics.
+                  Attention to detail matters, whether it&apos;s in code architecture or visual design aesthetics.
                 </p>
               </div>
               <div className="p-4 bg-gray-900/60 rounded-lg border border-gray-700/50">
@@ -310,7 +308,7 @@ export default function AboutPage() {
       <TextReveal delay={0.5}>
         <div className="text-center p-8 bg-gradient-to-r from-gray-900/60 via-gray-800/60 to-gray-900/60 rounded-lg border border-green-400/20">
           <blockquote className="text-xl font-mono text-gray-300 italic mb-4">
-            "In a world of infinite possibilities, every pixel counts."
+            &quot;In a world of infinite possibilities, every pixel counts.&quot;
           </blockquote>
           <div className="text-sm font-pixel text-green-400">— Benjamin Williams</div>
         </div>
@@ -319,10 +317,10 @@ export default function AboutPage() {
       {/* CTA Section */}
       <CardReveal delay={0.6}>
         <div className="bg-gradient-to-br from-green-400/10 via-transparent to-green-400/5 rounded-lg p-8 border border-green-400/30 text-center">
-          <h2 className="text-2xl pixel-head mb-4 text-green-400">Let's Build Something Amazing</h2>
+          <h2 className="text-2xl pixel-head mb-4 text-green-400">Let&apos;s Build Something Amazing</h2>
           <p className="font-mono text-gray-300 mb-6 max-w-2xl mx-auto">
-            I'm always interested in connecting with fellow developers, sharing ideas, and collaborating on interesting projects. 
-            Whether you want to discuss the latest in AI development or just chat about tech, I'd love to hear from you!
+            I&apos;m always interested in connecting with fellow developers, sharing ideas, and collaborating on interesting projects. 
+            Whether you want to discuss the latest in AI development or just chat about tech, I&apos;d love to hear from you!
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <PixelButton href="/contact" size="lg" variant="primary" pixelEffect={true}>

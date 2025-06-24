@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { useTheme } from '../Providers'
 
 interface Category {
@@ -446,10 +446,8 @@ export default function CategoryManager({
   className = '',
   maxDepth = 3
 }: CategoryManagerProps) {
-  const { theme } = useTheme()
-  const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES)
+  const [categories] = useState<Category[]>(DEFAULT_CATEGORIES)
   const [searchQuery, setSearchQuery] = useState('')
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
   const [viewMode, setViewMode] = useState<'tree' | 'flat'>('tree')
 
   // Filter categories based on search
@@ -633,7 +631,7 @@ export default function CategoryManager({
         {searchQuery && filteredCategories().length === 0 && (
           <div className="text-center py-8 text-gray-500">
             <div className="text-2xl mb-2">🔍</div>
-            <div className="font-mono text-sm">No categories found for "{searchQuery}"</div>
+            <div className="font-mono text-sm">No categories found for &quot;{searchQuery}&quot;</div>
           </div>
         )}
       </div>

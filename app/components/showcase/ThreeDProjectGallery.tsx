@@ -147,11 +147,14 @@ export default function ThreeDProjectGallery({
     initThreeJS()
 
     return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
+      const animationFrame = animationFrameRef.current
+      const renderer = rendererRef.current
+      
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame)
       }
-      if (rendererRef.current) {
-        rendererRef.current.dispose()
+      if (renderer) {
+        renderer.dispose()
       }
     }
   }, [viewMode])
@@ -338,13 +341,15 @@ export default function ThreeDProjectGallery({
     canvasRef.current.addEventListener('wheel', handleWheel, { passive: false })
 
     return () => {
-      if (canvasRef.current) {
-        canvasRef.current.removeEventListener('mousemove', handleMouseMove)
-        canvasRef.current.removeEventListener('click', handleClick)
-        canvasRef.current.removeEventListener('wheel', handleWheel)
+      const canvas = canvasRef.current
+      
+      if (canvas) {
+        canvas.removeEventListener('mousemove', handleMouseMove)
+        canvas.removeEventListener('click', handleClick)
+        canvas.removeEventListener('wheel', handleWheel)
       }
     }
-  }, [filteredProjects, onProjectSelect, onProjectHover, viewMode])
+  }, [filteredProjects, onProjectSelect, onProjectHover, viewMode, cameraControls.zoom])
 
   // Handle window resize
   useEffect(() => {

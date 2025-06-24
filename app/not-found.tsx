@@ -139,7 +139,7 @@ export default function NotFound() {
 
         <ScrollReveal animation="fadeInUp" delay={1.2}>
           <p className="text-gray-400 text-sm mb-8 font-mono">
-            [ROBOT.EXE] "I searched everywhere, but this page seems to have been deleted by a rogue semicolon."
+            [ROBOT.EXE] &quot;I searched everywhere, but this page seems to have been deleted by a rogue semicolon.&quot;
           </p>
         </ScrollReveal>
 

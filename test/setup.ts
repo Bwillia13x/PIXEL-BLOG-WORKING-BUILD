@@ -128,6 +128,16 @@ vi.mock('next-themes', () => ({
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
 }))
 
+// Mock next/font/google
+vi.mock('next/font/google', () => {
+  const mockFn = () => ({ className: 'mock-font', variable: '--mock-font' })
+  return {
+    Press_Start_2P: () => mockFn,
+    JetBrains_Mono: () => mockFn,
+    Inter: () => mockFn,
+  }
+})
+
 // Clean up after each test
 afterEach(() => {
   vi.clearAllMocks()

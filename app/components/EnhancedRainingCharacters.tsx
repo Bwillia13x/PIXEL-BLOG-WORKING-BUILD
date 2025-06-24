@@ -138,7 +138,7 @@ export default function EnhancedRainingCharacters({
       }
 
       // Update and draw rain drops
-      rainDrops.forEach((drop, index) => {
+      rainDrops.forEach((drop) => {
         // Enhanced physics
         drop.life += deltaTime
         drop.glitchTimer += deltaTime

@@ -6,7 +6,11 @@ import { usePathname } from 'next/navigation'
 import { siteConfig } from '@/lib/site-config'
 import { WebSiteStructuredData, PersonStructuredData } from './StructuredData'
 import WebVitalsMonitor from './WebVitalsMonitor'
-import type { SEOData } from '../utils/seo'
+
+interface WindowWithGtag extends Window {
+  gtag?: (...args: unknown[]) => void
+  dataLayer?: unknown[]
+}
 
 interface SEOLayoutProps {
   children: React.ReactNode
@@ -74,7 +78,7 @@ function initializePerformanceMonitoring() {
       if ('gtag' in window) {
         Object.entries(metrics).forEach(([key, value]) => {
           if (value > 0) {
-            ;(window as any).gtag('event', 'timing_complete', {
+            ;(window as WindowWithGtag).gtag?.('event', 'timing_complete', {
               name: key,
               value: Math.round(value)
             })
@@ -100,7 +104,7 @@ function initializePerformanceMonitoring() {
 
   try {
     observer.observe({ entryTypes: ['resource'] })
-  } catch (error) {
+  } catch {
     console.warn('PerformanceObserver not supported')
   }
 }
@@ -116,11 +120,12 @@ function initializeAnalytics() {
     script.async = true
     document.head.appendChild(script)
 
-    ;(window as any).dataLayer = (window as any).dataLayer || []
-    function gtag(...args: any[]) {
-      ;(window as any).dataLayer.push(args)
+    const w = window as WindowWithGtag
+    w.dataLayer = w.dataLayer || []
+    function gtag(...args: unknown[]) {
+      ;(window as WindowWithGtag).dataLayer?.push(args)
     }
-    ;(window as any).gtag = gtag
+    ;(window as WindowWithGtag).gtag = gtag
 
     gtag('js', new Date())
     gtag('config', process.env.NEXT_PUBLIC_GA_ID, {
@@ -130,7 +135,7 @@ function initializeAnalytics() {
   }
 
   // Custom analytics
-  const sendAnalytics = (event: string, data: any) => {
+  const sendAnalytics = (event: string, data: Record<string, unknown>) => {
     fetch('/api/analytics', {
       method: 'POST',
       headers: {
@@ -143,8 +148,8 @@ function initializeAnalytics() {
         url: window.location.href,
         userAgent: navigator.userAgent
       })
-    }).catch(error => {
-      console.warn('Analytics error:', error)
+    }).catch(() => {
+      console.warn('Analytics error')
     })
   }
 
@@ -287,7 +292,7 @@ function usePageTracking() {
   React.useEffect(() => {
     // Track page views
     if (typeof window !== 'undefined' && 'gtag' in window) {
-      ;(window as any).gtag('config', process.env.NEXT_PUBLIC_GA_ID, {
+      ;(window as WindowWithGtag).gtag?.('config', process.env.NEXT_PUBLIC_GA_ID, {
         page_path: pathname,
       })
     }

@@ -24,7 +24,7 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onLogin }) => {
       if (!success) {
         setError('Invalid credentials. Please try again.')
       }
-    } catch (err) {
+    } catch {
       setError('Authentication failed. Please try again.')
     } finally {
       setIsLoading(false)

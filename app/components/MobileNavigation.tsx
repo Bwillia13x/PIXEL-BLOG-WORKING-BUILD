@@ -8,9 +8,6 @@ import { usePathname } from 'next/navigation'
 import ThemeToggle from './ThemeToggle'
 import QuickSearch from './QuickSearch'
 
-interface MobileNavigationProps {
-  className?: string
-}
 
 interface NavItem {
   href: string
@@ -27,7 +24,7 @@ const navigationItems: NavItem[] = [
   { href: '/contact', label: 'Contact', icon: Mail, description: 'Get in touch' },
 ]
 
-export default function MobileNavigation({ className = '' }: MobileNavigationProps) {
+export default function MobileNavigation(): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [focusedIndex, setFocusedIndex] = useState(-1)

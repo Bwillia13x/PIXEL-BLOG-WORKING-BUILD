@@ -200,7 +200,7 @@ export default function SocialShare({
       if (!ticking) {
         requestAnimationFrame(() => {
           const currentScrollY = window.scrollY
-          const scrollDirection = currentScrollY > (handleScroll as any).lastScrollY ? 'down' : 'up'
+          const scrollDirection = currentScrollY > (handleScroll as typeof handleScroll & {lastScrollY: number}).lastScrollY ? 'down' : 'up'
           
           if (scrollDirection === 'down' && currentScrollY > 200) {
             setIsVisible(false)
@@ -209,7 +209,7 @@ export default function SocialShare({
             setIsVisible(true)
           }
           
-          (handleScroll as any).lastScrollY = currentScrollY
+          (handleScroll as typeof handleScroll & {lastScrollY: number}).lastScrollY = currentScrollY
           ticking = false
         })
         ticking = true

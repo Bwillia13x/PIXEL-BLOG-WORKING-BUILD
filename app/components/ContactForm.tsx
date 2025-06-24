@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence, useAnimation } from 'framer-motion'
+import { useState, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Check, Send, AlertCircle, Mail, Sparkles } from 'lucide-react'
-import PixelLoading from './PixelLoading'
 import PixelButton from './PixelButton'
 import { useAccessibilityContext, useTouchFeedback } from './AccessibilityProvider'
 
@@ -11,11 +10,6 @@ interface ContactFormProps {
   className?: string
 }
 
-interface FormErrors {
-  name?: string
-  email?: string
-  message?: string
-}
 
 interface FormField {
   value: string
@@ -44,7 +38,6 @@ export default function ContactForm({ className }: ContactFormProps) {
   const [focusedField, setFocusedField] = useState<string | null>(null)
   
   const formRef = useRef<HTMLFormElement>(null)
-  const successControls = useAnimation()
   const { announce } = useAccessibilityContext()
   const { provideTouchFeedback } = useTouchFeedback()
 
@@ -407,7 +400,7 @@ export default function ContactForm({ className }: ContactFormProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              Thank you for reaching out! I'll get back to you as soon as possible.
+              Thank you for reaching out! I&apos;ll get back to you as soon as possible.
             </motion.p>
             
             {/* Pixel celebration effect */}
@@ -470,7 +463,7 @@ export default function ContactForm({ className }: ContactFormProps) {
             <EnhancedInput
               fieldName="subject"
               type="text"
-              placeholder="What's this about?"
+              placeholder="What&apos;s this about?"
               label="Subject"
             />
             
@@ -515,7 +508,7 @@ export default function ContactForm({ className }: ContactFormProps) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          * Your message will be sent directly. If there's an issue, we'll fall back to email.
+          * Your message will be sent directly. If there&apos;s an issue, we&apos;ll fall back to email.
         </motion.p>
       )}
     </motion.div>

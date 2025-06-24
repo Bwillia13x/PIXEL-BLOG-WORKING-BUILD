@@ -1,17 +1,14 @@
 "use client"
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Palette, 
-  Sun, 
-  Moon, 
-  Contrast, 
+ 
   Calendar,
   Leaf,
   Snowflake,
   Flower,
-  TreePine,
   Check,
   ChevronDown,
   Accessibility,
@@ -93,7 +90,6 @@ export default function EnhancedThemeToggle() {
     setSeasonalMode,
     isHighContrast,
     setHighContrast,
-    availableThemes,
     themeTransition
   } = useEnhancedTheme()
   
@@ -125,6 +121,20 @@ export default function EnhancedThemeToggle() {
     }
   }, [isOpen])
 
+  const handleOptionSelect = useCallback((index: number) => {
+    if (index < themeOptions.length) {
+      const option = themeOptions[index]
+      setTheme(option.id)
+      announce(`Theme changed to ${option.name}`, 'polite')
+    } else if (index === themeOptions.length) {
+      setSeasonalMode(!isSeasonalMode)
+      announce(`Seasonal mode ${!isSeasonalMode ? 'enabled' : 'disabled'}`, 'polite')
+    } else if (index === themeOptions.length + 1) {
+      setHighContrast(!isHighContrast)
+      announce(`High contrast mode ${!isHighContrast ? 'enabled' : 'disabled'}`, 'polite')
+    }
+  }, [setTheme, announce, isSeasonalMode, setSeasonalMode, isHighContrast, setHighContrast])
+
   // Arrow key navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -151,21 +161,7 @@ export default function EnhancedThemeToggle() {
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, focusedIndex])
-
-  const handleOptionSelect = (index: number) => {
-    if (index < themeOptions.length) {
-      const option = themeOptions[index]
-      setTheme(option.id)
-      announce(`Theme changed to ${option.name}`, 'polite')
-    } else if (index === themeOptions.length) {
-      setSeasonalMode(!isSeasonalMode)
-      announce(`Seasonal mode ${!isSeasonalMode ? 'enabled' : 'disabled'}`, 'polite')
-    } else if (index === themeOptions.length + 1) {
-      setHighContrast(!isHighContrast)
-      announce(`High contrast mode ${!isHighContrast ? 'enabled' : 'disabled'}`, 'polite')
-    }
-  }
+  }, [isOpen, focusedIndex, handleOptionSelect])
 
   const currentThemeOption = themeOptions.find(option => option.id === currentTheme) || themeOptions[0]
 
@@ -347,8 +343,8 @@ export default function EnhancedThemeToggle() {
                   } ${
                     focusedIndex === themeOptions.length ? 'ring-2 ring-green-400 bg-gray-800/60' : ''
                   }`}
-                  role="menuitem"
-                  aria-pressed={isSeasonalMode}
+                  role="menuitemcheckbox"
+                  aria-checked={isSeasonalMode}
                 >
                   <div className="w-5 h-5 rounded-none border border-yellow-400/50 bg-yellow-400/20 flex items-center justify-center">
                     <Calendar className="w-3 h-3 text-yellow-400" />
@@ -380,8 +376,8 @@ export default function EnhancedThemeToggle() {
                   } ${
                     focusedIndex === themeOptions.length + 1 ? 'ring-2 ring-green-400 bg-gray-800/60' : ''
                   }`}
-                  role="menuitem"
-                  aria-pressed={isHighContrast}
+                  role="menuitemcheckbox"
+                  aria-checked={isHighContrast}
                 >
                   <div className="w-5 h-5 rounded-none border border-white/50 bg-white/20 flex items-center justify-center">
                     <Accessibility className="w-3 h-3 text-white" />

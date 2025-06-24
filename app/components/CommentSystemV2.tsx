@@ -288,7 +288,7 @@ function CommentItem({
         {showReplyForm && (
           <div className="mt-4">
             <CommentForm
-              onSubmit={async (data) => {
+              onSubmit={async () => {
                 await onReply(comment.id)
                 setShowReplyForm(false)
               }}
@@ -335,7 +335,6 @@ export default function CommentSystemV2({
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState<string | null>(null)
-  const [replyingTo, setReplyingTo] = useState<string | null>(null)
 
   const handleSubmitComment = async (data: CommentFormData) => {
     setIsSubmitting(true)
@@ -350,7 +349,7 @@ export default function CommentSystemV2({
       } else {
         setSubmitMessage(result.error || 'Failed to submit comment')
       }
-    } catch (error) {
+    } catch {
       setSubmitMessage('An unexpected error occurred')
     } finally {
       setIsSubmitting(false)
@@ -358,7 +357,8 @@ export default function CommentSystemV2({
   }
 
   const handleReply = async (parentId: string) => {
-    setReplyingTo(parentId)
+    // Handle reply functionality - for now just log the parentId
+    console.log('Replying to comment:', parentId)
   }
 
   if (!enabled) {
@@ -468,7 +468,7 @@ export default function CommentSystemV2({
               No comments yet
             </h4>
             <p className="text-gray-500">
-              Be the first to share your thoughts on "{postTitle}"
+              Be the first to share your thoughts on &quot;{postTitle}&quot;
             </p>
           </div>
         )}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { useTheme } from '../Providers'
 
 interface RichTextEditorProps {
@@ -167,7 +167,7 @@ export default function RichTextEditor({
     }, 0)
   }, [state.content, updateContent])
 
-  const commands: EditorCommand[] = [
+  const commands: EditorCommand[] = useMemo(() => [
     {
       name: 'bold',
       icon: 'B',
@@ -218,7 +218,7 @@ export default function RichTextEditor({
       action: () => insertText('```\n', '\n```', 'code block'),
       tooltip: 'Code Block'
     }
-  ]
+  ], [insertText])
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     // Handle shortcuts
@@ -277,7 +277,7 @@ export default function RichTextEditor({
         textarea.setSelectionRange(start + 2, start + 2)
       }, 0)
     }
-  }, [commands, state.history, state.historyIndex, updateContent, onSave])
+  }, [commands, state.history, state.historyIndex, state.content, updateContent, onSave])
 
   return (
     <div className={`pixel-border bg-gray-900/80 backdrop-blur-sm rounded-lg overflow-hidden ${className}`}>

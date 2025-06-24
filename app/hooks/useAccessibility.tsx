@@ -131,8 +131,15 @@ export function useAccessibility(options: AccessibilityOptions = {}) {
 
     // Clean up after announcement
     setTimeout(() => {
-      if (announcementRef.current && announcement.parentNode) {
-        announcementRef.current.removeChild(announcement)
+      try {
+        if (announcementRef.current && 
+            announcement && 
+            announcement.parentNode === announcementRef.current) {
+          announcementRef.current.removeChild(announcement)
+        }
+      } catch (error) {
+        // Element may have already been removed, ignore error
+        console.debug('Announcement cleanup handled gracefully')
       }
       setState(prev => ({
         ...prev,

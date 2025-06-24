@@ -63,10 +63,14 @@ async function sendEmail(data: z.infer<typeof contactSchema>) {
 export async function POST(request: NextRequest) {
   try {
     const headersList = await headers()
-    const ip = headersList.get('x-forwarded-for') || 
-               headersList.get('x-real-ip') || 
-               request.ip || 
-               '127.0.0.1'
+    // Attempt to extract client IP from standard proxy headers
+    const forwardedFor = headersList.get('x-forwarded-for') || request.headers.get('x-forwarded-for')
+    const realIp = headersList.get('x-real-ip') || request.headers.get('x-real-ip')
+
+    const ip =
+      (forwardedFor ? forwardedFor.split(',')[0].trim() : undefined) ||
+      (realIp ? realIp.trim() : undefined) ||
+      '127.0.0.1'
     
     // Rate limiting
     const rateLimitKey = getRateLimitKey(ip)

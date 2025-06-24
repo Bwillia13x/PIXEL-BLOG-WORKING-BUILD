@@ -9,7 +9,6 @@ import {
   ArrowsPointingInIcon,
   ExclamationTriangleIcon,
   PlayIcon,
-  PauseIcon
 } from '@heroicons/react/24/outline'
 import { Project, CurrentProject } from '@/content/projects'
 
@@ -165,7 +164,7 @@ function ErrorState({
             Demo Unavailable
           </h3>
           <p className="font-mono text-sm text-gray-400 mb-6">
-            The demo couldn't be loaded. This might be due to network issues 
+            The demo couldn&apos;t be loaded. This might be due to network issues 
             or the demo server being temporarily unavailable.
           </p>
           
@@ -227,7 +226,7 @@ export default function DemoOverlay({
       setIsFullscreen(false)
       setRetryKey(prev => prev + 1)
     }
-  }, [project?.id])
+  }, [project])
 
   // Handle iframe load events
   const handleIframeLoad = () => {

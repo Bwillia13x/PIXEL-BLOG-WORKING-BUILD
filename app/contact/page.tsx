@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="max-w-3xl mx-auto relative">
+    <div className="max-w-3xl mx-auto relative pb-8">
       {/* Parallax Background */}
       <CircuitParallax intensity="subtle" />
       
@@ -22,11 +22,10 @@ export default function ContactPage() {
         subtitle="Whether you have a project idea, want to collaborate, or just want to chat about tech - I'd love to hear from you!"
         animationType="matrix"
         animationSpeed={75}
-        titleClassName="text-2xl md:text-3xl lg:text-4xl"
         subtitleClassName="font-readable text-lg text-gray-300"
       />
 
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid md:grid-cols-2 gap-8 mb-12">
         {/* Contact Info */}
         <div className="bg-gray-800 rounded-lg p-6 border border-green-400/20 hover:border-green-400/40 transition-all duration-300">
           <h2 className="text-xl font-pixel mb-6 text-green-400">Let&apos;s Connect</h2>

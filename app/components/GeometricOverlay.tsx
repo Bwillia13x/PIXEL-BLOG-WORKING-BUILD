@@ -25,7 +25,6 @@ export const GeometricOverlay: React.FC<GeometricOverlayProps> = ({
   pattern = 'grid',
   intensity = 'subtle',
   animated = true,
-  responsive = true,
   mouseInteraction = false
 }) => {
   const { theme } = useTheme()
@@ -191,7 +190,7 @@ export const GeometricOverlay: React.FC<GeometricOverlayProps> = ({
     resizeCanvas()
     window.addEventListener('resize', resizeCanvas)
 
-    let startTime = Date.now()
+    const startTime = Date.now()
 
     const animate = () => {
       if (!ctx) return

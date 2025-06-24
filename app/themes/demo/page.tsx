@@ -292,7 +292,7 @@ export default function ThemeDemoPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-6 pb-8">
         {/* Current Theme Info */}
         <motion.div
           key={currentTheme.id}

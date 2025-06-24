@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PixelIconLibrary } from '../design-system/PixelIcons';
 import { PixelButton, PixelCard } from '../design-system/PixelMicroInteractions';
@@ -225,14 +225,18 @@ const MetricsComparison = ({
   selectedMetrics: string[];
 }) => {
   const chartData = selectedMetrics.map(metric => {
-    const dataPoint: any = { name: metric.replace(/([A-Z])/g, ' $1').trim() };
-    projects.forEach(project => {
+    const metricName = metric.replace(/([A-Z])/g, ' $1').trim();
+    const totalValue = projects.reduce((sum, project) => {
       const value = project.metrics[metric as keyof typeof project.metrics] || 
                    project.business[metric as keyof typeof project.business] ||
                    0;
-      dataPoint[project.title] = value;
-    });
-    return dataPoint;
+      return sum + (typeof value === 'number' ? value : 0);
+    }, 0);
+    
+    return {
+      name: metricName,
+      value: totalValue
+    };
   });
 
   return (
@@ -296,9 +300,10 @@ const TechStackComparison = ({ projects }: { projects: ComparisonProject[] }) =>
 // Performance vs Complexity scatter plot
 const PerformanceComplexityChart = ({ projects }: { projects: ComparisonProject[] }) => {
   const scatterData = projects.map(project => ({
+    name: project.title,
+    value: project.metrics.performance * project.business.complexity,
     x: project.metrics.performance,
     y: project.business.complexity,
-    name: project.title,
     color: project.color
   }));
 
@@ -322,11 +327,11 @@ const ComparisonTable = ({
   projects: ComparisonProject[];
   visibleColumns: string[];
 }) => {
-  const getValueByPath = (obj: any, path: string) => {
-    return path.split('.').reduce((current, key) => current?.[key], obj);
+  const getValueByPath = (obj: Record<string, unknown>, path: string): unknown => {
+    return path.split('.').reduce((current: any, key: string) => current?.[key], obj);
   };
 
-  const formatValue = (value: any, column: string) => {
+  const formatValue = (value: unknown, column: string): React.ReactNode => {
     if (typeof value === 'number') {
       if (column.includes('budget') || column.includes('roi')) {
         return `$${value.toLocaleString()}`;
@@ -339,7 +344,10 @@ const ComparisonTable = ({
     if (Array.isArray(value)) {
       return value.slice(0, 3).join(', ') + (value.length > 3 ? '...' : '');
     }
-    return value || 'N/A';
+    if (typeof value === 'string') {
+      return value;
+    }
+    return 'N/A';
   };
 
   return (
@@ -374,7 +382,7 @@ const ComparisonTable = ({
                 </td>
                 {projects.map(project => (
                   <td key={project.id} className="p-3 text-white border-r border-gray-700">
-                    {formatValue(getValueByPath(project, column), column)}
+                    {formatValue(getValueByPath(project as unknown as Record<string, unknown>, column), column)}
                   </td>
                 ))}
               </motion.tr>

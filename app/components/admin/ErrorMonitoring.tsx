@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ExclamationTriangleIcon,
@@ -201,7 +201,7 @@ export default function ErrorMonitoring() {
 
   const errorHandler = getErrorHandler()
 
-  const refreshData = () => {
+  const refreshData = useCallback(() => {
     setIsLoading(true)
     try {
       const recentErrors = errorHandler.getRecentErrors(50)
@@ -214,7 +214,7 @@ export default function ErrorMonitoring() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [errorHandler])
 
   const clearAllErrors = () => {
     if (confirm('Are you sure you want to clear all error data? This action cannot be undone.')) {
@@ -229,7 +229,7 @@ export default function ErrorMonitoring() {
     
     const interval = setInterval(refreshData, 10000) // Refresh every 10 seconds
     return () => clearInterval(interval)
-  }, [])
+  }, [refreshData])
 
   // Filter errors
   const filteredErrors = errors.filter(error => {

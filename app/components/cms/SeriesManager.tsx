@@ -403,7 +403,7 @@ export default function SeriesManager({
             </button>
           </div>
           <div className="text-sm text-gray-400 font-mono">
-            Post will be part of "{currentSeriesData.title}" series
+            Post will be part of &quot;{currentSeriesData.title}&quot; series
           </div>
         </div>
       )}
@@ -499,7 +499,7 @@ export default function SeriesManager({
             <div className="text-center py-8 text-gray-500">
               <div className="text-4xl mb-4">📚</div>
               <div className="font-mono">
-                {searchQuery ? `No series found for "${searchQuery}"` : 'No series created yet'}
+                {searchQuery ? `No series found for &quot;${searchQuery}&quot;` : 'No series created yet'}
               </div>
             </div>
           )}
@@ -555,7 +555,7 @@ export default function SeriesManager({
             <div className="text-center py-8 text-gray-500">
               <div className="text-4xl mb-4">📂</div>
               <div className="font-mono">
-                {searchQuery ? `No collections found for "${searchQuery}"` : 'No collections created yet'}
+                {searchQuery ? `No collections found for &quot;${searchQuery}&quot;` : 'No collections created yet'}
               </div>
             </div>
           )}

@@ -33,7 +33,12 @@ export interface ChartDataPoint {
   value: number;
   category?: string;
   color?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean>;
+  x?: number;
+  y?: number;
+  label?: string;
+  animatedValue?: number;
+  prediction?: number;
 }
 
 export interface TimeSeriesDataPoint {
@@ -46,18 +51,72 @@ export interface TimeSeriesDataPoint {
 
 export interface MultiSeriesDataPoint {
   name: string;
-  [key: string]: any;
+  [key: string]: string | number | boolean | undefined;
+}
+
+export interface ChartSeries {
+  id: string;
+  name: string;
+  data: ChartDataPoint[];
+  color: string;
+}
+
+export interface PieSegment {
+  label: string;
+  value: number;
+  color: string;
+  percentage?: number;
+}
+
+export interface ChartConfig {
+  width: number;
+  height: number;
+  margins: {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
+  colors: string[];
+}
+
+export interface TooltipPayload {
+  color?: string;
+  name?: string;
+  value?: string | number;
+  dataKey?: string;
+  payload?: ChartDataPoint;
+}
+
+export interface PixelTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayload[];
+  label?: string;
+  theme?: 'retro' | 'neon' | 'dark' | 'light';
+}
+
+export interface TreemapContentProps {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  index?: number;
+  name?: string;
+  value?: number;
 }
 
 // Advanced chart props
 interface AdvancedChartProps {
-  data: any[];
+  data: ChartDataPoint[];
   width?: number;
   height?: number;
   theme?: 'retro' | 'neon' | 'dark' | 'light';
   animated?: boolean;
   interactive?: boolean;
   className?: string;
+  onHover?: (data: ChartDataPoint) => void;
+  onClick?: (data: ChartDataPoint) => void;
+  onSelect?: (series: ChartSeries) => void;
 }
 
 // Retro pixel color palette
@@ -88,7 +147,7 @@ const NEON_COLORS = [
 ];
 
 // Custom tooltip component
-const PixelTooltip = ({ active, payload, label, theme = 'retro' }: any) => {
+const PixelTooltip = ({ active, payload, label, theme = 'retro' }: PixelTooltipProps) => {
   if (!active || !payload || !payload.length) return null;
 
   const bgColor = theme === 'retro' ? '#0a0a0a' : '#1a1a2e';
@@ -106,7 +165,7 @@ const PixelTooltip = ({ active, payload, label, theme = 'retro' }: any) => {
       }}
     >
       <p className="text-white font-pixel text-sm mb-2">{label}</p>
-      {payload.map((entry: any, index: number) => (
+      {payload.map((entry: TooltipPayload, index: number) => (
         <div key={index} className="flex items-center gap-2 text-xs">
           <div
             className="w-3 h-3"
@@ -354,8 +413,13 @@ export const TechTreemap = ({
 }: AdvancedChartProps) => {
   const colors = theme === 'retro' ? RETRO_COLORS : NEON_COLORS;
 
-  const CustomizedContent = (props: any) => {
+  const CustomizedContent = (props: TreemapContentProps) => {
     const { x, y, width, height, index, name, value } = props;
+    
+    // Guard against undefined values
+    if (x == null || y == null || width == null || height == null || index == null) {
+      return null;
+    }
     
     return (
       <g>

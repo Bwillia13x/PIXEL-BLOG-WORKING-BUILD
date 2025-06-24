@@ -21,7 +21,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   }
 
   return (
-    <div>
+    <div className="pb-8">
       <h2 className="text-2xl font-pixel mb-6">{category} Posts</h2>
       <div className="grid gap-6">
         {categoryPosts.map((post) => (

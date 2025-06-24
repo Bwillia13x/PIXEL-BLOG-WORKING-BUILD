@@ -9,6 +9,10 @@ interface SearchResult {
   type: 'post' | 'project'
   category?: string
   tags: string[]
+  description?: string
+  year?: number
+  demo?: string
+  github?: string
   date?: string
   slug: string
   excerpt?: string
@@ -104,14 +108,14 @@ function SearchResultItem({ item }: SearchResultItemProps) {
                 item.status === 'in-progress' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50' :
                 'bg-gray-500/20 text-gray-400 border-gray-500/50'}
             `}>
-              {item.status.replace('-', ' ').toUpperCase()}
+              {item.status?.replace('-', ' ').toUpperCase()}
             </div>
           )}
         </div>
 
         {/* Content Preview */}
         {(('content' in item && item.content) || ('description' in item && item.description)) && (() => {
-          const content = 'content' in item ? item.content : 'description' in item ? item.description : ''
+          const content = item.content || item.description || ''
           return (
             <div className="text-sm text-gray-300 leading-relaxed">
               <p 
@@ -266,7 +270,7 @@ export default function SearchResults({ results, isLoading, query }: SearchResul
     <div className="space-y-4">
       <div className="text-sm text-gray-400 font-mono">
         {results.length} result{results.length !== 1 ? 's' : ''} found
-        {query && <span> for "{query}"</span>}
+        {query && <span> for &quot;{query}&quot;</span>}
       </div>
       
       {results.map((item, index) => (

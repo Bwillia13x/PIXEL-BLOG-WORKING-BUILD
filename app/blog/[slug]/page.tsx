@@ -4,7 +4,7 @@ import Link from 'next/link'
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import { Post } from '@/app/data/posts'
+import { Post } from '@/app/types/Post'
 import { generatePostSEO } from '@/app/utils/seo'
 import BlogPostLayout from '@/app/components/BlogPostLayout'
 
@@ -101,7 +101,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 pb-8">
       <BlogPostLayout
         post={post}
         enableComments={true} // Comments system enabled with full API integration

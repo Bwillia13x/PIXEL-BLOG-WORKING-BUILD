@@ -262,13 +262,13 @@ const PixelButton = forwardRef<HTMLButtonElement | HTMLAnchorElement, PixelButto
       whileHover: disabled ? {} : { 
         scale: 1.02,
         y: -1,
-        ...(typeof motionProps.whileHover === 'object' && motionProps.whileHover !== null ? motionProps.whileHover : {})
+        ...(typeof motionProps.whileHover === 'object' && motionProps.whileHover !== null ? motionProps.whileHover as Record<string, unknown> : {})
       },
       whileTap: disabled ? {} : pressEffect ? { 
         scale: 0.98,
         y: 1,
         boxShadow: `1px 1px 0 ${colors.shadow}`,
-        ...(typeof motionProps.whileTap === 'object' && motionProps.whileTap !== null ? motionProps.whileTap : {})
+        ...(typeof motionProps.whileTap === 'object' && motionProps.whileTap !== null ? motionProps.whileTap as Record<string, unknown> : {})
       } : motionProps.whileTap,
       transition: { duration: 0.1 },
       ...motionProps
@@ -277,7 +277,7 @@ const PixelButton = forwardRef<HTMLButtonElement | HTMLAnchorElement, PixelButto
     if (href && !disabled) {
       return (
         <motion.a
-          ref={ref as any}
+          ref={ref as React.RefObject<HTMLAnchorElement>}
           href={href}
           target={target}
           className={baseClasses}
@@ -291,7 +291,7 @@ const PixelButton = forwardRef<HTMLButtonElement | HTMLAnchorElement, PixelButto
 
     return (
       <motion.button
-        ref={ref as any}
+        ref={ref as React.RefObject<HTMLButtonElement>}
         type={type}
         disabled={disabled || loading}
         onClick={disabled || loading ? undefined : onClick}

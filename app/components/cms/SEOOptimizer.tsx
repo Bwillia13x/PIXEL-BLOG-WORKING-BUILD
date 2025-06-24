@@ -127,47 +127,125 @@ export default function SEOOptimizer({
   const [showAdvanced, setShowAdvanced] = useState(false)
   const analysisTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
-  // Debounced analysis trigger
-  useEffect(() => {
-    if (analysisTimeoutRef.current) {
-      clearTimeout(analysisTimeoutRef.current)
+  // Helper function definitions (hoisted before first use)
+  const analyzeContent = useCallback((content: string, keyword: string) => {
+    const issues: SEOIssue[] = []
+    const suggestions: SEOSuggestion[] = []
+
+    const wordCount = content.split(/\s+/).filter(word => word.length > 0).length
+
+    if (wordCount < 300) {
+      issues.push({
+        type: 'warning',
+        category: 'content',
+        message: 'Content is too short for good SEO',
+        fix: 'Aim for at least 300 words',
+        impact: 'medium'
+      })
     }
 
-    analysisTimeoutRef.current = setTimeout(async () => {
-      await performSEOAnalysis()
-    }, 1000)
-
-    return () => {
-      if (analysisTimeoutRef.current) {
-        clearTimeout(analysisTimeoutRef.current)
+    if (keyword) {
+      const keywordDensity = calculateKeywordDensity(content, keyword)
+      
+      if (keywordDensity === 0) {
+        issues.push({
+          type: 'error',
+          category: 'keywords',
+          message: 'Target keyword not found in content',
+          fix: `Include "${keyword}" naturally in the content`,
+          impact: 'high'
+        })
+      } else if (keywordDensity < 0.5) {
+        suggestions.push({
+          type: 'optimization',
+          message: 'Keyword density is low, consider using the target keyword more',
+          priority: 3
+        })
+      } else if (keywordDensity > 3) {
+        issues.push({
+          type: 'warning',
+          category: 'keywords',
+          message: 'Keyword density is too high (keyword stuffing)',
+          fix: 'Reduce keyword usage to 1-3% density',
+          impact: 'medium'
+        })
       }
     }
-  }, [title, description, content, slug, targetKeyword])
 
-  const performSEOAnalysis = useCallback(async () => {
-    setIsAnalyzing(true)
+    return { issues, suggestions }
+  }, [])
 
-    try {
-      const analysis = await analyzeSEO({
-        title,
-        description,
-        content,
-        slug,
-        tags,
-        category,
-        targetKeyword
-      })
-      
-      setAnalysis(analysis)
-    } catch (error) {
-      console.error('SEO analysis failed:', error)
-    } finally {
-      setIsAnalyzing(false)
+  const calculateReadability = useCallback((content: string): ReadabilityScore => {
+    const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 0)
+    const words = content.split(/\s+/).filter(w => w.length > 0)
+    const syllables = words.reduce((sum, word) => sum + countSyllables(word), 0)
+
+    const avgSentenceLength = sentences.length > 0 ? words.length / sentences.length : 0
+    const avgSyllablesPerWord = words.length > 0 ? syllables / words.length : 0
+
+    // Flesch Reading Ease Score
+    const fleschScore = 206.835 - (1.015 * avgSentenceLength) - (84.6 * avgSyllablesPerWord)
+    
+    let grade = 'Unknown'
+    if (fleschScore >= 90) grade = 'Very Easy'
+    else if (fleschScore >= 80) grade = 'Easy'
+    else if (fleschScore >= 70) grade = 'Fairly Easy'
+    else if (fleschScore >= 60) grade = 'Standard'
+    else if (fleschScore >= 50) grade = 'Fairly Difficult'
+    else if (fleschScore >= 30) grade = 'Difficult'
+    else grade = 'Very Difficult'
+
+    const longSentences = sentences.filter(s => s.split(/\s+/).length > 20).length
+    const passiveVoice = (content.match(/\b(was|were|been|being)\s+\w+ed\b/g) || []).length
+
+    return {
+      score: Math.max(0, Math.min(100, fleschScore)),
+      grade,
+      avgSentenceLength,
+      avgWordsPerSentence: avgSentenceLength,
+      passiveVoice,
+      longSentences
     }
-  }, [title, description, content, slug, tags, category, targetKeyword])
+  }, [])
+
+  const extractKeywords = useCallback((content: string, title: string, description: string): KeywordAnalysis[] => {
+    const text = `${title} ${description} ${content}`.toLowerCase()
+    const words = text.match(/\b\w{4,}\b/g) || []
+    const wordCounts = new Map<string, number>()
+
+    words.forEach(word => {
+      wordCounts.set(word, (wordCounts.get(word) || 0) + 1)
+    })
+
+    const totalWords = words.length
+    const keywords: KeywordAnalysis[] = []
+
+    Array.from(wordCounts.entries())
+      .filter(([, count]) => count >= 3)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .forEach(([word, count]) => {
+        const density = (count / totalWords) * 100
+        
+        keywords.push({
+          keyword: word,
+          density,
+          frequency: count,
+          positions: findWordPositions(content, word),
+          inTitle: title.toLowerCase().includes(word),
+          inDescription: description.toLowerCase().includes(word),
+          inHeadings: /^#{1,6}\s.*\b/.test(content) && content.includes(word),
+          inUrl: false, // Would need slug analysis
+          competition: density > 2 ? 'high' : density > 1 ? 'medium' : 'low',
+          difficulty: Math.min(100, density * 10 + count)
+        })
+      })
+
+    return keywords
+  }, [])
 
   // Main SEO analysis function
-  const analyzeSEO = async (data: {
+  const analyzeSEO = useCallback(async (data: {
     title: string
     description: string
     content: string
@@ -222,7 +300,46 @@ export default function SEOOptimizer({
       metadata,
       structure
     }
-  }
+  }, [analyzeContent, calculateReadability, extractKeywords])
+
+  const performSEOAnalysis = useCallback(async () => {
+    setIsAnalyzing(true)
+
+    try {
+      const analysis = await analyzeSEO({
+        title,
+        description,
+        content,
+        slug,
+        tags,
+        category,
+        targetKeyword
+      })
+      
+      setAnalysis(analysis)
+    } catch (error) {
+      console.error('SEO analysis failed:', error)
+    } finally {
+      setIsAnalyzing(false)
+    }
+  }, [title, description, content, slug, tags, category, targetKeyword, analyzeSEO])
+
+  // Debounced analysis trigger
+  useEffect(() => {
+    if (analysisTimeoutRef.current) {
+      clearTimeout(analysisTimeoutRef.current)
+    }
+
+    analysisTimeoutRef.current = setTimeout(async () => {
+      await performSEOAnalysis()
+    }, 1000)
+
+    return () => {
+      if (analysisTimeoutRef.current) {
+        clearTimeout(analysisTimeoutRef.current)
+      }
+    }
+  }, [title, description, content, slug, targetKeyword, performSEOAnalysis])
 
   const analyzeTitle = (title: string, keyword: string) => {
     const issues: SEOIssue[] = []
@@ -330,54 +447,7 @@ export default function SEOOptimizer({
     return { issues, suggestions }
   }
 
-  const analyzeContent = (content: string, keyword: string) => {
-    const issues: SEOIssue[] = []
-    const suggestions: SEOSuggestion[] = []
-
-    const wordCount = content.split(/\s+/).filter(word => word.length > 0).length
-
-    if (wordCount < 300) {
-      issues.push({
-        type: 'warning',
-        category: 'content',
-        message: 'Content is too short for good SEO',
-        fix: 'Aim for at least 300 words',
-        impact: 'medium'
-      })
-    }
-
-    if (keyword) {
-      const keywordDensity = calculateKeywordDensity(content, keyword)
-      
-      if (keywordDensity === 0) {
-        issues.push({
-          type: 'error',
-          category: 'keywords',
-          message: 'Target keyword not found in content',
-          fix: `Include "${keyword}" naturally in the content`,
-          impact: 'high'
-        })
-      } else if (keywordDensity < 0.5) {
-        suggestions.push({
-          type: 'optimization',
-          message: 'Keyword density is low, consider using the target keyword more',
-          priority: 3
-        })
-      } else if (keywordDensity > 3) {
-        issues.push({
-          type: 'warning',
-          category: 'keywords',
-          message: 'Keyword density is too high (keyword stuffing)',
-          fix: 'Reduce keyword usage to 1-3% density',
-          impact: 'medium'
-        })
-      }
-    }
-
-    return { issues, suggestions }
-  }
-
-  const analyzeUrl = (slug: string, keyword: string) => {
+  const analyzeUrl = useCallback((slug: string, keyword: string) => {
     const issues: SEOIssue[] = []
 
     if (!slug) {
@@ -421,76 +491,7 @@ export default function SEOOptimizer({
     }
 
     return { issues, suggestions: [] }
-  }
-
-  const extractKeywords = (content: string, title: string, description: string): KeywordAnalysis[] => {
-    const text = `${title} ${description} ${content}`.toLowerCase()
-    const words = text.match(/\b\w{4,}\b/g) || []
-    const wordCounts = new Map<string, number>()
-
-    words.forEach(word => {
-      wordCounts.set(word, (wordCounts.get(word) || 0) + 1)
-    })
-
-    const totalWords = words.length
-    const keywords: KeywordAnalysis[] = []
-
-    Array.from(wordCounts.entries())
-      .filter(([, count]) => count >= 3)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .forEach(([word, count]) => {
-        const density = (count / totalWords) * 100
-        
-        keywords.push({
-          keyword: word,
-          density,
-          frequency: count,
-          positions: findWordPositions(content, word),
-          inTitle: title.toLowerCase().includes(word),
-          inDescription: description.toLowerCase().includes(word),
-          inHeadings: /^#{1,6}\s.*\b/.test(content) && content.includes(word),
-          inUrl: false, // Would need slug analysis
-          competition: density > 2 ? 'high' : density > 1 ? 'medium' : 'low',
-          difficulty: Math.min(100, density * 10 + count)
-        })
-      })
-
-    return keywords
-  }
-
-  const calculateReadability = (content: string): ReadabilityScore => {
-    const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 0)
-    const words = content.split(/\s+/).filter(w => w.length > 0)
-    const syllables = words.reduce((sum, word) => sum + countSyllables(word), 0)
-
-    const avgSentenceLength = sentences.length > 0 ? words.length / sentences.length : 0
-    const avgSyllablesPerWord = words.length > 0 ? syllables / words.length : 0
-
-    // Flesch Reading Ease Score
-    const fleschScore = 206.835 - (1.015 * avgSentenceLength) - (84.6 * avgSyllablesPerWord)
-    
-    let grade = 'Unknown'
-    if (fleschScore >= 90) grade = 'Very Easy'
-    else if (fleschScore >= 80) grade = 'Easy'
-    else if (fleschScore >= 70) grade = 'Fairly Easy'
-    else if (fleschScore >= 60) grade = 'Standard'
-    else if (fleschScore >= 50) grade = 'Fairly Difficult'
-    else if (fleschScore >= 30) grade = 'Difficult'
-    else grade = 'Very Difficult'
-
-    const longSentences = sentences.filter(s => s.split(/\s+/).length > 20).length
-    const passiveVoice = (content.match(/\b(was|were|been|being)\s+\w+ed\b/g) || []).length
-
-    return {
-      score: Math.max(0, Math.min(100, fleschScore)),
-      grade,
-      avgSentenceLength,
-      avgWordsPerSentence: avgSentenceLength,
-      passiveVoice,
-      longSentences
-    }
-  }
+  }, [])
 
   const analyzeMetadata = (title: string, description: string, slug: string, keyword: string): MetadataAnalysis => {
     return {

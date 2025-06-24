@@ -26,12 +26,36 @@ export function LoadingProvider({
   enableLoading = true,
   duration = 2500 
 }: LoadingProviderProps) {
-  const [isLoading, setIsLoading] = useState(enableLoading)
-  const [showChildren, setShowChildren] = useState(!enableLoading)
+  const [isMounted, setIsMounted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [showChildren, setShowChildren] = useState(false)
+
+  // Handle mounting to prevent hydration mismatch
+  useEffect(() => {
+    setIsMounted(true)
+    
+    if (!enableLoading) {
+      setIsLoading(false)
+      setShowChildren(true)
+      return
+    }
+
+    // Check if we should skip loading
+    const hasExistingContent = document.querySelector('[data-loading-complete]')
+    const isReload = sessionStorage.getItem('pixel-wisdom-loaded')
+    
+    if (hasExistingContent || isReload) {
+      setIsLoading(false)
+      setShowChildren(true)
+    } else {
+      setIsLoading(true)
+      setShowChildren(false)
+    }
+  }, [enableLoading])
 
   // Manage body class for loading state
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (!isMounted) return
 
     if (isLoading && enableLoading) {
       document.body.classList.add('loading-active')
@@ -50,28 +74,7 @@ export function LoadingProvider({
     return () => {
       document.body.classList.remove('loading-active')
     }
-  }, [isLoading, enableLoading])
-
-  // Skip loading in development Fast Refresh or if disabled
-  useEffect(() => {
-    if (!enableLoading) {
-      setIsLoading(false)
-      setShowChildren(true)
-      return
-    }
-
-    // In development, check for Fast Refresh or if page was already loaded
-    if (process.env.NODE_ENV === 'development') {
-      const hasExistingContent = document.querySelector('[data-loading-complete]')
-      const isReload = sessionStorage.getItem('pixel-wisdom-loaded')
-      
-      if (hasExistingContent || isReload) {
-        setIsLoading(false)
-        setShowChildren(true)
-        return
-      }
-    }
-  }, [enableLoading])
+  }, [isLoading, enableLoading, isMounted])
 
   const handleLoadingComplete = () => {
     setIsLoading(false)
@@ -93,15 +96,24 @@ export function LoadingProvider({
     setLoading: setIsLoading
   }
 
+  // Don't render anything until mounted to prevent hydration mismatch
+  if (!isMounted) {
+    return (
+      <LoadingContext.Provider value={contextValue}>
+        <div data-loading-complete="true">
+          {children}
+        </div>
+      </LoadingContext.Provider>
+    )
+  }
+
   return (
     <LoadingContext.Provider value={contextValue}>
       {isLoading && enableLoading && (
-        <div className="loading-screen-container">
-          <BriefLoadingScreen 
-            onComplete={handleLoadingComplete}
-            duration={duration}
-          />
-        </div>
+        <BriefLoadingScreen 
+          onComplete={handleLoadingComplete}
+          duration={duration}
+        />
       )}
       {showChildren && (
         <div data-loading-complete="true">

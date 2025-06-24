@@ -286,7 +286,7 @@ export const getRelativeTime = (date: Date): string => {
 }
 
 // Debounce utility
-export const debounce = <T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: unknown[]) => unknown>(
   func: T,
   delay: number
 ): ((...args: Parameters<T>) => void) => {
@@ -299,7 +299,7 @@ export const debounce = <T extends (...args: any[]) => any>(
 }
 
 // Local storage utilities
-export const saveToLocalStorage = (key: string, value: any): void => {
+export const saveToLocalStorage = (key: string, value: unknown): void => {
   try {
     localStorage.setItem(key, JSON.stringify(value))
   } catch (error) {

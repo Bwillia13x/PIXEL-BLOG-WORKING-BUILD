@@ -13,7 +13,7 @@ interface AnalyticsEvent {
   userId?: string
   sessionId: string
   timestamp: Date
-  metadata: Record<string, any>
+  metadata: Record<string, unknown>
   processed: boolean
 }
 
@@ -113,7 +113,6 @@ export default function AnalyticsIntegration({
   onEventCapture,
   className = ''
 }: AnalyticsIntegrationProps) {
-  const { theme } = useTheme()
   
   const [analyticsConfig] = useState<AnalyticsConfig>({ ...DEFAULT_CONFIG, ...config })
   const [events, setEvents] = useState<AnalyticsEvent[]>([])
@@ -129,31 +128,195 @@ export default function AnalyticsIntegration({
   const flushTimer = useRef<NodeJS.Timeout | undefined>(undefined)
   const engagementTimer = useRef<NodeJS.Timeout | undefined>(undefined)
 
-  // Initialize analytics
-  useEffect(() => {
-    initializeAnalytics()
+  // Helper functions
+  const getDeviceInfo = (): DeviceInfo => {
+    const userAgent = navigator.userAgent
     
-    if (analyticsConfig.enableEngagementTracking) {
-      startEngagementTracking()
+    let deviceType: DeviceInfo['type'] = 'desktop'
+    if (/Mobi|Android/i.test(userAgent)) deviceType = 'mobile'
+    else if (/Tablet|iPad/i.test(userAgent)) deviceType = 'tablet'
+
+    let os = 'Unknown'
+    if (/Windows/i.test(userAgent)) os = 'Windows'
+    else if (/Mac/i.test(userAgent)) os = 'macOS'
+    else if (/Linux/i.test(userAgent)) os = 'Linux'
+    else if (/Android/i.test(userAgent)) os = 'Android'
+    else if (/iOS/i.test(userAgent)) os = 'iOS'
+
+    let browser = 'Unknown'
+    if (/Chrome/i.test(userAgent)) browser = 'Chrome'
+    else if (/Firefox/i.test(userAgent)) browser = 'Firefox'
+    else if (/Safari/i.test(userAgent)) browser = 'Safari'
+    else if (/Edge/i.test(userAgent)) browser = 'Edge'
+
+    return {
+      type: deviceType,
+      os,
+      browser,
+      screenResolution: `${screen.width}x${screen.height}`,
+      viewportSize: `${window.innerWidth}x${window.innerHeight}`
+    }
+  }
+
+  const getLocationInfo = (): LocationInfo => {
+    return {
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    }
+  }
+
+  const calculateEngagementScore = (timeOnPage: number, scrollDepth: number): number => {
+    // Simple engagement score calculation
+    const timeScore = Math.min(timeOnPage / 60000, 1) // Cap at 1 minute
+    const scrollScore = scrollDepth / 100
+    const avgScore = (timeScore + scrollScore) / 2
+    return Math.round(avgScore * 100)
+  }
+
+  const getScrollDepth = (): number => {
+    const scrollTop = window.pageYOffset
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight
+    return docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0
+  }
+
+  // Callback definitions (hoisted before useEffect)
+  const trackEvent = useCallback((eventData: Omit<AnalyticsEvent, 'id' | 'sessionId' | 'timestamp' | 'processed'>) => {
+    if (!isTracking || Math.random() > analyticsConfig.samplingRate) return
+
+    const event: AnalyticsEvent = {
+      id: Math.random().toString(36).substr(2, 9),
+      sessionId: sessionId.current,
+      timestamp: new Date(),
+      processed: false,
+      userId: userId.current,
+      ...eventData
     }
 
-    return () => {
-      if (flushTimer.current) clearInterval(flushTimer.current)
-      if (engagementTimer.current) clearInterval(engagementTimer.current)
+    eventQueue.current.push(event)
+    setEvents(prev => [...prev, event])
+
+    if (onEventCapture) {
+      onEventCapture(event)
+    }
+
+    // Auto-flush if queue is full
+    if (eventQueue.current.length >= analyticsConfig.batchSize) {
       flushEvents()
     }
-  }, [])
+  }, [isTracking, analyticsConfig.samplingRate, analyticsConfig.batchSize, onEventCapture])
 
-  // Track page view when postId changes
-  useEffect(() => {
-    if (postId) {
-      trackPageView(postId)
+  const updateContentMetrics = useCallback((pageId: string) => {
+    // Simulate metrics calculation
+    const timeOnPage = Date.now() - startTime.current
+    const scrollDepth = getScrollDepth()
+    
+    const newMetrics: ContentMetrics = {
+      postId: pageId,
+      views: (metrics?.views || 0) + 1,
+      uniqueViews: 1, // Would need backend calculation
+      timeOnPage,
+      scrollDepth,
+      bounceRate: timeOnPage < 30000 ? 1 : 0,
+      shareCount: 0,
+      commentCount: 0,
+      likeCount: 0,
+      conversionRate: 0,
+      exitRate: 0,
+      engagementScore: calculateEngagementScore(timeOnPage, scrollDepth)
     }
-  }, [postId])
 
+    setMetrics(newMetrics)
 
+    if (onMetricsUpdate) {
+      onMetricsUpdate(newMetrics)
+    }
+  }, [onMetricsUpdate, metrics?.views])
 
-  const initializeAnalytics = () => {
+  const trackUserAction = useCallback((action: UserAction) => {
+    trackEvent({
+      type: 'user_action',
+      category: 'interaction',
+      action: action.type,
+      label: action.element,
+      metadata: {
+        timestamp: action.timestamp.toISOString(),
+        coordinates: action.coordinates
+      }
+    })
+
+    setUserBehavior(prev => prev ? {
+      ...prev,
+      actions: [...prev.actions, action]
+    } : null)
+  }, [trackEvent])
+
+  const trackPageView = useCallback((pageId: string) => {
+    trackEvent({
+      type: 'page_view',
+      category: 'navigation',
+      action: 'page_view',
+      label: pageId,
+      metadata: {
+        url: window.location.href,
+        title: document.title,
+        referrer: document.referrer,
+        timestamp: Date.now()
+      }
+    })
+
+    // Update metrics
+    updateContentMetrics(pageId)
+  }, [trackEvent, updateContentMetrics])
+
+  const trackEngagement = useCallback((type: string, value: number) => {
+    trackEvent({
+      type: 'engagement',
+      category: 'content',
+      action: type,
+      value,
+      metadata: {
+        url: window.location.href,
+        timestamp: Date.now()
+      }
+    })
+  }, [trackEvent])
+
+  const startEngagementTracking = useCallback(() => {
+    // Track scroll events
+    let scrollTimeout: NodeJS.Timeout
+    window.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout)
+      scrollTimeout = setTimeout(() => {
+        trackUserAction({
+          type: 'scroll',
+          element: 'page',
+          timestamp: new Date()
+        })
+      }, 1000)
+    }, { passive: true })
+
+    // Track clicks
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement
+      trackUserAction({
+        type: 'click',
+        element: target.tagName.toLowerCase() + (target.id ? `#${target.id}` : ''),
+        timestamp: new Date(),
+        coordinates: { x: e.clientX, y: e.clientY }
+      })
+    })
+
+    // Track visibility changes
+    document.addEventListener('visibilitychange', () => {
+      trackEvent({
+        type: 'user_action',
+        category: 'engagement',
+        action: document.hidden ? 'tab_hidden' : 'tab_visible',
+        metadata: { timestamp: Date.now() }
+      })
+    })
+  }, [trackEvent, trackUserAction, trackEngagement])
+
+  const initializeAnalytics = useCallback(() => {
     // Generate or retrieve user ID
     userId.current = localStorage.getItem('analytics_user_id') || Math.random().toString(36).substr(2, 9)
     localStorage.setItem('analytics_user_id', userId.current)
@@ -191,139 +354,31 @@ export default function AnalyticsIntegration({
       action: 'start',
       metadata: { deviceInfo, locationInfo }
     })
-  }
+  }, [analyticsConfig.flushInterval, trackEvent])
 
-  const getDeviceInfo = (): DeviceInfo => {
-    const userAgent = navigator.userAgent
+  // Initialize analytics
+  useEffect(() => {
+    initializeAnalytics()
     
-    let deviceType: DeviceInfo['type'] = 'desktop'
-    if (/Mobi|Android/i.test(userAgent)) deviceType = 'mobile'
-    else if (/Tablet|iPad/i.test(userAgent)) deviceType = 'tablet'
-
-    let os = 'Unknown'
-    if (/Windows/i.test(userAgent)) os = 'Windows'
-    else if (/Mac/i.test(userAgent)) os = 'macOS'
-    else if (/Linux/i.test(userAgent)) os = 'Linux'
-    else if (/Android/i.test(userAgent)) os = 'Android'
-    else if (/iOS/i.test(userAgent)) os = 'iOS'
-
-    let browser = 'Unknown'
-    if (/Chrome/i.test(userAgent)) browser = 'Chrome'
-    else if (/Firefox/i.test(userAgent)) browser = 'Firefox'
-    else if (/Safari/i.test(userAgent)) browser = 'Safari'
-    else if (/Edge/i.test(userAgent)) browser = 'Edge'
-
-    return {
-      type: deviceType,
-      os,
-      browser,
-      screenResolution: `${screen.width}x${screen.height}`,
-      viewportSize: `${window.innerWidth}x${window.innerHeight}`
-    }
-  }
-
-  const getLocationInfo = (): LocationInfo => {
-    return {
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-    }
-  }
-
-  const trackEvent = useCallback((eventData: Omit<AnalyticsEvent, 'id' | 'sessionId' | 'timestamp' | 'processed'>) => {
-    if (!isTracking || Math.random() > analyticsConfig.samplingRate) return
-
-    const event: AnalyticsEvent = {
-      id: Math.random().toString(36).substr(2, 9),
-      sessionId: sessionId.current,
-      timestamp: new Date(),
-      processed: false,
-      userId: userId.current,
-      ...eventData
+    if (analyticsConfig.enableEngagementTracking) {
+      startEngagementTracking()
     }
 
-    eventQueue.current.push(event)
-    setEvents(prev => [...prev, event])
-
-    if (onEventCapture) {
-      onEventCapture(event)
-    }
-
-    // Auto-flush if queue is full
-    if (eventQueue.current.length >= analyticsConfig.batchSize) {
+    return () => {
+      if (flushTimer.current) clearInterval(flushTimer.current)
+      if (engagementTimer.current) clearInterval(engagementTimer.current)
       flushEvents()
     }
-  }, [isTracking, analyticsConfig.samplingRate, analyticsConfig.batchSize, onEventCapture])
+  }, [analyticsConfig.enableEngagementTracking, initializeAnalytics, startEngagementTracking])
 
-  const trackPageView = (pageId: string) => {
-    trackEvent({
-      type: 'page_view',
-      category: 'navigation',
-      action: 'page_view',
-      label: pageId,
-      metadata: {
-        url: window.location.href,
-        title: document.title,
-        referrer: document.referrer,
-        timestamp: Date.now()
-      }
-    })
+  // Track page view when postId changes
+  useEffect(() => {
+    if (postId) {
+      trackPageView(postId)
+    }
+  }, [postId, trackPageView])
 
-    // Update metrics
-    updateContentMetrics(pageId)
-  }
-
-  const trackUserAction = (action: UserAction) => {
-    trackEvent({
-      type: 'user_action',
-      category: 'interaction',
-      action: action.type,
-      label: action.element,
-      metadata: {
-        coordinates: action.coordinates,
-        value: action.value,
-        timestamp: action.timestamp
-      }
-    })
-
-    // Update user behavior
-    setUserBehavior(prev => prev ? {
-      ...prev,
-      actions: [...prev.actions, action]
-    } : null)
-  }
-
-  const trackEngagement = () => {
-    const timeOnPage = Date.now() - startTime.current
-    const scrollDepth = getScrollDepth()
-
-    trackEvent({
-      type: 'engagement',
-      category: 'user_engagement',
-      action: 'engagement_update',
-      value: timeOnPage,
-      metadata: {
-        scrollDepth,
-        timeOnPage,
-        isVisible: !document.hidden
-      }
-    })
-  }
-
-  const trackConversion = (type: string, value?: number) => {
-    if (!analyticsConfig.enableConversionTracking) return
-
-    trackEvent({
-      type: 'conversion',
-      category: 'conversion',
-      action: type,
-      value,
-      metadata: {
-        timestamp: Date.now(),
-        postId
-      }
-    })
-  }
-
-  const trackError = (error: Error, context?: string) => {
+  const trackError = useCallback((error: Error, context?: string) => {
     if (!analyticsConfig.enableErrorTracking) return
 
     trackEvent({
@@ -338,87 +393,7 @@ export default function AnalyticsIntegration({
         url: window.location.href
       }
     })
-  }
-
-  const updateContentMetrics = (pageId: string) => {
-    // Simulate metrics calculation
-    const timeOnPage = Date.now() - startTime.current
-    const scrollDepth = getScrollDepth()
-    
-    const newMetrics: ContentMetrics = {
-      postId: pageId,
-      views: (metrics?.views || 0) + 1,
-      uniqueViews: 1, // Would need backend calculation
-      timeOnPage,
-      scrollDepth,
-      bounceRate: timeOnPage < 30000 ? 1 : 0,
-      shareCount: 0,
-      commentCount: 0,
-      likeCount: 0,
-      conversionRate: 0,
-      exitRate: 0,
-      engagementScore: calculateEngagementScore(timeOnPage, scrollDepth)
-    }
-
-    setMetrics(newMetrics)
-
-    if (onMetricsUpdate) {
-      onMetricsUpdate(newMetrics)
-    }
-  }
-
-  const calculateEngagementScore = (timeOnPage: number, scrollDepth: number): number => {
-    // Simple engagement score calculation
-    const timeScore = Math.min(timeOnPage / 60000, 1) // Cap at 1 minute
-    const scrollScore = scrollDepth / 100
-    const avgScore = (timeScore + scrollScore) / 2
-    return Math.round(avgScore * 100)
-  }
-
-  const getScrollDepth = (): number => {
-    const scrollTop = window.pageYOffset
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight
-    return docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0
-  }
-
-  const startEngagementTracking = () => {
-    // Track scroll events
-    let scrollTimeout: NodeJS.Timeout
-    window.addEventListener('scroll', () => {
-      clearTimeout(scrollTimeout)
-      scrollTimeout = setTimeout(() => {
-        trackUserAction({
-          type: 'scroll',
-          element: 'page',
-          timestamp: new Date()
-        })
-      }, 1000)
-    }, { passive: true })
-
-    // Track clicks
-    document.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement
-      trackUserAction({
-        type: 'click',
-        element: target.tagName.toLowerCase() + (target.id ? `#${target.id}` : ''),
-        timestamp: new Date(),
-        coordinates: { x: e.clientX, y: e.clientY }
-      })
-    })
-
-    // Track visibility changes
-    document.addEventListener('visibilitychange', () => {
-      trackEvent({
-        type: 'user_action',
-        category: 'engagement',
-        action: document.hidden ? 'page_hidden' : 'page_visible',
-        metadata: { timestamp: Date.now() }
-      })
-    })
-
-    // Periodic engagement updates
-    engagementTimer.current = setInterval(trackEngagement, 30000) // Every 30 seconds
-  }
+  }, [analyticsConfig.enableErrorTracking, trackEvent])
 
   const flushEvents = async () => {
     if (eventQueue.current.length === 0) return
@@ -508,7 +483,7 @@ export default function AnalyticsIntegration({
         window.removeEventListener('unhandledrejection', handleUnhandledRejection)
       }
     }
-  }, [analyticsConfig.enableErrorTracking])
+  }, [analyticsConfig.enableErrorTracking, trackError])
 
   return (
     <div className={`${className}`}>

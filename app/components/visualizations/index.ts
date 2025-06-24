@@ -157,11 +157,16 @@ export const DATA_UTILS = {
     }));
   },
   
-  aggregateData: (data: any[], groupBy: string, valueKey: string) => {
-    const groups = data.reduce((acc, item) => {
-      const key = item[groupBy];
+  aggregateData: <T extends Record<string, unknown>>(
+    data: T[],
+    groupBy: keyof T & string,
+    valueKey: keyof T & string
+  ) => {
+    const groups = data.reduce<Record<string, number[]>>((acc, item) => {
+      const key = String(item[groupBy]);
+      const value = Number(item[valueKey]);
       if (!acc[key]) acc[key] = [];
-      acc[key].push(item[valueKey]);
+      acc[key].push(value);
       return acc;
     }, {});
     

@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from 'framer-motion'
-import { Zap, Sunset, Palette, Code, Terminal, Cpu } from 'lucide-react'
+import { Zap, Sunset, Code, Terminal } from 'lucide-react'
 
 interface ColorSystemPreviewProps {
   className?: string
@@ -177,7 +177,7 @@ export default function ColorSystemPreview({ className = '' }: ColorSystemPrevie
                     <span style={{ color: system.colors.primary }}>terminal</span>
                   </div>
                   <div style={{ color: system.colors.secondary }}>
-                    $ echo "Hello {system.name}"
+                    $ echo &quot;Hello {system.name}&quot;
                   </div>
                   <div style={{ color: system.colors.text }}>
                     Hello {system.name}
@@ -200,7 +200,7 @@ export default function ColorSystemPreview({ className = '' }: ColorSystemPrevie
                     function <span style={{ color: system.colors.primary }}>init</span>() {'{'}
                   </div>
                   <div style={{ color: system.colors.secondary }}>
-                    &nbsp;&nbsp;console.log('<span style={{ color: system.colors.text }}>System ready</span>');
+                    &nbsp;&nbsp;console.log(&apos;<span style={{ color: system.colors.text }}>System ready</span>&apos;);
                   </div>
                   <div style={{ color: system.colors.accent }}>
                     {'}'}

@@ -92,6 +92,7 @@ const currentProjects: CurrentProject[] = [
     priority: "medium",
     timeInvestment: "2 weeks",
     tags: ["AI", "Developer Tools", "Automation"],
+    startDate: "TBD",
     plannedStart: "2025-07",
     highlights: [
       "Cursor IDE workflow optimization",
@@ -151,7 +152,7 @@ export default function CurrentProjectsPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4">
+    <div className="max-w-6xl mx-auto px-4 pb-8">
       {/* Hero Section with Enhanced Stats */}
       <PageHeader 
         title="Current Projects"

@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { motion, AnimatePresence, useAnimation } from 'framer-motion';
-import { format, parseISO, differenceInDays, startOfYear, endOfYear, eachMonthOfInterval, isWithinInterval } from 'date-fns';
+import React, { useState, useRef, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { format, parseISO, differenceInDays, startOfYear, endOfYear, isWithinInterval } from 'date-fns';
 import { PixelIconLibrary } from '../design-system/PixelIcons';
 
 // Timeline data types
@@ -70,7 +70,6 @@ const TimelineScale = ({
   onZoomChange: (zoom: number) => void;
   onRangeChange: (range: TimelineRange) => void;
 }) => {
-  const months = eachMonthOfInterval({ start: range.start, end: range.end });
   
   const zoomLevels = [
     { level: 1, label: 'YEAR', unit: 'year' },
@@ -440,7 +439,7 @@ const FilterPanel = ({
     statuses: string[];
     tags: string[];
   };
-  onFiltersChange: (filters: any) => void;
+  onFiltersChange: (filters: { categories: string[]; statuses: string[]; tags: string[] }) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   

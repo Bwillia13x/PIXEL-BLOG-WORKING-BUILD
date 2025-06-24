@@ -273,8 +273,8 @@ class ImagePerformanceMonitor {
     }
 
     // Send to analytics service (implement your analytics integration here)
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'image_performance_report', {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'image_performance_report', {
         custom_parameter_total_images: report.totalImages,
         custom_parameter_avg_load_time: Math.round(report.averageLoadTime),
         custom_parameter_cache_hit_rate: Math.round(report.cacheHitRate),

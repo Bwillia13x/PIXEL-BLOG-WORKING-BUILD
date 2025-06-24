@@ -1,7 +1,7 @@
 'use client'
 
 import { lazy, Suspense, useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, Variants } from 'framer-motion'
 
 interface LazyLoadProps {
   children: React.ReactNode
@@ -241,54 +241,59 @@ export function LazySection({
       }
     )
 
-    if (ref.current) {
-      observer.observe(ref.current)
+    const currentRef = ref.current
+    if (currentRef) {
+      observer.observe(currentRef)
     }
 
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current)
+      if (currentRef) {
+        observer.unobserve(currentRef)
       }
     }
   }, [threshold, rootMargin, triggerOnce, hasTriggered, delay])
 
-  const getAnimationProps = () => {
-    if (!fadeIn && !slideIn) return {}
-
-    const initial: any = {}
-    const animate: any = {}
-
-    if (fadeIn) {
-      initial.opacity = 0
-      animate.opacity = 1
-    }
-
-    if (slideIn) {
-      switch (slideIn) {
-        case 'up':
-          initial.y = 50
-          animate.y = 0
-          break
-        case 'down':
-          initial.y = -50
-          animate.y = 0
-          break
-        case 'left':
-          initial.x = 50
-          animate.x = 0
-          break
-        case 'right':
-          initial.x = -50
-          animate.x = 0
-          break
+  const variants: Variants = {
+    hidden: (() => {
+      const props: { opacity?: number; x?: number; y?: number } = {}
+      
+      if (fadeIn) {
+        props.opacity = 0
       }
-    }
-
-    return {
-      initial,
-      animate,
-      transition: { duration: 0.6 }
-    }
+      
+      if (slideIn) {
+        switch (slideIn) {
+          case 'up':
+            props.y = 50
+            break
+          case 'down':
+            props.y = -50
+            break
+          case 'left':
+            props.x = 50
+            break
+          case 'right':
+            props.x = -50
+            break
+        }
+      }
+      
+      return props
+    })(),
+    visible: (() => {
+      const props: { opacity?: number; x?: number; y?: number } = {}
+      
+      if (fadeIn) {
+        props.opacity = 1
+      }
+      
+      if (slideIn) {
+        props.x = 0
+        props.y = 0
+      }
+      
+      return props
+    })()
   }
 
   return (
@@ -301,7 +306,10 @@ export function LazySection({
         {isVisible ? (
           <motion.div
             key="content"
-            {...getAnimationProps()}
+            variants={variants}
+            initial="hidden"
+            animate="visible"
+            transition={{ duration: 0.6 }}
           >
             {children}
           </motion.div>
@@ -321,7 +329,7 @@ export function LazySection({
 }
 
 // Hook for lazy loading components
-export function useLazyComponent<T extends React.ComponentType<any>>(
+export function useLazyComponent<T extends React.ComponentType<unknown>>(
   importFunc: () => Promise<{ default: T }>
 ): T | null {
   const [component, setComponent] = useState<T | null>(null)
@@ -346,9 +354,9 @@ export function useLazyComponent<T extends React.ComponentType<any>>(
 
 // Lazy wrapper for heavy components
 interface LazyComponentProps {
-  component: () => Promise<{ default: React.ComponentType<any> }>
+  component: () => Promise<{ default: React.ComponentType<unknown> }>
   fallback?: React.ReactNode
-  props?: any
+  props?: Record<string, unknown>
   threshold?: number
   rootMargin?: string
 }

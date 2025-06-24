@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence, useAnimation, useInView, useMotionValue, useTransform } from 'framer-motion';
 
 interface PixelGlitchTextProps {
@@ -47,7 +47,7 @@ export const PixelGlitchText = ({
     }
   }, [isActive, trigger]);
 
-  const getGlitchedText = () => {
+  const getGlitchedText = useCallback(() => {
     if (!isGlitching) return text;
     
     const chars = text.split('');
@@ -61,7 +61,7 @@ export const PixelGlitchText = ({
     });
     
     return chars.join('');
-  };
+  }, [isGlitching, text, maxChars, glitchChars]);
 
   const [displayText, setDisplayText] = useState(text);
 
@@ -79,7 +79,7 @@ export const PixelGlitchText = ({
       
       return () => clearInterval(interval);
     }
-  }, [isGlitching]);
+  }, [isGlitching, getGlitchedText, changeSpeed, duration, text]);
 
   return (
     <motion.span
@@ -131,7 +131,7 @@ export const MatrixTextReveal = ({
   const [scrambleStates, setScrambleStates] = useState<boolean[]>([]);
   const [scrambleChars, setScrambleChars] = useState<string[]>([]);
   
-  const matrixChars = ['0', '1', 'ア', 'イ', 'ウ', 'エ', 'オ', 'カ', 'キ', 'ク', 'ケ', 'コ', '█', '▓', '▒', '░', 'サ', 'シ', 'ス', 'セ', 'ソ'];
+  const matrixChars = useMemo(() => ['0', '1', 'ア', 'イ', 'ウ', 'エ', 'オ', 'カ', 'キ', 'ク', 'ケ', 'コ', '█', '▓', '▒', '░', 'サ', 'シ', 'ス', 'セ', 'ソ'], []);
 
   useEffect(() => {
     // Initialize scramble states and characters
@@ -194,7 +194,7 @@ export const MatrixTextReveal = ({
     }, currentIndex === 0 ? delay : speed);
 
     return () => clearTimeout(timer);
-  }, [currentIndex, text, speed, delay, scrambleDuration, onComplete, isComplete]);
+  }, [currentIndex, text, speed, delay, scrambleDuration, onComplete, isComplete, matrixChars]);
 
   // Build the display text with proper character handling
   const buildDisplayText = () => {

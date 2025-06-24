@@ -195,17 +195,21 @@ export const PerformanceMetrics: React.FC = () => {
       // FID - First Input Delay
       new PerformanceObserver((list) => {
         const entries = list.getEntries()
-        entries.forEach((entry: any) => {
-          setMetrics(prev => ({ ...prev, fid: entry.processingStart - entry.startTime }))
+        entries.forEach((entry: PerformanceEntry) => {
+          const fidEntry = entry as PerformanceEntry & { processingStart?: number }
+          if (fidEntry.processingStart) {
+            setMetrics(prev => ({ ...prev, fid: fidEntry.processingStart! - entry.startTime }))
+          }
         })
       }).observe({ entryTypes: ['first-input'] })
 
       // CLS - Cumulative Layout Shift
       let clsValue = 0
       new PerformanceObserver((list) => {
-        for (const entry of list.getEntries() as any[]) {
-          if (!entry.hadRecentInput) {
-            clsValue += entry.value
+        for (const entry of list.getEntries()) {
+          const clsEntry = entry as PerformanceEntry & { hadRecentInput?: boolean; value?: number }
+          if (!clsEntry.hadRecentInput && clsEntry.value) {
+            clsValue += clsEntry.value
             setMetrics(prev => ({ ...prev, cls: clsValue }))
           }
         }

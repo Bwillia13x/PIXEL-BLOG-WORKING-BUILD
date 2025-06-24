@@ -67,7 +67,7 @@ export default function ImageUploader({
 
   const generateId = () => Math.random().toString(36).substr(2, 9)
 
-  const validateFile = (file: File): string | null => {
+  const validateFile = useCallback((file: File): string | null => {
     if (!allowedTypes.includes(file.type)) {
       return `File type ${file.type} is not allowed. Supported types: ${allowedTypes.join(', ')}`
     }
@@ -77,9 +77,9 @@ export default function ImageUploader({
     }
     
     return null
-  }
+  }, [allowedTypes, maxSize])
 
-  const getDimensions = (file: File): Promise<{ width: number; height: number }> => {
+  const getDimensions = useCallback((file: File): Promise<{ width: number; height: number }> => {
     return new Promise((resolve) => {
       const img = new Image()
       img.onload = () => {
@@ -87,9 +87,9 @@ export default function ImageUploader({
       }
       img.src = URL.createObjectURL(file)
     })
-  }
+  }, [])
 
-  const optimizeImage = async (file: File, filter = 'none'): Promise<{ optimized: File; thumbnail: string }> => {
+  const optimizeImage = useCallback(async (file: File, filter = 'none'): Promise<{ optimized: File; thumbnail: string }> => {
     return new Promise((resolve) => {
       const canvas = canvasRef.current
       const ctx = canvas?.getContext('2d')
@@ -171,7 +171,7 @@ export default function ImageUploader({
       
       img.src = URL.createObjectURL(file)
     })
-  }
+  }, [])
 
   const applyPixelateFilter = (ctx: CanvasRenderingContext2D, width: number, height: number, pixelSize: number) => {
     const imageData = ctx.getImageData(0, 0, width, height)
@@ -245,7 +245,7 @@ export default function ImageUploader({
     ctx.putImageData(imageData, 0, 0)
   }
 
-  const processFiles = async (files: FileList | File[]) => {
+  const processFiles = useCallback(async (files: FileList | File[]) => {
     const fileArray = Array.from(files)
     
     if (images.length + fileArray.length > maxFiles) {
@@ -304,7 +304,7 @@ export default function ImageUploader({
     
     setUploading(false)
     setProgress(0)
-  }
+  }, [images, maxFiles, onError, autoOptimize, selectedFilter, getDimensions, validateFile, optimizeImage, onUpload])
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault()

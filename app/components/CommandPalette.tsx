@@ -1,20 +1,18 @@
 'use client'
 
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   MagnifyingGlassIcon, 
-  CommandLineIcon,
   DocumentTextIcon,
   FolderIcon,
-  TagIcon,
-  CalendarIcon,
   ClockIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline'
-import { Post, fetchPosts } from '@/app/data/posts'
+import { fetchPosts } from '@/app/data/posts'
+import { Post } from '@/app/types/Post'
 import { FuzzySearch } from '@/app/utils/fuzzySearch'
 
 interface SearchResult {
@@ -49,7 +47,7 @@ export default function CommandPalette({ className = '', triggerOnly = false }: 
   const fuzzySearchRef = useRef<FuzzySearch<SearchResult> | null>(null)
 
   // Static pages for search
-  const staticPages: SearchResult[] = [
+  const staticPages: SearchResult[] = useMemo(() => [
     {
       type: 'page',
       id: 'home',
@@ -90,7 +88,7 @@ export default function CommandPalette({ className = '', triggerOnly = false }: 
       url: '/contact',
       icon: DocumentTextIcon
     }
-  ]
+  ], [])
 
   // Handle client-side mounting
   useEffect(() => {
@@ -153,7 +151,7 @@ export default function CommandPalette({ className = '', triggerOnly = false }: 
     }
 
     loadPosts()
-  }, [mounted])
+  }, [mounted, staticPages, query])
 
   // Handle search
   const performSearch = useCallback((searchQuery: string) => {
@@ -239,7 +237,7 @@ export default function CommandPalette({ className = '', triggerOnly = false }: 
         case 'Enter':
           e.preventDefault()
           if (results[selectedIndex]) {
-            handleResultSelect(results[selectedIndex])
+            handleResultSelect()
           }
           break
       }
@@ -250,7 +248,7 @@ export default function CommandPalette({ className = '', triggerOnly = false }: 
   }, [isOpen, results, selectedIndex, mounted])
 
   // Handle result selection
-  const handleResultSelect = (result: SearchResult) => {
+  const handleResultSelect = () => {
     setIsOpen(false)
     setQuery('')
     setSelectedIndex(0)
@@ -358,6 +356,7 @@ export default function CommandPalette({ className = '', triggerOnly = false }: 
             {/* Command Palette */}
             <motion.div
               ref={resultsRef}
+              id="command-palette-results"
               initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
@@ -393,6 +392,7 @@ export default function CommandPalette({ className = '', triggerOnly = false }: 
                     aria-describedby="command-palette-description"
                     aria-expanded={results.length > 0}
                     aria-activedescendant={results.length > 0 ? `result-${selectedIndex}` : undefined}
+                    aria-controls="command-palette-results"
                     role="combobox"
                   />
 
@@ -432,7 +432,7 @@ export default function CommandPalette({ className = '', triggerOnly = false }: 
                         <Link
                           key={result.id}
                           href={result.url}
-                          onClick={() => handleResultSelect(result)}
+                          onClick={() => handleResultSelect()}
                           className="block"
                         >
                           <motion.div
@@ -492,7 +492,7 @@ export default function CommandPalette({ className = '', triggerOnly = false }: 
                       🔍
                     </motion.div>
                     <p className="text-gray-400 font-mono text-sm">
-                      No results found for "{query}"
+                      No results found for &quot;{query}&quot;
                     </p>
                   </div>
                 ) : (

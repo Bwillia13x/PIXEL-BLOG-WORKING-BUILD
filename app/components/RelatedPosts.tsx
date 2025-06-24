@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { 
   ChevronRightIcon, 
   TagIcon, 
@@ -10,9 +10,8 @@ import {
   ClockIcon,
   SparklesIcon 
 } from '@heroicons/react/24/outline'
-import { Post } from '@/app/data/posts'
+import { Post } from '@/app/types/Post'
 import { RelatedPost, getSimilarityExplanation } from '@/app/utils/relatedPosts'
-import { formatReadingTime } from '@/app/utils/readingTime'
 
 interface RelatedPostsProps {
   relatedPosts: RelatedPost[]
@@ -171,7 +170,6 @@ function EmptyState() {
 
 export default function RelatedPosts({ 
   relatedPosts, 
-  currentPost, 
   className = "",
   showSimilarityScore = false,
   showReasons = true

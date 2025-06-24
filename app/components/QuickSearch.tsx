@@ -33,7 +33,6 @@ function QuickSearchContent({ className = "" }: QuickSearchProps) {
   const [query, setQuery] = useState('')
   const [isFocused, setIsFocused] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
-  const [lastTyped, setLastTyped] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -42,7 +41,6 @@ function QuickSearchContent({ className = "" }: QuickSearchProps) {
   useEffect(() => {
     if (query.length > 0) {
       setIsTyping(true)
-      setLastTyped(Date.now())
       
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current)
@@ -83,7 +81,7 @@ function QuickSearchContent({ className = "" }: QuickSearchProps) {
       ...searchInstance.filters, 
       query 
     })
-  }, [query])
+  }, [query, searchInstance])
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -331,7 +329,7 @@ function QuickSearchContent({ className = "" }: QuickSearchProps) {
                 ) : filteredResults.length === 0 ? (
                   <div className="p-6 text-center">
                     <div className="text-gray-400 font-mono text-sm">
-                      <p className="mb-2">No results for "{query}"</p>
+                      <p className="mb-2">No results for &quot;{query}&quot;</p>
                       <p className="text-xs text-gray-500">Try different keywords or check spelling</p>
                     </div>
                   </div>

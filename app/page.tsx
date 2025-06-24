@@ -1,10 +1,8 @@
 import Link from "next/link"
 import { ClientErrorDisplay } from "./components/ErrorBoundary"
 import TypewriterText from "./components/TypewriterText"
-import ScrollReveal, { PixelReveal, CardReveal, TextReveal } from "./components/ScrollReveal"
 import ContentGrid from "./components/ContentGrid"
 import PixelButton, { GhostButton } from "./components/PixelButton"
-import { GridParallax } from "./components/ParallaxBackground"
 
 interface Post {
   id: string
@@ -92,90 +90,55 @@ export default async function Home() {
   const categories = ["Tech", "Art", "Finance"]
 
   return (
-    <div className="min-h-screen p-8 relative">
-      {/* Parallax Background */}
-      <GridParallax intensity="subtle" />
-      {/* Enhanced Hero Section with scroll reveals */}
-      <section className="text-center mb-12">
-        <PixelReveal>
-                      <h1 className="text-4xl pixel-head mb-4 text-green-400">
-            <TypewriterText 
-              text="Welcome to Pixel Wisdom" 
-              speed={80}
-              delay={300}
-              cursor={true}
-              cursorChar="█"
-            />
-          </h1>
-        </PixelReveal>
+    <div className="min-h-screen relative">
+      {/* Clean Hero Section */}
+      <section className="text-center mb-20 max-w-4xl mx-auto">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl pixel-head mb-8 text-green-400">
+          Welcome to Pixel Wisdom
+        </h1>
         
-        <TextReveal delay={0.3}>
-          <p className="text-gray-300 max-w-2xl mx-auto mb-8">
-            A developer's journey through AI, finance, and digital innovation.
-          </p>
-        </TextReveal>
+        <p className="text-gray-300 max-w-3xl mx-auto mb-16 text-lg sm:text-xl leading-relaxed px-4">
+          A developer's journey through AI, finance, and digital innovation.
+        </p>
 
-        {/* Quick Navigation with staggered reveals */}
-        <ScrollReveal animation="fadeInUp" delay={0.6}>
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            {categories.map((category, index) => (
-              <ScrollReveal 
-                key={category} 
-                animation="scaleIn" 
-                delay={0.8 + index * 0.1}
-              >
-                <GhostButton
-                  href={`/category/${category.toLowerCase()}`}
-                  size="md"
-                  pixelEffect={true}
-                  glowEffect={true}
-                  pressEffect={true}
-                >
-                  {category}
-                </GhostButton>
-              </ScrollReveal>
-            ))}
-          </div>
-        </ScrollReveal>
+        {/* Simple Category Navigation */}
+        <div className="flex flex-wrap justify-center gap-4 mb-16">
+          {categories.map((category) => (
+            <Link
+              key={category}
+              href={`/category/${category.toLowerCase()}`}
+              className="px-6 py-3 bg-gray-900/40 border border-green-400/30 text-green-400 font-mono text-sm rounded-lg hover:bg-green-400/10 hover:border-green-400 transition-all duration-200"
+            >
+              {category}
+            </Link>
+          ))}
+        </div>
       </section>
 
       {/* Error Message */}
       {error && (
-        <PixelReveal>
-          <section className="mb-12">
-            <ClientErrorDisplay message={error} />
-          </section>
-        </PixelReveal>
+        <section className="mb-16 max-w-4xl mx-auto">
+          <ClientErrorDisplay message={error} />
+        </section>
       )}
 
-      {/* Enhanced Content Section */}
-      <section className="mb-12">
-        <TextReveal>
-          <h2 className="text-2xl pixel-head mb-8 text-green-400 text-center">
-            <TypewriterText 
-              text="Latest Content" 
-              speed={60}
-              delay={1500}
-              cursor={false}
-            />
-          </h2>
-        </TextReveal>
+      {/* Content Section */}
+      <section className="mb-20 max-w-6xl mx-auto">
+        <h2 className="text-2xl sm:text-3xl pixel-head mb-12 text-green-400 text-center">
+          Latest Content
+        </h2>
         
-        <PixelReveal delay={0.3}>
-          <ContentGrid 
-            posts={posts} 
-            loading={false} 
-            error={error}
-          />
-        </PixelReveal>
+        <ContentGrid 
+          posts={posts} 
+          loading={false} 
+          error={error}
+        />
       </section>
 
-      {/* Enhanced footer with reveal */}
-      <TextReveal delay={0.2}>
-        <footer className="text-center text-gray-500 text-sm">
-          <p>© 2024 Pixel Wisdom. Built with Next.js and Tailwind CSS.</p>
-        </footer>
-      </TextReveal>
+      {/* Simple footer */}
+      <footer className="text-center text-gray-500 text-sm max-w-4xl mx-auto pt-12 border-t border-gray-700/30">
+        <p>© 2024 Pixel Wisdom. Built with Next.js and Tailwind CSS.</p>
+      </footer>
     </div>
   )
 }

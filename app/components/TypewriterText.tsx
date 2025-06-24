@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 interface TypewriterTextProps {
   text: string
@@ -44,22 +44,7 @@ export const TypewriterText: React.FC<TypewriterTextProps> = ({
     }
   }, [text, once])
 
-  useEffect(() => {
-    if (once && hasCompletedRef.current && textRef.current === text) {
-      return
-    }
-
-    if (delay > 0) {
-      const delayTimer = setTimeout(() => {
-        startTyping()
-      }, delay)
-      return () => clearTimeout(delayTimer)
-    } else {
-      startTyping()
-    }
-  }, [text, speed, delay, once])
-
-  const startTyping = () => {
+  const startTyping = useCallback(() => {
     if (once && hasCompletedRef.current && textRef.current === text) {
       return
     }
@@ -78,21 +63,36 @@ export const TypewriterText: React.FC<TypewriterTextProps> = ({
     }, speed)
 
     return () => clearInterval(timer)
-  }
+  }, [once, text, speed, onComplete])
 
   useEffect(() => {
     if (cursor && !isComplete) {
       const cursorTimer = setInterval(() => {
-        setShowCursor(prev => !prev)
+        setShowCursor((prev: boolean) => !prev)
       }, 530)
       return () => clearInterval(cursorTimer)
     }
   }, [cursor, isComplete])
 
+  useEffect(() => {
+    if (once && hasCompletedRef.current && textRef.current === text) {
+      return
+    }
+
+    if (delay > 0) {
+      const delayTimer = setTimeout(() => {
+        startTyping()
+      }, delay)
+      return () => clearTimeout(delayTimer)
+    } else {
+      startTyping()
+    }
+  }, [text, speed, delay, once, startTyping])
+
   return (
     <span className={className}>
       {displayedText}
-      {cursor && !isComplete && (
+      {cursor && !isComplete && showCursor && (
         <span className="text-green-400 font-mono">
           {cursorChar}
         </span>

@@ -109,6 +109,22 @@ export default function TechnologyStackVisualization({
   const [groupBy, setGroupBy] = useState<'category' | 'proficiency' | 'usage'>('category')
   const [localShowConnections, setLocalShowConnections] = useState(showConnections)
 
+  // Categories for organization (hoisted before first use)
+  const categories = useMemo(() => [
+    { id: 'frontend', name: 'Frontend', icon: '🎨', color: '#10b981' },
+    { id: 'backend', name: 'Backend', icon: '⚙️', color: '#3b82f6' },
+    { id: 'database', name: 'Database', icon: '🗄️', color: '#8b5cf6' },
+    { id: 'devops', name: 'DevOps', icon: '🚀', color: '#f59e0b' },
+    { id: 'mobile', name: 'Mobile', icon: '📱', color: '#ef4444' },
+    { id: 'desktop', name: 'Desktop', icon: '💻', color: '#06b6d4' },
+    { id: 'ai-ml', name: 'AI/ML', icon: '🤖', color: '#ec4899' },
+    { id: 'blockchain', name: 'Blockchain', icon: '⛓️', color: '#84cc16' },
+    { id: 'game-dev', name: 'Game Dev', icon: '🎮', color: '#f97316' },
+    { id: 'design', name: 'Design', icon: '🎭', color: '#14b8a6' },
+    { id: 'testing', name: 'Testing', icon: '🧪', color: '#a855f7' },
+    { id: 'analytics', name: 'Analytics', icon: '📊', color: '#22d3ee' }
+  ] as const, [])
+
   // Filter technologies based on category and search
   const filteredTechnologies = useMemo(() => {
     let filtered = technologies
@@ -219,23 +235,7 @@ export default function TechnologyStackVisualization({
         proficiency: tech.proficiency
       }
     })
-  }, [filteredTechnologies, techConnections, viewMode])
-
-  // Categories for organization
-  const categories = [
-    { id: 'frontend', name: 'Frontend', icon: '🎨', color: '#10b981' },
-    { id: 'backend', name: 'Backend', icon: '⚙️', color: '#3b82f6' },
-    { id: 'database', name: 'Database', icon: '🗄️', color: '#8b5cf6' },
-    { id: 'devops', name: 'DevOps', icon: '🚀', color: '#f59e0b' },
-    { id: 'mobile', name: 'Mobile', icon: '📱', color: '#ef4444' },
-    { id: 'desktop', name: 'Desktop', icon: '💻', color: '#06b6d4' },
-    { id: 'ai-ml', name: 'AI/ML', icon: '🤖', color: '#ec4899' },
-    { id: 'blockchain', name: 'Blockchain', icon: '⛓️', color: '#84cc16' },
-    { id: 'game-dev', name: 'Game Dev', icon: '🎮', color: '#f97316' },
-    { id: 'design', name: 'Design', icon: '🎭', color: '#14b8a6' },
-    { id: 'testing', name: 'Testing', icon: '🧪', color: '#a855f7' },
-    { id: 'analytics', name: 'Analytics', icon: '📊', color: '#22d3ee' }
-  ] as const
+  }, [filteredTechnologies, techConnections, viewMode, categories])
 
   // Draw network visualization
   useEffect(() => {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   ChartBarIcon,
   ClockIcon,
@@ -9,7 +9,6 @@ import {
   GlobeAltIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  ArrowPathIcon,
   SparklesIcon,
   BoltIcon,
   EyeIcon
@@ -76,7 +75,7 @@ function MetricCard({
   )
 }
 
-function PerformanceInsights({ insights }: { insights: any[] }) {
+function PerformanceInsights({ insights }: { insights: Array<{ type: string; metric: string; message: string; recommendation: string }> }) {
   if (insights.length === 0) {
     return (
       <div className="p-4 bg-green-600/20 text-green-400 rounded-lg border border-green-600/30">
@@ -165,7 +164,7 @@ export default function PerformanceDashboard() {
   })
 
   const [showDetails, setShowDetails] = useState(false)
-  const [insights, setInsights] = useState<any[]>([])
+  const [insights, setInsights] = useState<Array<{ type: string; metric: string; message: string; recommendation: string }>>([])
 
   useEffect(() => {
     setInsights(getInsights())
@@ -272,7 +271,7 @@ export default function PerformanceDashboard() {
           <div className="bg-gray-800/50 rounded-lg border border-cyan-500/20 p-6">
             <h2 className="text-lg font-semibold text-white mb-4">Core Web Vitals</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-              {performanceMetrics.slice(0, 4).map((metric, index) => (
+              {performanceMetrics.slice(0, 4).map((metric) => (
                 <MetricCard 
                   key={metric.title} 
                   metric={metric} 
@@ -302,7 +301,7 @@ export default function PerformanceDashboard() {
       <div className="bg-gray-800/50 rounded-lg border border-cyan-500/20 p-6">
         <h2 className="text-lg font-semibold text-white mb-4">Runtime Performance</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-          {performanceMetrics.slice(4).map((metric, index) => (
+          {performanceMetrics.slice(4).map((metric) => (
             <MetricCard 
               key={metric.title} 
               metric={metric} 

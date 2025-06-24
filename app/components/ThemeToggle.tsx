@@ -7,7 +7,6 @@ import {
   SunIcon, 
   MoonIcon,
   PaintBrushIcon,
-  Cog6ToothIcon,
   ChevronDownIcon
 } from "@heroicons/react/24/outline"
 import { useTheme } from "@/app/contexts/ThemeContext"
@@ -25,7 +24,7 @@ const ThemeToggle = ({
   showLabel = false,
   className = "" 
 }: ThemeToggleProps) => {
-  const { currentTheme, setTheme, availableThemes, isTransitioning } = useTheme()
+  const { currentTheme, setTheme, isTransitioning } = useTheme()
   const [isQuickMenuOpen, setIsQuickMenuOpen] = useState(false)
 
   // Simple theme toggle between light and dark variants

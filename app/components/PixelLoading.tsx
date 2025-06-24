@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from 'framer-motion'
-import { Loader2, Code, Terminal, Cpu } from 'lucide-react'
+import { Terminal } from 'lucide-react'
 
 interface PixelLoadingProps {
   variant?: 'spinner' | 'dots' | 'bars' | 'pulse' | 'matrix' | 'typewriter'
@@ -15,8 +15,7 @@ export default function PixelLoading({
   variant = 'spinner', 
   size = 'md', 
   className = '',
-  message,
-  progress 
+  message
 }: PixelLoadingProps) {
   const sizeConfig = {
     sm: { container: 'w-4 h-4', text: 'text-xs', icon: 'w-3 h-3' },

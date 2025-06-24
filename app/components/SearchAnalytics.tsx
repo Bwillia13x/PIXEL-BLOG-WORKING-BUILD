@@ -90,7 +90,7 @@ const SearchAnalytics: React.FC<SearchAnalyticsProps> = ({ data }) => {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-mono text-green-400 truncate">
-                    "{query.query}"
+                    &quot;{query.query}&quot;
                   </div>
                 </div>
                 <div className="text-right ml-4">
@@ -147,7 +147,7 @@ const SearchAnalytics: React.FC<SearchAnalyticsProps> = ({ data }) => {
                 className="flex items-center justify-between p-2 bg-red-900/20 border border-red-500/30 rounded"
               >
                 <div className="text-sm font-mono text-red-400">
-                  "{query.query}"
+                  &quot;{query.query}&quot;
                 </div>
                 <div className="text-xs font-mono text-gray-400">
                   {query.count} searches
@@ -205,7 +205,7 @@ const SearchAnalytics: React.FC<SearchAnalyticsProps> = ({ data }) => {
             <div>⚠️ Search functionality needs improvement</div>
           )}
           {data.topQueries[0] && (
-            <div>📈 "{data.topQueries[0].query}" is your most searched term</div>
+            <div>📈 &quot;{data.topQueries[0].query}&quot; is your most searched term</div>
           )}
           {data.noResultsQueries.length > 0 && (
             <div>📝 {data.noResultsQueries.length} content opportunities identified</div>

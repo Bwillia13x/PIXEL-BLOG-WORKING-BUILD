@@ -4,13 +4,51 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, useAnimation, AnimatePresence } from 'framer-motion';
 import { PixelIconLibrary } from '../design-system/PixelIcons';
 
-// Infographic data types
+// Core infographic data types
+export interface InfographicMetric {
+  id: string;
+  label: string;
+  value: number;
+  unit?: string;
+  color?: string;
+}
+
+export interface TechnologyUsageData {
+  name: string;
+  usage: number;
+}
+
+export interface ProjectStats {
+  totalProjects: number;
+  linesOfCode: number;
+  githubStars: number;
+  completionRate: number;
+}
+
+export interface PerformanceMetricData {
+  score: number;
+  description: string;
+}
+
+export interface TimelineEvent {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  metrics?: Record<string, string>;
+}
+
+export interface SkillData {
+  name: string;
+  level: number;
+}
+
 export interface InfographicData {
   id: string;
   title: string;
   subtitle?: string;
   type: 'counter' | 'progress' | 'comparison' | 'timeline' | 'chart' | 'icon-stat';
-  data: any;
+  data: TechnologyUsageData[] | ProjectStats | Record<string, PerformanceMetricData> | TimelineEvent[] | SkillData[];
   color?: string;
   icon?: keyof typeof PixelIconLibrary;
 }
@@ -66,7 +104,7 @@ const AnimatedCounter = ({
 };
 
 // Technology usage infographic
-const TechnologyUsageInfographic = ({ data }: { data: any[] }) => {
+const TechnologyUsageInfographic = ({ data }: { data: TechnologyUsageData[] }) => {
   const maxUsage = Math.max(...data.map(item => item.usage));
 
   return (
@@ -117,7 +155,7 @@ const TechnologyUsageInfographic = ({ data }: { data: any[] }) => {
 };
 
 // Project statistics dashboard
-const ProjectStatsDashboard = ({ stats }: { stats: any }) => {
+const ProjectStatsDashboard = ({ stats }: { stats: ProjectStats }) => {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true });
 
@@ -201,7 +239,7 @@ const ProjectStatsDashboard = ({ stats }: { stats: any }) => {
 };
 
 // Performance metrics visualization
-const PerformanceMetrics = ({ metrics }: { metrics: any }) => {
+const PerformanceMetrics = ({ metrics }: { metrics: Record<string, PerformanceMetricData> }) => {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true });
 
@@ -212,7 +250,7 @@ const PerformanceMetrics = ({ metrics }: { metrics: any }) => {
       </h3>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {Object.entries(metrics).map(([key, value]: [string, any], index) => {
+        {Object.entries(metrics).map(([key, value]: [string, PerformanceMetricData], index) => {
           const percentage = Math.min(value.score, 100);
           const color = percentage >= 90 ? '#00ff88' : percentage >= 70 ? '#ffaa00' : '#ff4444';
           
@@ -279,7 +317,7 @@ const PerformanceMetrics = ({ metrics }: { metrics: any }) => {
 };
 
 // Timeline visualization
-const TimelineVisualization = ({ events }: { events: any[] }) => {
+const TimelineVisualization = ({ events }: { events: TimelineEvent[] }) => {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true });
 
@@ -340,7 +378,7 @@ const TimelineVisualization = ({ events }: { events: any[] }) => {
 };
 
 // Skill proficiency radar
-const SkillProficiencyRadar = ({ skills }: { skills: any[] }) => {
+const SkillProficiencyRadar = ({ skills }: { skills: SkillData[] }) => {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true });
   
@@ -504,21 +542,21 @@ export const AnimatedInfographics = ({
       title: 'Project Genesis',
       description: 'Started the pixel wisdom blog project with initial MVP design',
       date: 'Jan 2024',
-      metrics: { commits: '45', features: '8' }
+      metrics: { commits: '45', features: '8', performance: '-', users: '-', satisfaction: '-' }
     },
     {
       id: '2',
       title: 'Analytics Integration',
       description: 'Implemented comprehensive analytics system with real-time tracking',
       date: 'Feb 2024',
-      metrics: { performance: '+25%', users: '1.2K' }
+      metrics: { commits: '-', features: '-', performance: '+25%', users: '1.2K', satisfaction: '-' }
     },
     {
       id: '3',
       title: 'Advanced Features',
       description: 'Added theme system, visualizations, and interactive components',
       date: 'Mar 2024',
-      metrics: { features: '24', satisfaction: '94%' }
+      metrics: { commits: '-', features: '24', performance: '-', users: '-', satisfaction: '94%' }
     }
   ];
 

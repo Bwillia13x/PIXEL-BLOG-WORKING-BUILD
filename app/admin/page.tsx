@@ -82,7 +82,7 @@ export default function AdminPage() {
       </header>
 
       {/* Main Dashboard */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className="max-w-7xl mx-auto px-4 pb-6">
         <AnalyticsDashboard />
       </main>
     </div>

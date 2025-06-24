@@ -27,27 +27,6 @@ export function useAdminAuth() {
   const [user, setUser] = useState<AdminUser | null>(null)
   const [authError, setAuthError] = useState<string | null>(null)
 
-  // Check for existing session on mount
-  useEffect(() => {
-    checkExistingSession()
-  }, [])
-
-  // Auto-logout when session expires
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      const timeUntilExpiry = user.sessionExpiry - Date.now()
-      if (timeUntilExpiry > 0) {
-        const timer = setTimeout(() => {
-          logout()
-        }, timeUntilExpiry)
-        
-        return () => clearTimeout(timer)
-      } else {
-        logout()
-      }
-    }
-  }, [isAuthenticated, user])
-
   const checkExistingSession = useCallback(() => {
     try {
       const sessionData = localStorage.getItem(STORAGE_KEY)
@@ -68,6 +47,34 @@ export function useAdminAuth() {
       localStorage.removeItem(STORAGE_KEY)
     }
   }, [])
+
+  const logout = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY)
+    setIsAuthenticated(false)
+    setUser(null)
+    setAuthError(null)
+  }, [])
+
+  // Check for existing session on mount
+  useEffect(() => {
+    checkExistingSession()
+  }, [checkExistingSession])
+
+  // Auto-logout when session expires
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const timeUntilExpiry = user.sessionExpiry - Date.now()
+      if (timeUntilExpiry > 0) {
+        const timer = setTimeout(() => {
+          logout()
+        }, timeUntilExpiry)
+        
+        return () => clearTimeout(timer)
+      } else {
+        logout()
+      }
+    }
+  }, [isAuthenticated, user, logout])
 
   const login = useCallback(async (credentials: LoginCredentials): Promise<boolean> => {
     setAuthError(null)
@@ -103,13 +110,6 @@ export function useAdminAuth() {
       setAuthError('Authentication failed. Please try again.')
       return false
     }
-  }, [])
-
-  const logout = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY)
-    setIsAuthenticated(false)
-    setUser(null)
-    setAuthError(null)
   }, [])
 
   const extendSession = useCallback(() => {

@@ -51,7 +51,7 @@ interface BundleAnalysisResponse {
   history: BundleSizeData[]
   latest: BundleSizeData
   trends: BundleTrends
-  currentAnalysis?: any
+  currentAnalysis?: Record<string, unknown>
   totalEntries: number
   generatedAt: string
 }
@@ -74,8 +74,7 @@ function MetricCard({
   value, 
   unit, 
   trend, 
-  budget, 
-  isViolation = false 
+  budget
 }: {
   title: string
   value: number
@@ -149,7 +148,7 @@ function ViolationAlert({ violations }: { violations: BundleSizeData['violations
       animate={{ opacity: 1 }}
       className="space-y-2"
     >
-      {violations.map((violation, index) => (
+      {violations.map((violation, index): React.ReactNode => (
         <div
           key={index}
           className={`flex items-start gap-3 p-3 rounded-md border ${
@@ -189,7 +188,7 @@ function BundleChart({ history }: { history: BundleSizeData[] }) {
   return (
     <div className="h-64 p-4">
       <div className="flex items-end space-x-1 h-full">
-        {history.slice(-20).map((entry, index) => {
+        {history.slice(-20).map((entry, index): React.ReactNode => {
           const jsHeight = (entry.summary.totalJavaScriptKB / maxTotal) * 100
           const cssHeight = (entry.summary.totalCSSKB / maxTotal) * 100
           const date = new Date(entry.timestamp).toLocaleDateString()
@@ -265,7 +264,7 @@ export default function BundleSizeMonitor() {
       // This would typically trigger a build analysis
       await new Promise(resolve => setTimeout(resolve, 2000)) // Simulate analysis
       await fetchBundleData()
-    } catch (err) {
+    } catch {
       setError('Failed to run bundle analysis')
     } finally {
       setIsLoading(false)
@@ -429,10 +428,10 @@ export default function BundleSizeMonitor() {
             <h2 className="text-lg font-semibold text-white mb-4">Detailed Analysis</h2>
             
             {/* Recommendations */}
-            {data.currentAnalysis.recommendations && (
+            {(data.currentAnalysis.recommendations && Array.isArray(data.currentAnalysis.recommendations)) ? (
               <div className="space-y-3">
                 <h3 className="font-medium text-cyan-400">Optimization Recommendations:</h3>
-                {data.currentAnalysis.recommendations.slice(0, 5).map((rec: any, index: number) => (
+                {(data.currentAnalysis.recommendations as Array<{ priority: string; title: string; description: string }>).slice(0, 5).map((rec, index: number): React.ReactNode => (
                   <div key={index} className="p-3 bg-gray-900/50 rounded border border-gray-700">
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`w-2 h-2 rounded-full ${
@@ -446,7 +445,7 @@ export default function BundleSizeMonitor() {
                   </div>
                 ))}
               </div>
-            )}
+            ) : null}
           </motion.div>
         )}
       </AnimatePresence>

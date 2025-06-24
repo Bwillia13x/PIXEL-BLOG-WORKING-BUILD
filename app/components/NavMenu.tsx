@@ -3,8 +3,8 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Monitor, Home, User, Briefcase, BookOpen, Mail, X, ChevronRight, Search } from "lucide-react"
+import { motion } from "framer-motion"
+import { Monitor, Home, User, Briefcase, BookOpen, Mail, Search } from "lucide-react"
 import MobileNavigation from './MobileNavigation'
 
 interface NavItem {
@@ -172,15 +172,7 @@ const NavMenu = () => {
     }
   }, [focusedIndex])
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen)
-    setFocusedIndex(-1)
-  }
 
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false)
-    setFocusedIndex(-1)
-  }
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/'

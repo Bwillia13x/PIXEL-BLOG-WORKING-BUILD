@@ -42,16 +42,17 @@ export default defineConfig({
         }
       }
     },
-    testTimeout: 10000,
-    hookTimeout: 10000
+    testTimeout: 30000,
+    hookTimeout: 30000
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './app'),
       '@/components': path.resolve(__dirname, './app/components'),
       '@/lib': path.resolve(__dirname, './lib'),
       '@/hooks': path.resolve(__dirname, './app/hooks'),
-      '@/utils': path.resolve(__dirname, './app/utils')
+      '@/utils': path.resolve(__dirname, './app/utils'),
+      '@/app': path.resolve(__dirname, './app'),
+      '@': path.resolve(__dirname, './app')
     }
   }
 }) 

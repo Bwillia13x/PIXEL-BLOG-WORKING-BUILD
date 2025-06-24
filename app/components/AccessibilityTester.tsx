@@ -1,10 +1,9 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ExclamationTriangleIcon,
-  CheckCircleIcon,
   XCircleIcon,
   InformationCircleIcon,
   XMarkIcon,
@@ -55,10 +54,6 @@ export default function AccessibilityTester() {
       result: ContrastResult
     }> = []
 
-    // Helper to get computed color
-    const getComputedColor = (element: Element, property: string): string => {
-      return window.getComputedStyle(element).getPropertyValue(property)
-    }
 
     // Helper to calculate contrast ratio
     const calculateContrast = (color1: string, color2: string): number => {
@@ -293,7 +288,7 @@ export default function AccessibilityTester() {
     return issues
   }
 
-  const runAccessibilityScan = async () => {
+  const runAccessibilityScan = useCallback(async () => {
     setIsScanning(true)
     
     // Wait a bit for animations
@@ -308,13 +303,13 @@ export default function AccessibilityTester() {
 
     setIssues(allIssues)
     setIsScanning(false)
-  }
+  }, [])
 
   useEffect(() => {
     if (isOpen) {
       runAccessibilityScan()
     }
-  }, [isOpen])
+  }, [isOpen, runAccessibilityScan])
 
   const getIssueIcon = (type: AccessibilityIssue['type']) => {
     switch (type) {
@@ -397,7 +392,7 @@ export default function AccessibilityTester() {
             ].map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as 'overview' | 'contrast' | 'keyboard' | 'structure')}
                 className={`flex items-center space-x-2 px-4 py-3 transition-colors border-b-2 ${
                   activeTab === tab.id
                     ? 'border-blue-400 text-blue-400 bg-gray-700'

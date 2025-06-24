@@ -143,7 +143,7 @@ export default function ScrollReveal({
     visible: {
       ...baseVariant,
       transition: {
-        ...(hasTransition ? (baseVariant as any).transition : {}),
+        ...(hasTransition ? (baseVariant as Record<string, unknown>).transition as Record<string, unknown> : {}),
         duration
       }
     }
@@ -151,7 +151,7 @@ export default function ScrollReveal({
 
   return (
     <motion.div
-      ref={ref as any}
+      ref={ref as React.RefObject<HTMLDivElement>}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
       variants={variants}

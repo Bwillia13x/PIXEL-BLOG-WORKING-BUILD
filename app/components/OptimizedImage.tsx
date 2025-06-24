@@ -228,11 +228,12 @@ export default function OptimizedImage({
   // Detect connection speed
   useEffect(() => {
     if (typeof navigator !== 'undefined' && 'connection' in navigator) {
-      const connection = (navigator as any).connection
+      const connection = (navigator as any).connection as Partial<{ effectiveType?: string; downlink?: number }> | undefined
       if (connection) {
+        const downlink = connection.downlink ?? 10 // fallback Mbps
         const isSlowConnection = connection.effectiveType === 'slow-2g' || 
                                connection.effectiveType === '2g' || 
-                               connection.downlink < 1.5
+                               downlink < 1.5
         setConnectionSpeed(isSlowConnection ? 'slow' : 'fast')
       }
     }
@@ -310,9 +311,7 @@ export default function OptimizedImage({
         ...style,
         ...(aspectRatio && { aspectRatio }),
         ...(pixelArt && { 
-          imageRendering: 'pixelated' as any,
-          imageRendering: '-moz-crisp-edges' as any,
-          imageRendering: 'crisp-edges' as any
+          imageRendering: 'pixelated' as React.CSSProperties['imageRendering']
         })
       }}
       onLoad={handleLoad}

@@ -5,7 +5,6 @@ import { SeasonalThemeManager } from '../components/themes/SeasonalThemes';
 import { AccessibilityPanel } from '../components/themes/AccessibilityFeatures';
 import { CinematicTransitionManager } from '../components/themes/CinematicTransitions';
 import { ThemeVisualEffects } from '../components/themes/AdvancedVisualEffects';
-import { MatrixTextReveal } from '@/app/components/design-system/PixelAnimations';
 import PageHeader from '@/app/components/PageHeader';
 
 export default function AdvancedThemesPage() {

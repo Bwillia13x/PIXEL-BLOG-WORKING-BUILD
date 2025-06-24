@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 
 interface PixelDensityConfig {
@@ -69,7 +69,7 @@ interface PixelDensityProviderProps {
 }
 
 export const PixelDensityProvider = ({ children, config = {} }: PixelDensityProviderProps) => {
-  const mergedConfig = { ...defaultConfig, ...config };
+  const mergedConfig = useMemo(() => ({ ...defaultConfig, ...config }), [config]);
   
   const [state, setState] = useState<PixelDensityState>({
     currentDensity: 'medium',

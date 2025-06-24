@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef, useEffect } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import { 
   CalendarIcon, 
@@ -267,7 +267,6 @@ function TimelineNode({
 function TimelineYear({ 
   year, 
   events, 
-  isVisible, 
   onProjectClick, 
   onDemoClick, 
   compact 

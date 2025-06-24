@@ -39,7 +39,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto pb-8">
       {/* Project Header */}
       <div className="mb-8">
         <h1 className="text-4xl pixel-head mb-4">{project.title}</h1>

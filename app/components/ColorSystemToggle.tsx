@@ -9,6 +9,7 @@ interface ColorSystemToggleProps {
   variant?: 'simple' | 'detailed'
   showLabels?: boolean
   className?: string
+  compact?: boolean
 }
 
 const COLOR_SYSTEMS = [
@@ -37,10 +38,17 @@ const COLOR_SYSTEMS = [
 export default function ColorSystemToggle({
   variant = 'simple',
   showLabels = false,
-  className = ''
+  className = '',
+  compact = false
 }: ColorSystemToggleProps) {
   const { currentTheme, setTheme, isTransitioning } = useTheme()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  // If compact mode requested, override to simple variant and hide labels
+  if (compact) {
+    variant = 'simple'
+    showLabels = false
+  }
 
   // Determine current color system
   const getCurrentSystem = () => {
@@ -67,7 +75,7 @@ export default function ColorSystemToggle({
         onClick={handleToggle}
         disabled={isTransitioning}
         className={`
-          group relative flex items-center space-x-3 p-3 rounded-lg border-2 border-gray-600/40 
+          group relative flex items-center ${compact ? 'p-2' : 'space-x-3 p-3'} rounded-lg border-2 border-gray-600/40 
           bg-gray-900/80 hover:bg-gray-800/90 transition-all duration-300 
           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900
           disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm overflow-hidden

@@ -13,12 +13,13 @@ import {
   DocumentTextIcon
 } from '@heroicons/react/24/outline'
 
-import { Post, posts } from '@/app/data/posts'
+import { posts } from '@/app/data/posts'
+import { Post } from '@/app/types/Post'
 import { extractTableOfContents, injectTableOfContentsIds } from '@/app/utils/tableOfContents'
 import { calculateReadingTime } from '@/app/utils/readingTime'
 import { findRelatedPosts } from '@/app/utils/relatedPosts'
 import { generatePostSEO, validateSEO } from '@/app/utils/seo'
-import { initializeAnalytics, trackPageView, trackShare, endSession } from '@/app/utils/analytics'
+import { initializeAnalytics, trackPageView, endSession } from '@/app/utils/analytics'
 
 import TableOfContents from './TableOfContents'
 import RelatedPosts from './RelatedPosts'
@@ -169,14 +170,12 @@ export default function BlogPostLayout({
   className = ""
 }: BlogPostLayoutProps) {
   const contentRef = useRef<HTMLDivElement | null>(null)
-  const [analytics, setAnalytics] = useState<any>(null)
   const [views, setViews] = useState<number | undefined>(undefined)
 
   // Initialize analytics
   useEffect(() => {
     if (enableAnalytics) {
       const analyticsInstance = initializeAnalytics(true, process.env.NODE_ENV === 'development')
-      setAnalytics(analyticsInstance)
       
       if (analyticsInstance) {
         trackPageView(post.id, post.title)
@@ -206,12 +205,6 @@ export default function BlogPostLayout({
   const seoData = generatePostSEO(post)
   const seoValidation = validateSEO(post)
 
-  // Handle social sharing
-  const handleShare = (platform: string) => {
-    if (enableAnalytics) {
-      trackShare(platform, post.id)
-    }
-  }
 
   const postUrl = `/blog/${post.slug}`
   const currentUrl = typeof window !== 'undefined' ? window.location.origin + postUrl : postUrl

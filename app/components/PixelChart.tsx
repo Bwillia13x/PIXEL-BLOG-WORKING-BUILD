@@ -23,7 +23,7 @@ import {
 interface ChartData {
   name: string
   value: number
-  [key: string]: any
+  [key: string]: string | number
 }
 
 interface PixelChartProps {
@@ -58,12 +58,12 @@ const PixelChart: React.FC<PixelChartProps> = ({
   gradient = true
 }) => {
   // Custom tooltip component
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ color: string; dataKey: string; value: number }>; label?: string }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-gray-800 border border-green-400 rounded-lg p-3 shadow-lg">
           <p className="text-green-400 font-mono text-sm mb-2">{label}</p>
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry, index: number) => (
             <p key={index} className="text-gray-300 font-mono text-xs">
               <span style={{ color: entry.color }}>●</span>
               {` ${entry.dataKey}: ${entry.value.toLocaleString()}`}
@@ -76,7 +76,7 @@ const PixelChart: React.FC<PixelChartProps> = ({
   }
 
   // Custom grid component for pixel effect
-  const PixelGrid = (props: any) => (
+  const PixelGrid = (props: Record<string, unknown>) => (
     <CartesianGrid
       {...props}
       stroke="#4ade80"
@@ -86,7 +86,7 @@ const PixelChart: React.FC<PixelChartProps> = ({
   )
 
   // Custom axis tick
-  const CustomTick = ({ x, y, payload }: any) => (
+  const CustomTick = ({ x, y, payload }: { x?: number; y?: number; payload?: { value: string } }) => (
     <g transform={`translate(${x},${y})`}>
       <text
         x={0}
@@ -96,7 +96,7 @@ const PixelChart: React.FC<PixelChartProps> = ({
         fill="#9ca3af"
         className="font-mono text-xs"
       >
-        {payload.value}
+        {payload?.value}
       </text>
     </g>
   )

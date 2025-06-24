@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import PixelChart from './PixelChart'
 import RealTimeVisitors from './RealTimeVisitors'
@@ -92,7 +92,7 @@ const AnalyticsDashboard: React.FC = () => {
             {/* Date Range Selector */}
             <select
               value={dateRange}
-              onChange={(e) => setDateRange(e.target.value as any)}
+              onChange={(e) => setDateRange(e.target.value as '24h' | '7d' | '30d' | '90d')}
               className="bg-gray-700 border border-gray-600 text-white rounded px-3 py-2 text-sm font-mono"
             >
               {dateRanges.map(range => (

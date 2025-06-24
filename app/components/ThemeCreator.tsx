@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  PlusIcon,
   CheckIcon,
   XMarkIcon,
   EyeIcon,
@@ -30,6 +29,39 @@ interface ColorInputProps {
   onChange: (value: string) => void
   description?: string
   required?: boolean
+}
+
+// Helper to calculate contrast ratio between two hex colors (WCAG)
+function calculateContrast(foreground: string, background: string): number {
+  const hexToRgb = (hex: string) => {
+    const clean = hex.replace('#', '')
+    const num = parseInt(clean, 16)
+    return {
+      r: (num >> 16) & 255,
+      g: (num >> 8) & 255,
+      b: num & 255
+    }
+  }
+
+  const luminance = ({ r, g, b }: { r: number; g: number; b: number }) => {
+    const toLin = (c: number) => {
+      c /= 255
+      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
+    }
+    const [rs, gs, bs] = [r, g, b].map(toLin)
+    return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs
+  }
+
+  try {
+    const fgLum = luminance(hexToRgb(foreground))
+    const bgLum = luminance(hexToRgb(background))
+    const contrast = fgLum > bgLum
+      ? (fgLum + 0.05) / (bgLum + 0.05)
+      : (bgLum + 0.05) / (fgLum + 0.05)
+    return contrast
+  } catch {
+    return 1
+  }
 }
 
 function ColorInput({ label, value, onChange, description, required = false }: ColorInputProps) {
@@ -173,7 +205,7 @@ export default function ThemeCreator({
   })
 
   const [activeTab, setActiveTab] = useState<'colors' | 'fonts' | 'effects' | 'preview'>('colors')
-  const [errors, setErrors] = useState<string[]>([])
+  const [, ] = useState<string[]>([])
   const [isPreviewing, setIsPreviewing] = useState(false)
 
   // Validate theme data

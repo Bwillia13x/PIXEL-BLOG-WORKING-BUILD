@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTheme } from '../contexts/ThemeContext'
 import BlinkingCursor from './BlinkingCursor'
@@ -59,7 +59,7 @@ const RetroTerminal: React.FC = () => {
   }, [])
 
   // Available commands
-  const commands: Record<string, Command> = {
+  const commands: Record<string, Command> = useMemo(() => ({
     help: {
       name: 'help',
       description: 'Show available commands',
@@ -371,7 +371,7 @@ const RetroTerminal: React.FC = () => {
     sudo: {
       name: 'sudo',
       description: 'Superuser do (with a twist)',
-      action: (args) => [
+      action: () => [
         '🚫 sudo: command not found',
         '',
         'Nice try! But this is a web terminal. 😄',
@@ -438,7 +438,7 @@ const RetroTerminal: React.FC = () => {
         return ['Terminal session ended. 👋']
       }
     }
-  }
+  }), [router, setCurrentPath, setHistory, commandHistory, userName, setIsOpen, currentPath])
 
   // Auto-completion logic
   const getCommandSuggestions = useCallback((input: string) => {
@@ -461,7 +461,7 @@ const RetroTerminal: React.FC = () => {
     }
     
     return []
-  }, [])
+  }, [commands])
 
   // Handle command execution
   const executeCommand = useCallback((commandInput: string) => {
@@ -501,7 +501,7 @@ const RetroTerminal: React.FC = () => {
     setInput('')
     setHistoryIndex(-1)
     setShowSuggestions(false)
-  }, [playSound])
+  }, [commands, playSound])
 
   // Handle input changes
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -639,7 +639,7 @@ const RetroTerminal: React.FC = () => {
         timestamp: new Date().toLocaleTimeString()
       }])
     }
-  }, [])
+  }, [history.length])
 
   if (!isOpen) {
     return (
@@ -797,7 +797,7 @@ const RetroTerminal: React.FC = () => {
             color: currentTheme.colors.textSecondary
           }}
                   >
-            💡 Tab: autocomplete | ↑↓: history | Ctrl+`: toggle | Type "help" for commands
+            💡 Tab: autocomplete | ↑↓: history | Ctrl+`: toggle | Type &quot;help&quot; for commands
           </div>
       </div>
     </div>

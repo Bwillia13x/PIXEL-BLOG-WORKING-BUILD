@@ -196,7 +196,7 @@ export interface AnalyticsEvent {
   userId?: string
   sessionId: string
   timestamp: Date
-  metadata: Record<string, any>
+  metadata: Record<string, unknown>
   processed: boolean
 }
 

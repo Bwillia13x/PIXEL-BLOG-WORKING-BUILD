@@ -63,6 +63,9 @@ module.exports = {
       backgroundSize: {
         "grid-8": "8px 8px",
       },
+      spacing: {
+        nav: "var(--nav-height)",
+      },
     },
   },
   plugins: [require("@tailwindcss/typography"), require("tailwindcss-animate")],

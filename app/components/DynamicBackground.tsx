@@ -35,7 +35,7 @@ export const DynamicBackground: React.FC<DynamicBackgroundProps> = ({
   const { theme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
-  const [performanceMode, setPerformanceMode] = useState<'auto' | 'manual'>('auto')
+  const [performanceMode] = useState<'auto' | 'manual'>('auto')
 
   // Performance monitoring
   const [frameRate, setFrameRate] = useState(60)

@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
 export interface Post {
   id: string
@@ -52,13 +52,13 @@ function getPostData(fileName: string): Post | null {
       readTime,
       published: data.published !== false,
     }
-  } catch (_error) {
+  } catch {
     // Error processing file - silently skip
     return null
   }
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     // Check if posts directory exists
     if (!fs.existsSync(postsDirectory)) {
@@ -101,7 +101,7 @@ export async function GET(_request: NextRequest) {
         'Content-Type': 'application/json',
       }
     })
-  } catch (_error) {
+  } catch {
     // Error reading posts - return error response
     return NextResponse.json(
       { 

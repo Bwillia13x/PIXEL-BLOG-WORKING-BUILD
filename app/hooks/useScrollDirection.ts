@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 interface ScrollState {
   scrollY: number
@@ -15,41 +15,36 @@ export const useScrollDirection = (threshold: number = 10) => {
     isAtTop: true
   })
 
-  useEffect(() => {
-    let lastScrollY = window.scrollY
-    let ticking = false
+  const lastScrollYRef = useRef(0)
 
-    const updateScrollState = () => {
-      const scrollY = window.scrollY
-      const scrollDirection = scrollY > lastScrollY ? 'down' : 'up'
-      const isScrolled = scrollY > threshold
-      const isAtTop = scrollY < threshold
+  const updateScrollState = useCallback(() => {
+    const scrollY = window.scrollY
+    const scrollDirection = scrollY > lastScrollYRef.current ? 'down' : 'up'
+    const isScrolled = scrollY > threshold
+    const isAtTop = scrollY < threshold
 
-      // Only update if scroll direction has meaningfully changed
-      if (Math.abs(scrollY - lastScrollY) > 5) {
-        setScrollState({
-          scrollY,
-          scrollDirection,
-          isScrolled,
-          isAtTop
-        })
-      }
-
-      lastScrollY = scrollY > 0 ? scrollY : 0
-      ticking = false
+    if (Math.abs(scrollY - lastScrollYRef.current) > 5) {
+      setScrollState({ scrollY, scrollDirection, isScrolled, isAtTop })
+      lastScrollYRef.current = scrollY > 0 ? scrollY : 0
     }
+  }, [threshold])
+
+  useEffect(() => {
+    let ticking = false
 
     const onScroll = () => {
       if (!ticking) {
-        requestAnimationFrame(updateScrollState)
+        requestAnimationFrame(() => {
+          updateScrollState()
+          ticking = false
+        })
         ticking = true
       }
     }
 
     window.addEventListener('scroll', onScroll, { passive: true })
-    
     return () => window.removeEventListener('scroll', onScroll)
-  }, [threshold])
+  }, [updateScrollState])
 
   return scrollState
 } 

@@ -91,12 +91,34 @@ export default function ContentManagementSystem({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
 
+  // Callback definitions (hoisted before first use)
+  const updatePost = useCallback((updates: Partial<CMSPost>) => {
+    setPost(prev => ({
+      ...prev,
+      ...updates,
+      updatedAt: new Date(),
+      readTime: updates.content ? calculateReadTime(updates.content) : prev.readTime
+    }))
+    setHasUnsavedChanges(true)
+  }, [])
+
+  const handleSave = useCallback(async () => {
+    try {
+      await onSave(post)
+      setHasUnsavedChanges(false)
+      setLastSaved(new Date())
+    } catch (error) {
+      console.error('Save failed:', error)
+      throw error
+    }
+  }, [post, onSave])
+
   // Auto-generate slug from title
   useEffect(() => {
     if (post.title && (!post.slug || post.slug === generateSlug(post.title))) {
       updatePost({ slug: generateSlug(post.title) })
     }
-  }, [post.title])
+  }, [post.title, post.slug, updatePost])
 
   // Auto-save functionality
   useEffect(() => {
@@ -111,7 +133,7 @@ export default function ContentManagementSystem({
 
       return () => clearTimeout(timer)
     }
-  }, [post, hasUnsavedChanges, autoSave])
+  }, [post, hasUnsavedChanges, autoSave, handleSave])
 
   const generateSlug = (title: string): string => {
     return title
@@ -128,16 +150,6 @@ export default function ContentManagementSystem({
     const minutes = Math.ceil(words / wordsPerMinute)
     return `${minutes} min read`
   }
-
-  const updatePost = useCallback((updates: Partial<CMSPost>) => {
-    setPost(prev => ({
-      ...prev,
-      ...updates,
-      updatedAt: new Date(),
-      readTime: updates.content ? calculateReadTime(updates.content) : prev.readTime
-    }))
-    setHasUnsavedChanges(true)
-  }, [])
 
   const handleContentChange = (content: string) => {
     updatePost({ content })
@@ -178,17 +190,6 @@ export default function ContentManagementSystem({
       seoTitle: meta.title,
       seoDescription: meta.description
     })
-  }
-
-  const handleSave = async () => {
-    try {
-      await onSave(post)
-      setHasUnsavedChanges(false)
-      setLastSaved(new Date())
-    } catch (error) {
-      console.error('Save failed:', error)
-      throw error
-    }
   }
 
   const handlePublish = async () => {
