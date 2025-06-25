@@ -27,7 +27,7 @@ const timelineData = [
       complexity: 4,
       impact: 5,
       github: 'https://github.com/user/pixel-blog',
-      demo: 'https://pixelwisdom.dev'
+      demo: 'https://itfrombit.io'
     }
   },
   {
@@ -75,7 +75,7 @@ const exportData = {
   },
   metadata: {
     generatedAt: new Date(),
-    generatedBy: 'Pixel Wisdom System',
+    generatedBy: 'It From Bit System',
     version: '1.0.0',
     description: 'Comprehensive showcase of data visualization capabilities'
   }

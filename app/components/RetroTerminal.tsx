@@ -234,7 +234,7 @@ const RetroTerminal: React.FC = () => {
       description: 'Display system information',
       action: () => [
         '╭─────────────────────────────────╮',
-        '│    PIXEL WISDOM TERMINAL v2.5  │',
+                  '│      IT FROM BIT TERMINAL v2.5    │',
         '╰─────────────────────────────────╯',
         '',
         '🖥️  System: Pixel Blog Portfolio',
@@ -387,7 +387,7 @@ const RetroTerminal: React.FC = () => {
       action: () => [
         `${userName}`,
         '',
-        'You are a visitor exploring the Pixel Wisdom terminal! 🚀',
+        'You are a visitor exploring the It From Bit terminal! 🚀',
         'Welcome to this retro computing experience! 💾'
       ]
     },
@@ -627,7 +627,7 @@ const RetroTerminal: React.FC = () => {
         command: 'system',
         output: [
           '╭─────────────────────────────────────╮',
-          '│  Welcome to PIXEL WISDOM TERMINAL  │',
+          '│    Welcome to IT FROM BIT TERMINAL    │',
           '╰─────────────────────────────────────╯',
           '',
           '🚀 Retro terminal interface loaded!',
@@ -679,7 +679,7 @@ const RetroTerminal: React.FC = () => {
               className="text-sm font-mono"
               style={{ color: currentTheme.colors.text }}
             >
-              terminal@pixelwisdom: {currentPath}
+              terminal@itfrombit: {currentPath}
             </span>
           </div>
           <button
@@ -705,7 +705,7 @@ const RetroTerminal: React.FC = () => {
               {entry.command !== 'system' && (
                 <div className="flex items-center space-x-2 mb-1">
                   <span style={{ color: currentTheme.colors.primary }}>
-                    {userName}@pixelwisdom
+                    {userName}@itfrombit
                   </span>
                   <span style={{ color: currentTheme.colors.textSecondary }}>:</span>
                   <span style={{ color: currentTheme.colors.accent1 }}>
@@ -726,7 +726,7 @@ const RetroTerminal: React.FC = () => {
           {/* Current Input Line */}
           <div className="flex items-center space-x-2">
             <span style={{ color: currentTheme.colors.primary }}>
-              {userName}@pixelwisdom
+              {userName}@itfrombit
             </span>
             <span style={{ color: currentTheme.colors.textSecondary }}>:</span>
             <span style={{ color: currentTheme.colors.accent1 }}>

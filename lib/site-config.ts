@@ -27,19 +27,19 @@ export interface SiteConfig {
 }
 
 export const siteConfig: SiteConfig = {
-  name: "Pixel Wisdom",
-  title: "Pixel Wisdom - Developer Portfolio & AI Innovation Hub",
-  description: "Full-stack developer specializing in AI-driven development, financial technology, and modern web applications. Featuring cutting-edge projects in value investing tools, data visualization, and agentic IDE workflows.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://pixelwisdom.dev",
+  name: "It From Bit",
+  title: "It From Bit - Where Information Becomes Reality",
+  description: "Exploring the intersection of information theory, AI development, and financial markets. From quantum foundations to practical value investing tools - where Wheeler's 'It From Bit' philosophy meets modern technology.",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://itfrombit.ca",
   ogImage: "/og-image.png",
-  creator: "Pixel Wisdom Developer",
-  keywords: ["full-stack developer", "AI development", "financial technology", "value investing", "Next.js", "TypeScript", "React", "data visualization", "web development", "portfolio"],
+  creator: "It From Bit",
+  keywords: ["information theory", "AI development", "financial technology", "value investing", "quantum computing", "Next.js", "TypeScript", "React", "data visualization", "John Wheeler", "It From Bit"],
   social: {
     // TODO: Add your actual social links
     // github: "https://github.com/yourusername",
     // linkedin: "https://linkedin.com/in/yourusername", 
     // twitter: "https://twitter.com/yourusername",
-    email: "hello@pixelwisdom.dev"
+    email: "hello@itfrombit.io"
   },
   navigation: {
     main: [

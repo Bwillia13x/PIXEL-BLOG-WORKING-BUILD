@@ -173,13 +173,13 @@ export async function GET(request: NextRequest) {
           <hr/>
           ${contentHtml}
           <hr/>
-          <p><a href="${postUrl}">Read full article on Pixel Wisdom</a></p>
+          <p><a href="${postUrl}">Read full article on It From Bit</a></p>
         `,
         content_text: contentText,
         summary,
         date_published: new Date(post.date).toISOString(),
         author: {
-          name: siteConfig.creator || 'Pixel Wisdom',
+          name: siteConfig.creator || 'It From Bit',
           url: baseUrl,
           avatar: `${baseUrl}/icons/icon-192x192.png`
         },
@@ -198,7 +198,7 @@ export async function GET(request: NextRequest) {
       icon: `${baseUrl}/icons/icon-512x512.png`,
       favicon: `${baseUrl}/icons/favicon-32x32.png`,
       author: {
-        name: siteConfig.creator || 'Pixel Wisdom',
+        name: siteConfig.creator || 'It From Bit',
         url: baseUrl,
         avatar: `${baseUrl}/icons/icon-192x192.png`
       },

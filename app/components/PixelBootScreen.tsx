@@ -25,19 +25,19 @@ const asciiLogo = `
 `
 
 const bootSequence = [
-  { phase: "bios", text: "PIXEL WISDOM BIOS v2.1.0", delay: 200 },
+  { phase: "bios", text: "IT FROM BIT BIOS v2.1.0", delay: 200 },
   { phase: "memory", text: "Memory Test: 64MB OK", delay: 120 },
-  { phase: "cpu", text: "CPU: Intel Wisdom 486DX @ 33MHz", delay: 80 },
-  { phase: "drives", text: "Detecting drives... Found: C:\\WISDOM\\", delay: 160 },
-  { phase: "os", text: "Loading PixelOS...", delay: 240 },
+  { phase: "cpu", text: "CPU: Intel Information 486DX @ 33MHz", delay: 80 },
+  { phase: "drives", text: "Detecting drives... Found: C:\\ITFROMBIT\\", delay: 160 },
+  { phase: "os", text: "Loading ItFromBitOS...", delay: 240 },
   { phase: "kernel", text: "Kernel loaded successfully", delay: 120 },
   { phase: "drivers", text: "Loading device drivers...", delay: 160 },
   { phase: "network", text: "Network interface: READY", delay: 80 },
   { phase: "services", text: "Starting system services...", delay: 200 },
-  { phase: "wisdom", text: "Initializing Wisdom Engine...", delay: 240 },
+  { phase: "wisdom", text: "Initializing Information Engine...", delay: 240 },
   { phase: "ai", text: "AI Modules: ONLINE", delay: 120 },
   { phase: "blog", text: "Blog Framework: LOADED", delay: 160 },
-  { phase: "ready", text: "System Ready - Welcome to Pixel Wisdom!", delay: 320 }
+  { phase: "ready", text: "System Ready - Welcome to It From Bit!", delay: 320 }
 ]
 
 const glitchChars = ['▓', '▒', '░', '█', '▄', '▀', '■', '□', '▲', '►']
@@ -178,8 +178,8 @@ export function PixelBootScreen({ onComplete, soundEnabled = false }: PixelBootS
             className="h-full flex flex-col justify-start p-4"
           >
             <div className="text-xs space-y-1">
-              <div>PIXEL WISDOM BIOS v2.1.0</div>
-              <div>Copyright (C) 2025 Pixel Wisdom Technologies</div>
+              <div>IT FROM BIT BIOS v2.1.0</div>
+              <div>Copyright (C) 2025 It From Bit Technologies</div>
               <div className="mt-4">POST - Power On Self Test</div>
               <div className="mt-2">Testing RAM......... OK</div>
               <div>Testing CPU......... OK</div>
@@ -206,7 +206,7 @@ export function PixelBootScreen({ onComplete, soundEnabled = false }: PixelBootS
             className="h-full flex flex-col justify-start p-4"
           >
             <div className="mb-4 text-xs">
-              <div>PIXEL WISDOM OS Loading...</div>
+              <div>IT FROM BIT OS Loading...</div>
               <div className="border-b border-green-400 w-full my-2"></div>
             </div>
             

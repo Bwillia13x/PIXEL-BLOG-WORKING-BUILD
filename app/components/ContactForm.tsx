@@ -161,7 +161,7 @@ export default function ContactForm({ className }: ContactFormProps) {
       const body = encodeURIComponent(
         `Name: ${formState.name.value}\nEmail: ${formState.email.value}\nSubject: ${formState.subject.value}\n\nMessage:\n${formState.message.value}`
       )
-      const mailtoLink = `mailto:hello@pixelwisdom.dev?subject=${subject}&body=${body}`
+      const mailtoLink = `mailto:hello@itfrombit.io?subject=${subject}&body=${body}`
       
       // Show fallback option to user
       if (confirm('There was an issue sending your message. Would you like to open your email client instead?')) {

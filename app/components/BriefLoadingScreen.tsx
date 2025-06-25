@@ -15,7 +15,7 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
 
   const loadingTexts = useMemo(() => [
     'INITIALIZING...',
-    'LOADING PIXEL WISDOM...',
+    'LOADING IT FROM BIT...',
     'SYSTEM READY'
   ], [])
 
@@ -78,7 +78,7 @@ export function BriefLoadingScreen({ onComplete, duration = 2500 }: BriefLoading
               transform: 'translateY(20px)'
             }}
           >
-            PIXEL WISDOM
+            IT FROM BIT
           </motion.div>
 
           {/* Progress Bar */}

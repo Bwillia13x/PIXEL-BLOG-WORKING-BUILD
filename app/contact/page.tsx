@@ -39,7 +39,7 @@ export default function ContactPage() {
               <Mail className="w-5 h-5 text-green-400" />
               <div>
                 <p className="font-readable text-sm text-gray-400">Email</p>
-                <p className="font-readable text-gray-300">hello@pixelwisdom.dev</p>
+                <p className="font-readable text-gray-300">hello@itfrombit.io</p>
                 <div className="flex items-center space-x-2 mt-1">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                   <p className="font-readable text-xs text-green-400">Usually responds within 24 hours</p>

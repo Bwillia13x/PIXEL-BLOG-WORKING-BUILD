@@ -58,7 +58,7 @@ export function PixelIntroAnimation() {
       ctx.font = `${fontSize}px "Press Start 2P", monospace`
 
       for (let i = 0; i < drops.length; i++) {
-        const text = "PIXEL WISDOM BLOG AI DEV TOOLS"[Math.floor(Math.random() * 30)]
+        const text = "IT FROM BIT BLOG AI DEV TOOLS"[Math.floor(Math.random() * 26)]
         ctx.fillText(text, i * fontSize, drops[i] * fontSize)
 
         if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
@@ -134,7 +134,7 @@ export function PixelIntroAnimation() {
         ctx.font = `${fontSize}px "Press Start 2P", monospace`
         
         for (let i = 0; i < drops.length; i += 2) {
-          const text = "PIXELWISDOM"[Math.floor(Math.random() * 11)]
+          const text = "ITFROMBIT"[Math.floor(Math.random() * 9)]
           ctx.fillText(text, i * fontSize, drops[i] * fontSize)
           drops[i] += 0.3
           
@@ -207,7 +207,7 @@ export function PixelIntroAnimation() {
               INITIALIZING
             </div>
             <div className="text-sm md:text-lg font-mono text-green-400/80">
-              PIXEL WISDOM SYSTEMS
+              IT FROM BIT SYSTEMS
             </div>
           </motion.div>
         </div>

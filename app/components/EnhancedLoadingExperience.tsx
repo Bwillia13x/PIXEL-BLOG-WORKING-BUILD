@@ -172,7 +172,7 @@ export function EnhancedLoadingExperience({
                 }}
                 className="text-green-400/70 font-mono text-sm mt-4"
               >
-                Entering Pixel Wisdom...
+                Entering It From Bit...
               </motion.div>
             </div>
           </motion.div>
@@ -199,7 +199,7 @@ export function EnhancedLoadingExperience({
               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
               className="w-3 h-3 border border-green-400 border-t-transparent rounded-full"
             />
-            <span>INITIALIZING PIXEL WISDOM</span>
+                            <span>INITIALIZING IT FROM BIT</span>
           </div>
         </div>
       )}

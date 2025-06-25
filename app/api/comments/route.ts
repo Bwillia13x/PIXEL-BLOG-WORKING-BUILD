@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
           })
 
           await transporter.sendMail({
-            from: `Pixel Wisdom Blog <no-reply@pixelwisdom.dev>`,
+            from: `It From Bit Blog <no-reply@itfrombit.io>`,
             to: 'benjiwilli13x@gmail.com',
             subject: `New comment on post ${commentData.postId}`,
             text: `Author: ${commentData.authorName}\nEmail: ${commentData.authorEmail}\nContent:\n${commentData.content}`

@@ -130,12 +130,12 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
                 <div className="flex items-center space-x-3">
                   <img
                     src="/images/main_logo.jpeg"
-                    alt="Pixel Wisdom logo"
+                    alt="It From Bit logo"
                     className="w-12 h-12 object-contain gyro-spin"
                   />
                   
                   <h1 className="text-lg sm:text-xl font-pixel text-green-400">
-                    PIXEL WISDOM
+                    IT FROM BIT
                   </h1>
                 </div>
 

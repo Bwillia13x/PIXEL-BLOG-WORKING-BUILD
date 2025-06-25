@@ -113,8 +113,8 @@ export async function GET(request: NextRequest) {
       <width>512</width>
       <height>512</height>
     </image>
-    <managingEditor>${siteConfig.social?.email || 'hello@pixelwisdom.dev'} (${escapeXml(siteConfig.creator || 'Pixel Wisdom')})</managingEditor>
-    <webMaster>${siteConfig.social?.email || 'hello@pixelwisdom.dev'} (${escapeXml(siteConfig.creator || 'Pixel Wisdom')})</webMaster>
+    <managingEditor>${siteConfig.social?.email || 'hello@itfrombit.io'} (${escapeXml(siteConfig.creator || 'It From Bit')})</managingEditor>
+    <webMaster>${siteConfig.social?.email || 'hello@itfrombit.io'} (${escapeXml(siteConfig.creator || 'It From Bit')})</webMaster>
     <category>Technology</category>
     <category>Web Development</category>
     <category>AI</category>
@@ -142,9 +142,9 @@ export async function GET(request: NextRequest) {
         <hr/>
         <div>${post.content}</div>
         <hr/>
-        <p><a href="${postUrl}">Read full article on Pixel Wisdom</a></p>
+        <p><a href="${postUrl}">Read full article on It From Bit</a></p>
       ]]></content:encoded>
-      <author>${siteConfig.social?.email || 'hello@pixelwisdom.dev'} (${escapeXml(siteConfig.creator || 'Pixel Wisdom')})</author>
+      <author>${siteConfig.social?.email || 'hello@itfrombit.io'} (${escapeXml(siteConfig.creator || 'It From Bit')})</author>
     </item>`
     }).join('')}
   </channel>

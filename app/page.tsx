@@ -98,8 +98,8 @@ export default async function Home() {
       
       {/* Hero Section */}
       <PageHeader
-        title="Welcome to Pixel Wisdom"
-        subtitle="A developer's journey through AI, finance, and digital innovation."
+        title="Welcome to It From Bit"
+        subtitle="Exploring information, AI, and markets—where code meets reality."
         animationType="matrix"
         titleClassName="text-3xl sm:text-4xl md:text-5xl lg:text-6xl"
         className="mb-16"
@@ -139,7 +139,7 @@ export default async function Home() {
 
       {/* Simple footer */}
       <footer className="text-center text-gray-300 text-sm max-w-4xl mx-auto pt-12 border-t border-gray-700/30">
-        <p>© 2024 Pixel Wisdom. Built with Next.js and Tailwind CSS.</p>
+        <p>© 2024 It From Bit. Built with Next.js and Tailwind CSS.</p>
       </footer>
     </div>
   )

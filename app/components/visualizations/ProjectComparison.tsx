@@ -119,8 +119,8 @@ const SAMPLE_PROJECTS: ComparisonProject[] = [
     },
     links: {
       github: 'https://github.com/user/pixel-blog',
-      demo: 'https://pixelwisdom.dev',
-      documentation: 'https://docs.pixelwisdom.dev'
+      demo: 'https://itfrombit.io',
+      documentation: 'https://docs.itfrombit.io'
     },
     screenshots: [],
     color: '#00ff88'
