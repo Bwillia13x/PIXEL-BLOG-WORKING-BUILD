@@ -12,7 +12,7 @@ published: true
 
 # Testing Auto-Deployment Workflow
 
-This post demonstrates the new automated content deployment system that we've just implemented for the Pixel Wisdom blog.
+This post demonstrates the new automated content deployment system that we've just implemented for the It From Bit blog.
 
 ## What We've Built
 

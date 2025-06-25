@@ -318,7 +318,7 @@ const generatePDFContent = async (config: ExportConfig, data: ExportableData): P
   // Footer
   htmlContent += `
     <div class="footer">
-      This report was generated automatically by Pixel Wisdom Analytics System.<br>
+      This report was generated automatically by It From Bit Analytics System.<br>
       For questions or support, please contact the development team.
     </div>
     </body>

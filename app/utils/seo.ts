@@ -41,7 +41,7 @@ export interface SEOValidation {
 }
 
 const SITE_CONFIG = {
-  name: 'Pixel Wisdom',
+  name: 'It From Bit',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://pixel-wisdom.vercel.app',
   description: 'Modern portfolio and blog with retro pixel aesthetics',
   creator: 'Benjamin Williams',
@@ -64,7 +64,7 @@ export function generatePostSEO(
     ...(post.tags || []),
     post.category,
     'blog',
-    'pixel wisdom',
+    'it from bit',
     readingTime.text
   ].filter(Boolean)
   

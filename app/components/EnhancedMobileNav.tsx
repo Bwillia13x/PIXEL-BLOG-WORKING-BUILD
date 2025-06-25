@@ -286,7 +286,7 @@ export default function EnhancedMobileNavigation({ }: EnhancedMobileNavProps) {
                   }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  PIXEL WISDOM
+                  IT FROM BIT
                 </motion.h2>
                 <p className="font-mono text-xs text-gray-400">Touch & Swipe Navigation</p>
                 
@@ -382,7 +382,7 @@ export default function EnhancedMobileNavigation({ }: EnhancedMobileNavProps) {
                 
                 <div className="text-center">
                   <p className="font-mono text-xs text-gray-500 mb-2">
-                    © 2024 Pixel Wisdom
+                    © 2024 It From Bit
                   </p>
                   <div className="flex justify-center space-x-2">
                     {[...Array(5)].map((_, i) => (

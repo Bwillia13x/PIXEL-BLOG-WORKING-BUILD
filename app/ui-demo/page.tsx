@@ -11,6 +11,6 @@ export default function UIDemoPage() {
 }
 
 export const metadata = {
-  title: 'UI Improvements Demo - Pixel Wisdom',
+  title: 'UI Improvements Demo - It From Bit',
   description: 'Interactive demonstration of the enhanced design system and user interface improvements.',
 }

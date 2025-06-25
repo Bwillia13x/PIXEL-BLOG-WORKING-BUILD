@@ -6,7 +6,7 @@ test.describe('Blog Pages', () => {
     await page.goto('/blog');
 
     // Check page title
-    await expect(page).toHaveTitle(/Blog.*Pixel Wisdom/i);
+    await expect(page).toHaveTitle(/Blog.*It From Bit/i);
 
     // Check for blog posts or empty state
     const postsContainer = page.getByRole('main');

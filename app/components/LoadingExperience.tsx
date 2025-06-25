@@ -65,7 +65,7 @@ export function LoadingExperience({ onComplete, soundEnabled = false }: LoadingE
 
       {/* Accessibility announcement */}
       <div className="sr-only" aria-live="polite" aria-atomic="true">
-        {currentPhase === 'intro' && 'Loading: Initializing Pixel Wisdom...'}
+        {currentPhase === 'intro' && 'Loading: Initializing It From Bit...'}
         {currentPhase === 'boot' && 'Loading: Booting system...'}
         {currentPhase === 'transition' && 'Loading: Preparing interface...'}
         {currentPhase === 'complete' && 'Loading complete'}
@@ -167,7 +167,7 @@ export function LoadingExperience({ onComplete, soundEnabled = false }: LoadingE
                 }}
                 className="text-green-400/70 font-mono text-xs sm:text-sm mt-6 tracking-wider"
               >
-                Initializing Pixel Wisdom Interface...
+                Initializing It From Bit Interface...
               </motion.div>
 
               {/* Pixel particles effect */}
@@ -213,7 +213,7 @@ export function LoadingExperience({ onComplete, soundEnabled = false }: LoadingE
               transition={{ duration: 0.8 }}
               className="text-green-400 font-pixel text-sm"
             >
-              Welcome to Pixel Wisdom
+              Welcome to It From Bit
             </motion.div>
           </motion.div>
         )}
@@ -224,7 +224,7 @@ export function LoadingExperience({ onComplete, soundEnabled = false }: LoadingE
         <div className="absolute bottom-6 left-6 z-10">
           <PixelLoading 
             variant="typewriter" 
-            message="LOADING PIXEL WISDOM" 
+            message="LOADING IT FROM BIT" 
             className="text-green-400/60 text-xs"
           />
         </div>

@@ -540,7 +540,7 @@ export const AnimatedInfographics = ({
     {
       id: '1',
       title: 'Project Genesis',
-      description: 'Started the pixel wisdom blog project with initial MVP design',
+      description: 'Started the It From Bit blog project with initial MVP design',
       date: 'Jan 2024',
       metrics: { commits: '45', features: '8', performance: '-', users: '-', satisfaction: '-' }
     },

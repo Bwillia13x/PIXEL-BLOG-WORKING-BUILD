@@ -132,7 +132,7 @@ export const COLOR_SYSTEMS = {
       highContrast: false
     },
     metadata: {
-      author: 'Pixel Wisdom',
+      author: 'It From Bit',
       version: '1.0.0',
       created: new Date().toISOString(),
       tags: ['default', 'matrix', 'green', 'neon', 'terminal']
@@ -197,7 +197,7 @@ export const COLOR_SYSTEMS = {
       highContrast: false
     },
     metadata: {
-      author: 'Pixel Wisdom',
+      author: 'It From Bit',
       version: '1.0.0',
       created: new Date().toISOString(),
       tags: ['cyberpunk', 'sunset', 'magenta', 'orange', 'vibrant']
@@ -270,7 +270,7 @@ export const RETRO_THEMES: Record<string, ThemeConfig> = {
       highContrast: false
     },
     metadata: {
-      author: 'Pixel Wisdom',
+      author: 'It From Bit',
       version: '1.0.0',
       created: new Date().toISOString(),
       tags: ['retro', 'terminal', 'amber', 'warm']
@@ -334,7 +334,7 @@ export const RETRO_THEMES: Record<string, ThemeConfig> = {
       highContrast: false
     },
     metadata: {
-      author: 'Pixel Wisdom',
+      author: 'It From Bit',
       version: '1.0.0',
       created: new Date().toISOString(),
       tags: ['cyberpunk', 'neon', 'blue', 'futuristic']
@@ -398,7 +398,7 @@ export const RETRO_THEMES: Record<string, ThemeConfig> = {
       highContrast: false
     },
     metadata: {
-      author: 'Pixel Wisdom',
+      author: 'It From Bit',
       version: '1.0.0',
       created: new Date().toISOString(),
       tags: ['vintage', 'sepia', 'paper', 'classic']
@@ -462,7 +462,7 @@ export const RETRO_THEMES: Record<string, ThemeConfig> = {
       highContrast: false
     },
     metadata: {
-      author: 'Pixel Wisdom',
+      author: 'It From Bit',
       version: '1.0.0',
       created: new Date().toISOString(),
       tags: ['neon', 'vibrant', 'night', 'electric']
@@ -526,7 +526,7 @@ export const RETRO_THEMES: Record<string, ThemeConfig> = {
       highContrast: false
     },
     metadata: {
-      author: 'Pixel Wisdom',
+      author: 'It From Bit',
       version: '1.0.0',
       created: new Date().toISOString(),
       tags: ['synthwave', '80s', 'retro', 'gradient']

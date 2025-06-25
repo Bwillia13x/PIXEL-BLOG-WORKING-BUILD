@@ -7,6 +7,7 @@ import BreadcrumbNav from './BreadcrumbNav'
 import CommandPalette from './CommandPalette'
 import { ChevronUp, ChevronDown } from 'lucide-react'
 import { useScrollDirection } from '@/app/hooks/useScrollDirection'
+import LogoPW from './LogoPW'
 
 interface ResponsiveHeaderProps {
   showBreadcrumbs?: boolean
@@ -128,11 +129,7 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
               <div className="flex items-center justify-between py-4 sm:py-6">
                 {/* Logo/Brand Area */}
                 <div className="flex items-center space-x-3">
-                  <img
-                    src="/images/main_logo.jpeg"
-                    alt="It From Bit logo"
-                    className="w-12 h-12 object-contain gyro-spin"
-                  />
+                  <LogoPW size={48} className="gyro-spin" />
                   
                   <h1 className="text-lg sm:text-xl font-pixel text-green-400">
                     IT FROM BIT
@@ -183,9 +180,7 @@ export const ResponsiveHeader: React.FC<ResponsiveHeaderProps> = ({
               className="py-3 flex items-center justify-between overflow-hidden"
             >
               <div className="flex items-center space-x-2">
-                <div className="w-6 h-6 bg-green-400 border border-green-400">
-                  <div className="w-full h-full bg-black" />
-                </div>
+                <LogoPW size={28} />
                 <span className="text-sm font-pixel text-green-400">PW</span>
               </div>
 

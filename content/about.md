@@ -1,115 +1,157 @@
-# About Pixel Wisdom
+# About It From Bit
 
-I'm a full-stack developer and entrepreneur passionate about building AI-powered solutions that solve real-world problems. My expertise spans modern web technologies, financial technology, and innovative development workflows that leverage artificial intelligence to accelerate productivity.
+*"It from bit symbolizes the idea that every item of the physical world has at bottom... an immaterial source and explanation"* — John Wheeler
 
-## What I Build
+Welcome to It From Bit, where we explore how information becomes reality through code, markets, and artificial intelligence.
 
-### 🤖 AI-Driven Development Tools
-I specialize in creating development workflows that integrate AI assistants like Codex CLI, achieving 3x faster feature delivery while maintaining high code quality. My approach combines human creativity with AI efficiency.
+## The Philosophy Behind "It From Bit"
 
-### 💰 Financial Technology Solutions
-My flagship projects include sophisticated value investing tools that automate Benjamin Graham's methodology:
-- **Quality Score Engine**: AI-powered company analysis using 12 defensive criteria
-- **Margin of Safety Calculator**: Monte Carlo simulation across multiple valuation methods
-- **Deep Value Screener**: Systematic identification of undervalued opportunities
-- **EPV Calculator**: Bruce Greenwald's Earnings Power Value methodology
-- **Portfolio Stress Testing**: Historical crisis simulation and risk assessment
+The name comes from physicist John Wheeler's revolutionary insight that all physical phenomena—all "its"—arise from information-theoretic origins—from "bits." This isn't just metaphor; it's a fundamental principle that shapes how we understand reality, computation, and markets.
 
-### 🎨 Interactive Data Visualizations
-I create compelling, responsive visualizations that make complex data accessible:
-- Real-time trading dashboards with 60fps chart updates
-- 3D data visualization engines using WebGL and Three.js
-- Interactive project showcases with advanced animations
-- Scientific computing visualizations (CFD, shock wave analysis)
+### Information as Foundation
+Wheeler proposed that information is not just about computation—it's about the fabric of reality itself. At It From Bit, we apply this lens to:
+- **Code**: Every algorithm encodes patterns that shape digital reality
+- **Markets**: Financial systems process information into economic outcomes  
+- **AI**: Machine learning discovers information structures in data
+- **Quantum Systems**: Information processing at the most fundamental level
 
-## Technical Expertise
+## What We Build
+
+### 🔬 Information-Theoretic Tools
+Projects that demonstrate how bits become "its":
+- **Quantum Computing Simulations**: Exploring information processing at quantum scales
+- **Financial Analysis Engines**: Converting market data into investment insights
+- **AI Development Workflows**: Information transformation through machine learning
+- **Data Visualization Systems**: Making abstract information tangible and actionable
+
+### 💹 Value Investing Technology
+Applying information theory to financial markets:
+- **Quality Score Engine**: Multi-dimensional company analysis using 12 defensive criteria
+- **Margin of Safety Calculator**: Monte Carlo simulation across valuation methodologies
+- **Deep Value Screener**: Systematic identification of information inefficiencies
+- **EPV Analysis Tools**: Bruce Greenwald's Earnings Power Value framework
+- **Portfolio Risk Assessment**: Historical stress testing and correlation analysis
+
+### 🧠 AI-Driven Development
+Leveraging artificial intelligence as an information amplifier:
+- **Codex CLI Integration**: AI-assisted development workflows
+- **Automated Code Generation**: Pattern recognition in software development
+- **Intelligent Testing Systems**: AI-powered quality assurance
+- **Documentation Generation**: Converting code into human-readable insights
+
+## Technical Foundations
 
 ### Core Technologies
-- **Frontend**: React, Next.js, TypeScript, Tailwind CSS
-- **Backend**: Node.js, Python, API development
-- **Data**: Chart.js, D3.js, WebGL, real-time processing
-- **AI Tools**: Codex CLI, GitHub Copilot, custom prompt engineering
-- **Deployment**: Vercel, cloud infrastructure, CI/CD
+- **Frontend**: React, Next.js, TypeScript—information presentation layers
+- **Backend**: Node.js, Python—information processing engines
+- **Data**: Chart.js, D3.js, WebGL—information visualization
+- **AI Tools**: Codex CLI, advanced prompt engineering—information transformation
+- **Infrastructure**: Cloud computing, real-time data processing
 
-### Specialized Skills
-- **Financial Modeling**: Complex calculations, risk assessment, Monte Carlo simulation
-- **Performance Optimization**: 60fps animations, bundle optimization, Web Workers
-- **Data Architecture**: Real-time data processing, WebSocket connections
-- **AI Integration**: Prompt engineering, workflow automation, agentic development
+### Specialized Expertise
+- **Financial Modeling**: Quantitative analysis and risk assessment
+- **Performance Optimization**: High-frequency data processing
+- **Information Architecture**: Designing systems for maximum information flow
+- **Quantum-Inspired Algorithms**: Applying quantum principles to classical computing
 
-## Professional Philosophy
+## The Wheeler Principle in Practice
 
-### AI-First Development
-I believe in leveraging AI as a force multiplier for human creativity. My development workflow integrates multiple AI tools to handle routine tasks, freeing me to focus on architecture, user experience, and innovative problem-solving.
+### From Bits to Business Value
+Every project demonstrates the "It from Bit" principle:
+1. **Information Collection**: Gathering raw data bits
+2. **Pattern Recognition**: Discovering structure in information
+3. **Algorithm Development**: Encoding insights into executable code
+4. **Reality Creation**: Generating tangible outcomes from abstract information
 
-### Financial Technology Focus
-Having studied value investing principles extensively, I'm passionate about democratizing sophisticated financial analysis. My tools make institutional-grade research accessible to individual investors.
+### Case Study: Financial Analysis
+Our value investing tools exemplify Wheeler's principle:
+- **Bits**: Raw financial data from markets and companies
+- **Processing**: Algorithms apply Graham and Greenwald methodologies
+- **Insight**: Quality scores and safety margins emerge from information
+- **Reality**: Investment decisions based on information-theoretic analysis
 
-### Open Source Contribution
-I actively contribute to the developer community by open-sourcing components, sharing development workflows, and documenting best practices for AI-driven development.
+## Philosophy in Action
 
-### User-Centric Design
-Every project prioritizes accessibility, performance, and user experience. I build responsive applications that work seamlessly across devices with comprehensive keyboard navigation and screen reader support.
+### Information-First Development
+We approach every project by asking:
+- What information patterns are we trying to discover?
+- How can we minimize information loss in processing?
+- What emergent properties arise from information interactions?
+- How does our code embody Wheeler's principle?
 
-## Notable Achievements
+### Quantum-Inspired Thinking
+Drawing from quantum information theory:
+- **Superposition**: Exploring multiple solution states simultaneously
+- **Entanglement**: Understanding interconnected system dependencies
+- **Measurement**: How observation changes system states
+- **Coherence**: Maintaining information integrity across transformations
 
-### Project Impact
-- **500+ daily active users** across financial analysis tools
-- **2,000+ monthly analysis sessions** helping investors make better decisions
-- **15%+ alpha generation** for users identifying undervalued opportunities
-- **12.8% annual returns** for top quintile quality score recommendations (vs 9.2% S&P 500)
+## Impact and Results
 
-### Technical Milestones
-- **3x productivity increase** using AI-first development workflow
-- **40% bug reduction** through AI-assisted code review
-- **90% documentation coverage** with automated generation
-- **Sub-second response times** for complex financial calculations
+### Project Metrics
+- **Information Processing**: TB+ of financial data analyzed monthly
+- **User Engagement**: 500+ daily active users across analysis tools
+- **Performance**: Sub-second response times for complex calculations
+- **Accuracy**: 90%+ prediction accuracy in value identification systems
 
-### Development Metrics
-- **85% test coverage** across all projects
-- **95+ Lighthouse scores** for performance and accessibility
-- **<500KB bundle sizes** for optimal loading speeds
-- **60fps animations** for smooth user interactions
+### Community Contributions
+- **Open Source**: Sharing information-theoretic development tools
+- **Technical Writing**: Documenting the intersection of information theory and software
+- **Education**: Teaching Wheeler's principles in practical contexts
+- **Research**: Advancing quantum-inspired classical algorithms
 
-## Current Focus
+## Current Research
 
-### 🚀 Scaling AI Development Workflows
-Refining and documenting AI-first development practices, creating templates and tools that help other developers achieve similar productivity gains.
+### 🌌 Quantum Information Applications
+Exploring how quantum information principles apply to classical systems:
+- Quantum-inspired optimization algorithms for portfolio construction
+- Information-theoretic approaches to machine learning
+- Entanglement-like correlations in financial markets
 
-### 📈 Advanced Financial Analytics
-Expanding the financial analysis suite with machine learning predictions, natural language query interfaces, and advanced portfolio optimization algorithms.
+### 🔮 Emergent Intelligence
+Investigating how intelligence emerges from information processing:
+- AI systems that embody Wheeler's principle
+- Information-theoretic measures of algorithmic intelligence
+- Quantum cognition models in decision-making systems
 
-### 🌐 Developer Community
-Contributing to open source projects, writing technical content, and sharing knowledge about modern development practices and AI integration.
+### 📊 Information Market Theory
+Developing new frameworks for understanding markets as information systems:
+- Information asymmetry detection algorithms
+- Market microstructure from information theory perspective
+- Quantum game theory applications to trading strategies
 
-## Background & Education
+## Vision for the Future
 
-### Professional Experience
-- **Full-Stack Development**: 5+ years building production applications
-- **Financial Technology**: Deep expertise in value investing and quantitative analysis
-- **AI Integration**: Early adopter of AI development tools and workflows
-- **Data Visualization**: Specialized in making complex data accessible and actionable
+### The Information Economy
+We're moving toward an economy where information is the primary value driver. Our work prepares for this future by:
+- Building tools that maximize information utility
+- Developing frameworks for information-based value creation
+- Creating systems that embody Wheeler's fundamental insight
 
-### Continuous Learning
-I stay current with emerging technologies through:
-- Regular experimentation with new AI tools and frameworks
-- Contributing to open source projects
-- Writing technical content and case studies
-- Engaging with the developer community
+### Wheeler's Legacy
+Continuing Wheeler's vision by demonstrating that:
+- Software systems are information made manifest
+- Market dynamics emerge from information flow
+- AI represents information becoming self-aware
+- Quantum computing fulfills information's ultimate potential
 
-## Let's Connect
+## Connect with the Vision
 
-I'm always interested in discussing:
-- **AI-driven development workflows** and productivity optimization
-- **Financial technology** and quantitative analysis
-- **Data visualization** and interactive web applications
-- **Collaboration opportunities** on innovative projects
+Ready to explore how information becomes reality? Let's discover what emerges when bits become "its."
 
-### Get In Touch
-- **Email**: [hello@pixelwisdom.dev](mailto:hello@pixelwisdom.dev)
-- **Projects**: Explore my work in the [portfolio section](/projects)
-- **Writing**: Read my insights on [AI development](/blog/ai-driven-development-workflow) and [financial technology](/blog/building-value-investing-tools)
+### Collaboration Opportunities
+- **Research Projects**: Quantum-inspired classical algorithms
+- **Financial Technology**: Information-theoretic market analysis
+- **AI Development**: Wheeler principle-based machine learning
+- **Open Source**: Tools that embody "It from Bit" philosophy
+
+### Get in Touch
+- **Email**: [hello@itfrombit.ca](mailto:hello@itfrombit.ca)
+- **Projects**: Explore our [portfolio](/projects) of information-to-reality transformations
+- **Writing**: Read our insights on [information theory](/blog) and practical applications
 
 ---
 
-*"The intersection of human creativity and artificial intelligence is where the most exciting innovations happen. I'm passionate about building that future, one project at a time."*
+*"Every it—every particle, every field of force, even the space-time continuum itself—derives its function, its meaning, its very existence entirely from binary choices, bits."* — John Wheeler
+
+Welcome to the future where information becomes reality. Welcome to It From Bit.

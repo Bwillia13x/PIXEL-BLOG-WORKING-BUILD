@@ -1,5 +1,5 @@
 ---
-title: "Hello World: Building with Pixel Wisdom"
+title: "Hello World: Building with It From Bit"
 date: "2025-06-14"
 excerpt: "Welcome to my blog! Here's what you can expect to find as I document my journey through tech, AI, and creative development."
 category: "General"

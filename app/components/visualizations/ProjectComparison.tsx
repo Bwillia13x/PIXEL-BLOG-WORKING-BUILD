@@ -79,7 +79,7 @@ export interface ComparisonProject {
 const SAMPLE_PROJECTS: ComparisonProject[] = [
   {
     id: 'pixel-blog',
-    title: 'Pixel Wisdom Blog',
+    title: 'It From Bit Blog',
     description: 'Modern developer blog with pixel-art theme and advanced analytics',
     category: 'Web Application',
     status: 'completed',

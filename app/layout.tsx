@@ -149,7 +149,7 @@ export default function RootLayout({
                       role="main"
                       aria-label="Main content"
                       tabIndex={-1}
-                      style={{ marginTop: 'calc(var(--header-height) + 1rem)' }}
+                      style={{ marginTop: 'calc(var(--header-height) + 0.5rem)' }}
                     >
                       {children}
                     </main>

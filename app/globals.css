@@ -285,7 +285,7 @@ p {
   }
 }
 
-/* === Pixel Wisdom card polish ======================= */
+/* === It From Bit card polish ======================= */
 @keyframes pw-card-sheen {
   0%   { background-position: -150% 0; }
   100% { background-position: 150% 0; }

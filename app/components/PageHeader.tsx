@@ -106,7 +106,7 @@ export default function PageHeader({
 
   return (
     <motion.div
-      className={`text-center mt-6 sm:mt-8 mb-12 sm:mb-16 lg:mb-20 overflow-hidden px-4 ${className}`}
+      className={`text-center mt-2 sm:mt-3 mb-12 sm:mb-16 lg:mb-20 overflow-hidden px-4 ${className}`}
       variants={containerVariants}
       initial="hidden"
       animate="visible"

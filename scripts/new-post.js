@@ -27,7 +27,7 @@ async function question(prompt) {
 }
 
 async function createNewPost() {
-  console.log('🚀 Creating a new blog post for Pixel Wisdom\n');
+  console.log('🚀 Creating a new blog post for It From Bit\n');
   
   try {
     const title = await question('📝 Post title: ');

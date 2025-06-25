@@ -10,7 +10,7 @@ describe('Home page', () => {
     render(HomeComponent)
     
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /Welcome to Pixel Wisdom/i })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /Welcome to It From Bit/i })).toBeInTheDocument()
     })
   })
 }) 

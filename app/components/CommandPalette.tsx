@@ -52,7 +52,7 @@ export default function CommandPalette({ className = '', triggerOnly = false }: 
       type: 'page',
       id: 'home',
       title: 'Home',
-      description: 'Welcome to Pixel Wisdom - Digital portfolio and blog',
+      description: 'Welcome to It From Bit - Digital portfolio and blog',
       url: '/',
       icon: FolderIcon
     },

@@ -1,4 +1,4 @@
-// Service Worker for Pixel Wisdom Blog
+// Service Worker for It From Bit Blog
 // Version 1.0.0
 
 const CACHE_NAME = 'pixel-wisdom-v1'

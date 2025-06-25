@@ -428,7 +428,7 @@ class BundleAnalyzer {
 async function main() {
   const analyzer = new BundleAnalyzer()
   
-  console.log('🚀 Pixel Wisdom Blog - Bundle Size Analyzer')
+  console.log('🚀 It From Bit - Bundle Size Analyzer')
   console.log('==========================================\n')
   
   try {

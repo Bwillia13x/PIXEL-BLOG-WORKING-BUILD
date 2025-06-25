@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Advanced Theming System Demo - Pixel Wisdom',
+  title: 'Advanced Theming System Demo - It From Bit',
   description: 'Interactive demonstration of the advanced theming system with retro color schemes, live preview, and custom theme creation.',
   keywords: [
     'theming',

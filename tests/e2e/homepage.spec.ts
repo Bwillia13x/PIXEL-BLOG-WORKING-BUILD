@@ -6,10 +6,10 @@ test.describe('Homepage', () => {
     await page.goto('/');
 
     // Check page title
-    await expect(page).toHaveTitle(/Pixel Wisdom/);
+    await expect(page).toHaveTitle(/It From Bit/);
 
     // Check main heading
-    await expect(page.getByRole('heading', { name: /Welcome to Pixel Wisdom/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Welcome to It From Bit/i })).toBeVisible();
 
     // Check navigation is present
     await expect(page.getByRole('navigation')).toBeVisible();
@@ -77,7 +77,7 @@ test.describe('Homepage', () => {
     }
 
     // Ensure main content is still visible
-    await expect(page.getByRole('heading', { name: /Welcome to Pixel Wisdom/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Welcome to It From Bit/i })).toBeVisible();
   });
 
   test('should have working search functionality', async ({ page }) => {

@@ -127,7 +127,7 @@ const securityHeaders = {
   
   // Remove server information
   'Server': 'Pixel-Wisdom-Blog',
-  'X-Powered-By': 'Next.js & Pixel Wisdom'
+  'X-Powered-By': 'Next.js & It From Bit'
 }
 
 // Input sanitization utilities

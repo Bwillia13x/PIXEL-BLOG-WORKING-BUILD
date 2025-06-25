@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  It From Bit – Revamped Logo
+  Features
+  • Central axis glyph with hidden "P" (upper hook) and "W" (lower arrow) initials.
+  • Concentric rings drawn as pixel-style segments (square caps, crisp edges).
+  • Outer binary halo encodes ASCII for "IB" (0x49 0x42 → 01001001 01000010).
+  • Neon-green default stroke; color can be overridden via CSS using currentColor.
+  • Scales cleanly from 32 px favicon to 512 px hero.
+  • WCAG-AA-compliant monochrome when stroke set to #000 or #FFF.
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 512 512"
+  width="100%"
+  height="100%"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="8"
+  stroke-linecap="square"
+  stroke-linejoin="miter"
+  shape-rendering="crispEdges"
+>
+  <!-- Concentric pixel rings -->
+  <g id="rings" stroke-dasharray="16 8">
+    <circle cx="256" cy="256" r="96" />
+    <circle cx="256" cy="256" r="152" />
+  </g>
+
+  <!-- Central axis with hidden initials P and W -->
+  <g id="axis" stroke-dasharray="">
+    <!-- Upper hook forms a stylised "P" -->
+    <path d="M256 64 v128 h48" />
+    <!-- Vertical spine -->
+    <path d="M256 64 v384" />
+    <!-- Lower arrow forms part of "W" -->
+    <path d="M224 448 l32 32 l32 -32" />
+  </g>
+
+  <!-- Binary halo (ASCII for \"PW\") -->
+  <defs>
+    <path id="haloPath" d="M256 48 a208 208 0 1 1 -0.01 0" />
+  </defs>
+  <text
+    font-family="'IBM Plex Mono', monospace"
+    font-size="20"
+    letter-spacing="4"
+    textLength="1230"
+  >
+    <textPath href="#haloPath" startOffset="0">
+      01010000 01010111 • 01010000 01010111 • 01010000 01010111 •
+    </textPath>
+  </text>
+</svg> 

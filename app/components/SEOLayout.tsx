@@ -369,7 +369,7 @@ export default function SEOLayout({ children }: SEOLayoutProps) {
         <meta property="og:type" content="website" />
         <meta property="og:url" content={siteConfig.url} />
         {siteConfig.ogImage && <meta property="og:image" content={siteConfig.ogImage} />}
-        <meta property="og:site_name" content="Pixel Wisdom" />
+        <meta property="og:site_name" content="It From Bit" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
